@@ -1,0 +1,2031 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#0d0f14">
+<title>ถอดรหัสตัวเลข</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap');
+</style>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  color-scheme: dark;
+  --bg:       #0d0f14;
+  --surface:  #151820;
+  --surface2: #1c2030;
+  --border:   #2a2f42;
+  --border2:  #363d55;
+  --text:     #e8eaf0;
+  --muted:    #7a82a0;
+  --dim:      #454d6a;
+  --accent:   #7c6ff7;
+  --accent2:  #5b52d9;
+  --bull:     #4ade80;
+  --bull-bg:  #0f2a1a;
+  --bull-bd:  #1e5c35;
+  --cow:      #fbbf24;
+  --cow-bg:   #241c08;
+  --cow-bd:   #5c4a10;
+}
+
+html { background: #0d0f14; }
+
+body {
+  font-family: 'Space Grotesk', system-ui, -apple-system, sans-serif;
+  background: #0d0f14;
+  background: var(--bg);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2.5rem 1rem 4rem;
+  color: var(--text);
+}
+
+.wrap { width: 100%; max-width: 460px; }
+
+/* ── Header ── */
+.header { text-align: center; margin-bottom: 2rem; }
+
+.logo-mark {
+  display: inline-flex;
+  gap: 5px;
+  margin-bottom: 16px;
+}
+
+.logo-cell {
+  width: 18px; height: 18px;
+  border-radius: 4px;
+  border: 1.5px solid var(--border2);
+  background: var(--surface2);
+  transition: background 0.3s, border-color 0.3s;
+}
+
+.logo-cell.lit  { background: var(--accent); border-color: var(--accent); }
+.logo-cell.half { background: var(--cow);    border-color: var(--cow); }
+
+.game-title {
+  font-family: 'Space Mono', 'Courier New', monospace;
+  font-size: 26px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  color: var(--text);
+  margin-bottom: 6px;
+}
+
+.game-title span { color: var(--accent); }
+
+.game-sub {
+  font-size: 13px;
+  color: var(--muted);
+  letter-spacing: 0.02em;
+}
+
+/* ── Rules accordion ── */
+.rules-box {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  margin-bottom: 1.5rem;
+  overflow: hidden;
+  background: var(--surface);
+}
+
+.rules-toggle {
+  width: 100%;
+  background: transparent;
+  border: none;
+  padding: 13px 16px;
+  text-align: left;
+  font-family: 'Space Grotesk', system-ui, -apple-system, sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--muted);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: color 0.15s;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.rules-toggle:hover { color: var(--text); }
+.rules-toggle .arrow { margin-left: auto; transition: transform 0.2s; font-size: 10px; }
+.rules-toggle.open { color: var(--text); }
+.rules-toggle.open .arrow { transform: rotate(180deg); }
+
+.rules-content {
+  display: none;
+  padding: 0 16px 16px;
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.8;
+  border-top: 1px solid var(--border);
+}
+
+.rules-content.open { display: block; }
+
+.rules-content h3 {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--dim);
+  margin: 14px 0 6px;
+}
+
+.rules-content h3:first-child { margin-top: 14px; }
+.rules-content ul { padding-left: 16px; }
+.rules-content ul li { margin-bottom: 4px; }
+.rules-content p { margin-bottom: 4px; }
+
+.tag-bull { background: var(--bull-bg); color: var(--bull); border: 1px solid var(--bull-bd); padding: 1px 8px; border-radius: 4px; font-family: 'Space Mono', 'Courier New', monospace; font-size: 12px; }
+.tag-cow  { background: var(--cow-bg);  color: var(--cow);  border: 1px solid var(--cow-bd);  padding: 1px 8px; border-radius: 4px; font-family: 'Space Mono', 'Courier New', monospace; font-size: 12px; }
+
+.example-block {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 14px;
+  margin-top: 8px;
+}
+
+.ex-row { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; font-size: 12px; }
+.ex-row:last-child { margin-bottom: 0; }
+.ex-label { color: var(--dim); min-width: 34px; font-family: 'Space Mono', 'Courier New', monospace; }
+.ex-digits { display: flex; gap: 4px; }
+
+.ex-digit {
+  width: 26px; height: 26px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 5px;
+  font-family: 'Space Mono', 'Courier New', monospace;
+  font-weight: 700;
+  font-size: 13px;
+  background: var(--surface2);
+  color: var(--dim);
+  border: 1px solid var(--border);
+}
+
+.ex-digit.bull { background: var(--bull-bg); color: var(--bull); border-color: var(--bull-bd); }
+.ex-digit.cow  { background: var(--cow-bg);  color: var(--cow);  border-color: var(--cow-bd); }
+.ex-result { color: var(--muted); margin-left: 4px; }
+
+/* ── Status bar ── */
+.status-bar {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  margin-bottom: 1.25rem;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+  background: var(--surface);
+}
+
+.stat-cell {
+  flex: 1;
+  padding: 10px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  border-right: 1px solid var(--border);
+}
+
+.stat-cell:last-child { border-right: none; }
+
+.stat-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--dim);
+}
+
+.stat-val {
+  font-family: 'Space Mono', 'Courier New', monospace;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.stat-val.bull-col { color: var(--bull); }
+.stat-val.cow-col  { color: var(--cow); }
+
+/* ── Input area ── */
+.input-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--dim);
+  margin-bottom: 10px;
+}
+
+/* ── Digit display row ── */
+.digit-display-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.digit-box {
+  flex: 1;
+  height: 64px;
+  font-family: 'Space Mono', 'Courier New', monospace;
+  font-size: 28px;
+  font-weight: 700;
+  text-align: center;
+  border: 1.5px solid var(--border2);
+  border-radius: 12px;
+  background: var(--surface);
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  cursor: pointer;
+  transition: border-color 0.15s;
+  user-select: none;
+}
+
+.digit-box.active {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(124,111,247,0.18);
+  background: var(--surface2);
+}
+
+.digit-box .ph { color: var(--dim); font-size: 22px; }
+
+.digit-cursor {
+  position: absolute;
+  bottom: 7px;
+  width: 18px; height: 2px;
+  background: var(--accent);
+  border-radius: 2px;
+  animation: kblink 1s infinite;
+}
+
+@keyframes kblink { 0%,100%{opacity:1} 50%{opacity:0} }
+
+/* ── Custom keypad ── */
+.keypad {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 7px;
+  margin-bottom: 8px;
+}
+
+.key-btn {
+  height: 52px;
+  font-family: 'Space Mono', 'Courier New', monospace;
+  font-size: 20px;
+  font-weight: 700;
+  border: 1.5px solid var(--border2);
+  border-radius: 11px;
+  background: var(--surface2);
+  color: var(--text);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.1s, transform 0.08s;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.key-btn:active { background: var(--border2); transform: scale(0.94); }
+.key-btn.del { font-size: 15px; color: var(--muted); }
+.key-btn.go {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+  font-family: 'Space Grotesk', system-ui, -apple-system, sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+}
+.key-btn.go:active { background: var(--accent2); }
+.key-btn.go:disabled { background: var(--border2); color: var(--dim); border-color: var(--border2); cursor: not-allowed; transform: none; }
+.key-btn.go.p2go { background: #a0790f; border-color: #a0790f; }
+.key-btn.go.p2go:active { background: #7c5d0a; }
+
+/* keep submit-btn class for new-game button */
+.submit-btn {
+  height: 44px;
+  padding: 0 20px;
+  font-family: 'Space Grotesk', system-ui, -apple-system, sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  border: none;
+  border-radius: 10px;
+  background: var(--accent);
+  color: #fff;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.submit-btn:hover { background: var(--accent2); }
+
+.err-msg {
+  font-size: 12px;
+  color: #f87171;
+  min-height: 18px;
+  margin-bottom: 10px;
+  font-family: 'Space Mono', 'Courier New', monospace;
+}
+
+/* ── Legend ── */
+.legend {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 1.25rem;
+  font-size: 12px;
+  color: var(--dim);
+}
+
+.legend-dot {
+  width: 10px; height: 10px;
+  border-radius: 3px;
+  display: inline-block;
+  margin-right: 5px;
+  vertical-align: middle;
+}
+
+/* ── History ── */
+.history { display: flex; flex-direction: column; gap: 6px; }
+
+.hist-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 12px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  animation: slideIn 0.2s ease;
+}
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateY(-8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.round-num {
+  font-family: 'Space Mono', 'Courier New', monospace;
+  font-size: 10px;
+  color: var(--dim);
+  min-width: 22px;
+}
+
+.hist-num { display: flex; gap: 5px; }
+
+.hist-digit {
+  width: 34px; height: 34px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 7px;
+  font-family: 'Space Mono', 'Courier New', monospace;
+  font-weight: 700;
+  font-size: 15px;
+  background: var(--surface2);
+  color: var(--dim);
+  border: 1px solid var(--border);
+}
+
+.hist-digit.bull { background: var(--bull-bg); color: var(--bull); border-color: var(--bull-bd); }
+.hist-digit.cow  { background: var(--cow-bg);  color: var(--cow);  border-color: var(--cow-bd); }
+
+.hist-scores { margin-left: auto; display: flex; gap: 6px; }
+
+.score-pill {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-family: 'Space Mono', 'Courier New', monospace;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 9px;
+  border-radius: 20px;
+}
+
+.bull-p { background: var(--bull-bg); color: var(--bull); border: 1px solid var(--bull-bd); }
+.cow-p  { background: var(--cow-bg);  color: var(--cow);  border: 1px solid var(--cow-bd); }
+
+/* ── Win screen ── */
+.win-banner {
+  background: var(--surface);
+  border: 1px solid var(--bull-bd);
+  border-radius: 14px;
+  padding: 20px;
+  margin-bottom: 1.5rem;
+  display: none;
+  flex-direction: column;
+}
+
+.win-top { display: flex; align-items: center; gap: 14px; }
+.win-icon { font-size: 32px; }
+.win-text { font-size: 17px; font-weight: 700; color: var(--bull); margin-bottom: 3px; }
+.win-sub  { font-size: 13px; color: var(--muted); font-family: 'Space Mono', 'Courier New', monospace; }
+
+.new-btn {
+  margin-left: auto;
+  padding: 10px 18px;
+  font-family: 'Space Grotesk', system-ui, -apple-system, sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  border: 1.5px solid var(--bull-bd);
+  border-radius: 8px;
+  background: var(--bull-bg);
+  color: var(--bull);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.15s;
+  flex-shrink: 0;
+}
+
+.new-btn:hover { background: #1a3d24; }
+
+.win-history { margin-top: 16px; border-top: 1px solid var(--border); padding-top: 14px; }
+
+.win-history-title {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--dim);
+  margin-bottom: 10px;
+}
+
+.win-history .hist-row { background: var(--bg); }
+.win-history .hist-row.last-row { border-color: var(--bull-bd); background: var(--bull-bg); }
+
+/* ── Divider ── */
+.divider {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 1.25rem 0;
+}
+
+.rec-toggle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: none;
+  font-family: 'Space Mono', 'Courier New', monospace;
+  font-size: 10px;
+  color: var(--dim);
+  cursor: pointer;
+  padding: 2px 0;
+  margin-top: 6px;
+  transition: color 0.15s;
+}
+.rec-toggle:hover { color: var(--muted); }
+
+.rec-guesses {
+  display: none;
+  margin-top: 8px;
+  border-top: 1px solid var(--border);
+  padding-top: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.rec-guess-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+}
+
+.rec-guess-num { font-family: 'Space Mono', 'Courier New', monospace; color: var(--dim); min-width: 20px; font-size: 10px; }
+
+.rec-guess-digits { display: flex; gap: 3px; }
+
+.rec-guess-digit {
+  width: 22px; height: 22px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 4px;
+  font-family: 'Space Mono', 'Courier New', monospace;
+  font-weight: 700;
+  font-size: 11px;
+  background: var(--surface2);
+  color: var(--dim);
+  border: 1px solid var(--border);
+}
+
+.rec-guess-digit.bull { background: var(--bull-bg); color: var(--bull); border-color: var(--bull-bd); }
+.rec-guess-digit.cow  { background: var(--cow-bg);  color: var(--cow);  border-color: var(--cow-bd); }
+
+.rec-guess-score { font-family: 'Space Mono', 'Courier New', monospace; font-size: 10px; color: var(--dim); }
+
+.sound-toggle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 3px 9px;
+  font-family: 'Space Grotesk', system-ui, -apple-system, sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--dim);
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s;
+}
+.sound-toggle:hover { color: var(--text); border-color: var(--border2); }
+.sound-toggle.on { color: var(--accent); border-color: var(--accent); }
+
+.record-row { flex-direction: column; align-items: stretch; }
+.record-top { display: flex; align-items: center; gap: 10px; }
+
+.records-section {
+  margin-top: 2rem;
+  border-top: 1px solid var(--border);
+  padding-top: 1.5rem;
+}
+
+.records-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.records-title {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--dim);
+}
+
+.clear-btn {
+  font-family: 'Space Grotesk', system-ui, -apple-system, sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--dim);
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 3px 9px;
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s;
+}
+
+.clear-btn:hover { color: #f87171; border-color: #f87171; }
+
+.record-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 12px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  margin-bottom: 6px;
+  font-size: 13px;
+  animation: slideIn 0.2s ease;
+}
+
+.record-num {
+  font-family: 'Space Mono', 'Courier New', monospace;
+  font-size: 10px;
+  color: var(--dim);
+  min-width: 22px;
+}
+
+.record-secret {
+  font-family: 'Space Mono', 'Courier New', monospace;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--bull);
+  letter-spacing: 0.15em;
+}
+
+.record-meta {
+  margin-left: auto;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.record-badge {
+  font-family: 'Space Mono', 'Courier New', monospace;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 20px;
+  background: var(--surface2);
+  color: var(--muted);
+  border: 1px solid var(--border);
+}
+
+.record-badge.best { background: var(--bull-bg); color: var(--bull); border-color: var(--bull-bd); }
+.mode-selector {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 1.25rem;
+}
+
+.mode-btn {
+  flex: 1;
+  padding: 11px 8px;
+  font-family: 'Space Grotesk', system-ui, -apple-system, sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  border: 1.5px solid var(--border2);
+  border-radius: 10px;
+  background: var(--surface);
+  color: var(--muted);
+  cursor: pointer;
+  transition: all 0.15s;
+  text-align: center;
+  line-height: 1.4;
+}
+
+.mode-btn:hover { border-color: var(--accent); color: var(--text); }
+.mode-btn.active { border-color: var(--accent); background: rgba(124,111,247,0.12); color: var(--text); }
+.mode-btn .md-name { font-size: 14px; display: block; }
+.mode-btn .md-desc { font-size: 10px; font-weight: 400; color: var(--dim); display: block; margin-top: 2px; }
+.mode-btn.active .md-desc { color: var(--muted); }
+
+/* ── 2-player layout ── */
+.two-player-wrap {
+  display: none;
+  flex-direction: column;
+  gap: 0;
+  width: 100%;
+  max-width: 460px;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.player-panel {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 12px 0;
+  min-height: 0;
+  overflow: hidden;
+}
+
+
+
+.player-panel.p2 {
+  transform: rotate(180deg);
+  direction: rtl;
+}
+.player-panel.p2 .p-input-row {
+  direction: ltr;
+}
+.player-panel.p2 .p-status-bar {
+  direction: ltr;
+}
+.player-panel.p2 .p-history {
+  direction: ltr;
+}
+.player-panel.p2 .p-hist-row {
+  direction: ltr;
+}
+.player-panel.p2 .player-label {
+  direction: ltr;
+  justify-content: flex-end;
+}
+
+.player-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--dim);
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.player-label .pl-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+
+.player-panel.p2 .pl-dot { background: var(--cow); }
+
+.p-status-bar {
+  display: flex;
+  gap: 0;
+  margin-bottom: 12px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+  background: var(--surface);
+}
+
+.p-stat-cell {
+  flex: 1;
+  padding: 8px 10px;
+  border-right: 1px solid var(--border);
+}
+
+.p-stat-cell:last-child { border-right: none; }
+
+.p-stat-label {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--dim);
+  margin-bottom: 2px;
+}
+
+.p-stat-val {
+  font-family: 'Space Mono', 'Courier New', monospace;
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.p-stat-val.bull-col { color: var(--bull); }
+.p-stat-val.cow-col  { color: var(--cow); }
+
+.p-input-row {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.p-digit-input {
+  flex: 1;
+  max-width: 62px;
+  height: 58px;
+  font-family: 'Space Mono', 'Courier New', monospace;
+  font-size: 24px;
+  font-weight: 700;
+  text-align: center;
+  border: 1.5px solid var(--border2);
+  border-radius: 10px;
+  background: var(--surface);
+  color: var(--text);
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+  -moz-appearance: textfield;
+  caret-color: transparent;
+}
+
+.p-digit-input::-webkit-inner-spin-button,
+.p-digit-input::-webkit-outer-spin-button { -webkit-appearance: none; }
+
+.p-digit-input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(124,111,247,0.18);
+}
+
+.p-digit-input.p2-focus:focus { border-color: var(--cow); box-shadow: 0 0 0 3px rgba(251,191,36,0.18); }
+
+.p-submit-btn {
+  height: 58px;
+  padding: 0 14px;
+  font-family: 'Space Grotesk', system-ui, -apple-system, sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  border: none;
+  border-radius: 10px;
+  background: var(--accent);
+  color: #fff;
+  cursor: pointer;
+  transition: background 0.15s, transform 0.1s;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.p-submit-btn:hover { background: var(--accent2); }
+.p-submit-btn:active { transform: scale(0.96); }
+.p-submit-btn:disabled { background: var(--border2); color: var(--dim); cursor: not-allowed; transform: none; }
+.p-submit-btn.p2 { background: #a0790f; }
+.p-submit-btn.p2:hover { background: #7c5d0a; }
+
+.p-err-msg { font-size: 11px; color: #f87171; min-height: 16px; margin-bottom: 6px; font-family: 'Space Mono', 'Courier New', monospace; }
+
+.p-history { display: flex; flex-direction: column; gap: 5px; overflow-y: auto; flex: 1; min-height: 0; }
+
+.p-hist-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 10px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  font-size: 12px;
+}
+
+.p-hist-num { font-family: 'Space Mono', 'Courier New', monospace; font-size: 10px; color: var(--dim); min-width: 20px; }
+.p-hist-digits { display: flex; gap: 4px; }
+
+.p-hist-digit {
+  width: 28px; height: 28px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 6px;
+  font-family: 'Space Mono', 'Courier New', monospace;
+  font-weight: 700;
+  font-size: 13px;
+  background: var(--surface2);
+  color: var(--dim);
+  border: 1px solid var(--border);
+}
+
+.p-hist-digit.bull { background: var(--bull-bg); color: var(--bull); border-color: var(--bull-bd); }
+.p-hist-digit.cow  { background: var(--cow-bg);  color: var(--cow);  border-color: var(--cow-bd); }
+
+.p-scores { margin-left: auto; display: flex; gap: 5px; }
+.p-score-pill {
+  font-family: 'Space Mono', 'Courier New', monospace;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 3px 7px;
+  border-radius: 20px;
+}
+.p-bull-p { background: var(--bull-bg); color: var(--bull); border: 1px solid var(--bull-bd); }
+.p-cow-p  { background: var(--cow-bg);  color: var(--cow);  border: 1px solid var(--cow-bd); }
+
+.p-win-box {
+  display: none;
+  background: var(--bull-bg);
+  border: 1px solid var(--bull-bd);
+  border-radius: 10px;
+  padding: 12px 16px;
+  margin-bottom: 8px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--bull);
+  align-items: center;
+  gap: 10px;
+}
+
+.p-win-box.loser {
+  background: var(--surface2);
+  border-color: var(--border2);
+  color: var(--muted);
+}
+
+.p2-new-game-bar {
+  display: none;
+  justify-content: center;
+  padding: 8px 0;
+  border-top: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.divider-mid {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 0;
+  font-size: 11px;
+  color: var(--dim);
+  gap: 8px;
+  font-family: 'Space Mono', 'Courier New', monospace;
+  border-top: 2px dashed var(--border2);
+  border-bottom: 2px dashed var(--border2);
+  margin: 0;
+  flex-shrink: 0;
+}
+
+.divider-mid-center {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  justify-content: center;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--muted);
+}
+
+.divider-line { color: var(--border2); font-size: 11px; }
+
+.mode-btn-mid {
+  font-family: 'Space Grotesk', system-ui, -apple-system, sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 5px 10px;
+  border: 1px solid var(--border2);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--dim);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s;
+  flex-shrink: 0;
+}
+.mode-btn-mid:hover { color: var(--text); border-color: var(--accent); }
+.mode-btn-mid.active { color: var(--text); border-color: var(--accent); background: rgba(124,111,247,0.12); }
+
+.level-selector {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 1.5rem;
+}
+
+.level-btn {
+  flex: 1;
+  padding: 10px 8px;
+  font-family: 'Space Grotesk', system-ui, -apple-system, sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  border: 1.5px solid var(--border2);
+  border-radius: 10px;
+  background: var(--surface);
+  color: var(--muted);
+  cursor: pointer;
+  transition: all 0.15s;
+  text-align: center;
+  line-height: 1.4;
+}
+
+.level-btn:hover { border-color: var(--accent); color: var(--text); }
+
+.level-btn.active {
+  border-color: var(--accent);
+  background: rgba(124,111,247,0.12);
+  color: var(--text);
+}
+
+.level-btn .lv-name { font-size: 14px; display: block; }
+.level-btn .lv-desc { font-size: 10px; font-weight: 400; color: var(--dim); display: block; margin-top: 2px; }
+.level-btn.active .lv-desc { color: var(--muted); }
+
+.lose-banner {
+  background: var(--surface);
+  border: 1px solid #7f1d1d;
+  border-radius: 14px;
+  padding: 20px;
+  margin-bottom: 1.5rem;
+  display: none;
+  flex-direction: column;
+}
+
+.lose-top { display: flex; align-items: center; gap: 14px; }
+.lose-icon { font-size: 32px; }
+.lose-text { font-size: 17px; font-weight: 700; color: #f87171; margin-bottom: 3px; }
+.lose-sub  { font-size: 13px; color: var(--muted); font-family: 'Space Mono', 'Courier New', monospace; }
+.lose-btn  {
+  margin-left: auto;
+  padding: 10px 18px;
+  font-family: 'Space Grotesk', system-ui, -apple-system, sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  border: 1.5px solid #7f1d1d;
+  border-radius: 8px;
+  background: #2d0a0a;
+  color: #f87171;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: background 0.15s;
+}
+.lose-btn:hover { background: #3d1010; }
+
+.attempts-left {
+  display: flex;
+  gap: 5px;
+  margin-top: 8px;
+  align-items: center;
+}
+
+.attempt-pip {
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  background: var(--accent);
+  transition: background 0.2s, transform 0.2s;
+}
+
+.attempt-pip.used { background: var(--border2); transform: scale(0.8); }
+.attempt-pip.last { background: #f87171; }
+
+.record-badge.new-record { background: #1a0a30; color: #c084fc; border-color: #7c3aed; animation: pulse-badge 1.2s ease infinite; }
+@keyframes pulse-badge { 0%,100% { box-shadow: 0 0 0 0 rgba(124,58,237,0.4); } 50% { box-shadow: 0 0 0 4px rgba(124,58,237,0); } }
+
+.no-records {
+  text-align: center;
+  font-size: 13px;
+  color: var(--dim);
+  padding: 16px 0;
+  font-family: 'Space Mono', 'Courier New', monospace;
+}
+
+@media (max-width: 400px) {
+  .digit-input { height: 60px; font-size: 24px; }
+  .submit-btn  { height: 60px; padding: 0 14px; font-size: 13px; }
+  .game-title  { font-size: 22px; }
+}
+</style>
+</head>
+<body>
+<!-- Shared mode bar -->
+<div style="width:100%;max-width:460px;margin-bottom:12px">
+  <div class="mode-selector" id="shared-mode-selector">
+    <button class="mode-btn active" id="mode1-btn" onclick="selectMode(1)">
+      <span class="md-name">👤 1 คน</span>
+      <span class="md-desc">เล่นคนเดียว</span>
+    </button>
+    <button class="mode-btn" id="mode2-btn" onclick="selectMode(2)">
+      <span class="md-name">👥 2 คน</span>
+      <span class="md-desc">แข่งกัน บน/ล่าง</span>
+    </button>
+  </div>
+</div>
+
+<div class="wrap" id="single-wrap">
+
+  <!-- Header -->
+  <div class="header">
+    <div class="logo-mark" id="logo-mark">
+      <div class="logo-cell lit"></div>
+      <div class="logo-cell half"></div>
+      <div class="logo-cell"></div>
+      <div class="logo-cell lit"></div>
+    </div>
+    <h1 class="game-title">ถอด<span>รหัส</span>ตัวเลข</h1>
+    <p class="game-sub">ตัวเลข 4 หลักที่ซ่อนอยู่ — ถอดรหัสให้ได้!</p>
+  </div>
+
+  <!-- Rules -->
+  <div class="rules-box">
+    <button class="rules-toggle" id="rules-toggle" onclick="toggleRules()">
+      ▸ กติกาและวิธีการเล่น
+      <span class="arrow">▼</span>
+    </button>
+    <div class="rules-content" id="rules-content">
+      <h3>เป้าหมาย</h3>
+      <p>ทายตัวเลข 4 หลักที่ไม่ซ้ำกัน (0–9) ที่เกมสุ่มซ่อนไว้</p>
+
+      <h3>วิธีเล่น</h3>
+      <ul>
+        <li>กรอกตัวเลข 4 หลักลงในช่อง (ไม่ซ้ำกัน)</li>
+        <li>กด <strong>ทาย →</strong> หรือ Enter เพื่อส่ง</li>
+        <li>อ่านคำใบ้แล้วปรับการทายครั้งถัดไป</li>
+      </ul>
+
+      <h3>คำใบ้</h3>
+      <ul>
+        <li><span class="tag-bull">ตัว</span> — จำนวนตัวเลขที่ตรงกับรหัส (ไม่สนตำแหน่ง)</li>
+        <li><span class="tag-cow">ที่</span> — จำนวนตัวเลขที่ถูกทั้งตัวและตำแหน่ง</li>
+        <li>ตัวเลขที่ไม่มีในรหัส จะไม่นับทั้งคู่</li>
+      </ul>
+
+      <h3>ตัวอย่าง — รหัสลับคือ 2 9 4 1</h3>
+      <div class="example-block">
+        <div class="ex-row">
+          <span class="ex-label">#1</span>
+          <div class="ex-digits">
+            <div class="ex-digit">1</div><div class="ex-digit">5</div><div class="ex-digit">6</div><div class="ex-digit">8</div>
+          </div>
+          <span class="ex-result">→ 1 ตัว &nbsp;0 ที่ &nbsp;(เลข 1 มีในรหัส ผิดที่)</span>
+        </div>
+        <div class="ex-row">
+          <span class="ex-label">#2</span>
+          <div class="ex-digits">
+            <div class="ex-digit bull">2</div><div class="ex-digit bull">9</div><div class="ex-digit cow">1</div><div class="ex-digit cow">4</div>
+          </div>
+          <span class="ex-result">→ 4 ตัว &nbsp;2 ที่</span>
+        </div>
+        <div class="ex-row">
+          <span class="ex-label">#3</span>
+          <div class="ex-digits">
+            <div class="ex-digit bull">2</div><div class="ex-digit bull">9</div><div class="ex-digit bull">4</div><div class="ex-digit bull">1</div>
+          </div>
+          <span class="ex-result">→ ✓4 &nbsp;ชนะ!</span>
+        </div>
+      </div>
+
+      <h3>ทางลัด</h3>
+      <ul>
+        <li>Enter — ส่งคำตอบ</li>
+        <li>Backspace ที่ช่องว่าง — ย้อนกลับช่องก่อน</li>
+        <li>← → — เลื่อนระหว่างช่อง</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Level selector -->
+  <div class="level-selector">
+    <button class="level-btn active" id="lv1-btn" onclick="selectLevel(1)">
+      <span class="lv-name">Level 1</span>
+      <span class="lv-desc">ง่าย — เห็นสีใบ้</span>
+    </button>
+    <button class="level-btn" id="lv2-btn" onclick="selectLevel(2)">
+      <span class="lv-name">Level 2</span>
+      <span class="lv-desc">ปานกลาง — ไม่มีสี</span>
+    </button>
+  </div>
+
+  <!-- Lose banner -->
+  <div id="lose-banner" class="lose-banner">
+    <div class="lose-top">
+      <span class="lose-icon">💀</span>
+      <div style="flex:1">
+        <div class="lose-text">หมดครั้งแล้ว!</div>
+        <div class="lose-sub" id="lose-sub"></div>
+      </div>
+      <button class="lose-btn" onclick="startNewGame()">ลองใหม่ →</button>
+    </div>
+  </div>
+
+  <!-- Win banner -->
+  <div id="win-banner" class="win-banner">
+    <div class="win-top">
+      <span class="win-icon">🏆</span>
+      <div style="flex:1">
+        <div class="win-text" id="win-text">ถอดรหัสสำเร็จ!</div>
+        <div class="win-sub" id="win-sub"></div>
+      </div>
+      <button class="new-btn" onclick="startNewGame()">เกมใหม่ →</button>
+    </div>
+    <div class="win-history" id="win-history" style="display:none">
+      <div class="win-history-title">ประวัติการทายทั้งหมด</div>
+      <div class="history" id="win-history-list"></div>
+    </div>
+  </div>
+
+  <!-- Game area -->
+  <div id="game-area">
+    <!-- Status -->
+    <div class="status-bar">
+      <div class="stat-cell">
+        <div class="stat-label">ถูกตัว</div>
+        <div class="stat-val bull-col" id="bull-count">—</div>
+      </div>
+      <div class="stat-cell">
+        <div class="stat-label">ถูกที่</div>
+        <div class="stat-val cow-col" id="cow-count">—</div>
+      </div>
+      <div class="stat-cell">
+        <div class="stat-label">ครั้งที่</div>
+        <div class="stat-val" id="round-disp">1</div>
+      </div>
+      <div class="stat-cell">
+        <div class="stat-label">เวลา</div>
+        <div class="stat-val" id="timer-disp" style="font-size:16px;letter-spacing:0.05em">0:00</div>
+      </div>
+    </div>
+
+    <!-- Input -->
+    <div class="input-label">ใส่รหัส 4 หลัก</div>
+    <div class="digit-display-row" id="digit-display-row">
+      <div class="digit-box active" id="d0" onclick="spFocus(0)"><span class="ph">?</span></div>
+      <div class="digit-box" id="d1" onclick="spFocus(1)"><span class="ph">?</span></div>
+      <div class="digit-box" id="d2" onclick="spFocus(2)"><span class="ph">?</span></div>
+      <div class="digit-box" id="d3" onclick="spFocus(3)"><span class="ph">?</span></div>
+    </div>
+
+    <div class="err-msg" id="err-msg"></div>
+
+    <div class="keypad" id="sp-keypad">
+      <div class="key-btn" onclick="spKey(1)">1</div>
+      <div class="key-btn" onclick="spKey(2)">2</div>
+      <div class="key-btn" onclick="spKey(3)">3</div>
+      <div class="key-btn" onclick="spKey(4)">4</div>
+      <div class="key-btn" onclick="spKey(5)">5</div>
+      <div class="key-btn" onclick="spKey(6)">6</div>
+      <div class="key-btn" onclick="spKey(7)">7</div>
+      <div class="key-btn" onclick="spKey(8)">8</div>
+      <div class="key-btn" onclick="spKey(9)">9</div>
+      <div class="key-btn del" onclick="spDel()">⌫</div>
+      <div class="key-btn" onclick="spKey(0)">0</div>
+      <div class="key-btn go" id="sp-go-btn" onclick="submitGuess()">ทาย →</div>
+    </div>
+
+    <!-- Legend -->
+    <div class="legend" id="legend">
+      <span><span class="legend-dot" style="background:var(--bull)"></span>ถูกตัว (ไม่สนตำแหน่ง)</span>
+      <span><span class="legend-dot" style="background:var(--cow)"></span>ถูกที่ (ถูกทั้งตัวและตำแหน่ง)</span>
+      <span><span class="legend-dot" style="background:var(--dim);opacity:0.5"></span>ไม่มีในรหัส</span>
+    </div>
+
+    <hr class="divider">
+    <div class="history" id="history"></div>
+  </div>
+
+  <!-- Records -->
+  <div class="records-section" id="records-section">
+    <div class="records-header">
+      <div class="records-title">ประวัติรหัสที่ถอดแล้ว</div>
+      <div style="display:flex;gap:6px;align-items:center">
+        <button class="sound-toggle on" id="sound-toggle" onclick="toggleSound()">🔊 เสียง</button>
+        <div id="clear-normal" style="display:flex">
+          <button class="clear-btn" onclick="askClear()">ล้างทั้งหมด</button>
+        </div>
+        <div id="clear-confirm" style="display:none;gap:5px;align-items:center">
+          <span style="font-size:11px;color:var(--muted)">แน่ใจ?</span>
+          <button class="clear-btn" style="color:#f87171;border-color:#f87171" onclick="clearRecords()">ลบเลย</button>
+          <button class="clear-btn" onclick="cancelClear()">ยกเลิก</button>
+        </div>
+      </div>
+    </div>
+    <div id="records-list"><div class="no-records">ยังไม่มีประวัติ</div></div>
+  </div>
+
+</div>
+
+<!-- 2-Player Layout -->
+<div class="two-player-wrap" id="two-player-wrap">
+
+  <!-- Player 2 (top, rotated 180deg — reads from top of screen) -->
+  <div class="player-panel p2">
+    <div class="player-label"><span class="pl-dot"></span>ผู้เล่น 2</div>
+    <div class="p-win-box" id="p2-win-box">🏆 ผู้เล่น 2 ชนะ!</div>
+    <div class="p-status-bar">
+      <div class="p-stat-cell"><div class="p-stat-label">ถูกตัว</div><div class="p-stat-val bull-col" id="p2-bull">—</div></div>
+      <div class="p-stat-cell"><div class="p-stat-label">ถูกที่</div><div class="p-stat-val cow-col" id="p2-cow">—</div></div>
+      <div class="p-stat-cell"><div class="p-stat-label">ครั้งที่</div><div class="p-stat-val" id="p2-round">1</div></div>
+    </div>
+    <div class="p-digit-display-row">
+      <div class="p-digit-box p2-active" id="p2d0" onclick="tpFocus(2,0)"><span class="ph">?</span></div>
+      <div class="p-digit-box" id="p2d1" onclick="tpFocus(2,1)"><span class="ph">?</span></div>
+      <div class="p-digit-box" id="p2d2" onclick="tpFocus(2,2)"><span class="ph">?</span></div>
+      <div class="p-digit-box" id="p2d3" onclick="tpFocus(2,3)"><span class="ph">?</span></div>
+    </div>
+    <div class="p-err-msg" id="p2-err"></div>
+    <div class="p-keypad">
+      <div class="p-key-btn" onclick="tpKey(2,1)">1</div>
+      <div class="p-key-btn" onclick="tpKey(2,2)">2</div>
+      <div class="p-key-btn" onclick="tpKey(2,3)">3</div>
+      <div class="p-key-btn" onclick="tpKey(2,4)">4</div>
+      <div class="p-key-btn" onclick="tpKey(2,5)">5</div>
+      <div class="p-key-btn" onclick="tpKey(2,6)">6</div>
+      <div class="p-key-btn" onclick="tpKey(2,7)">7</div>
+      <div class="p-key-btn" onclick="tpKey(2,8)">8</div>
+      <div class="p-key-btn" onclick="tpKey(2,9)">9</div>
+      <div class="p-key-btn del" onclick="tpDel(2)">⌫</div>
+      <div class="p-key-btn" onclick="tpKey(2,0)">0</div>
+      <div class="p-key-btn go p2go" id="p2-submit" onclick="p2Submit(2)">ทาย →</div>
+    </div>
+    <div class="p-history" id="p2-history"></div>
+  </div>
+
+  <!-- Middle divider with mode buttons -->
+  <div class="divider-mid" id="divider-mid">
+    <button class="mode-btn-mid active" id="mid-mode1-btn" onclick="selectMode(1)">👤 1 คน</button>
+    <div class="divider-mid-center">
+      <span class="divider-line">────</span>
+      <span id="two-timer">0:00</span>
+      <span class="divider-line">────</span>
+    </div>
+    <button class="mode-btn-mid" id="mid-mode2-btn" onclick="selectMode(2)">👥 2 คน</button>
+  </div>
+
+  <!-- Player 1 (bottom, reads normally from bottom of screen) -->
+  <div class="player-panel p1">
+    <div class="player-label"><span class="pl-dot"></span>ผู้เล่น 1</div>
+    <div class="p-win-box" id="p1-win-box">🏆 ผู้เล่น 1 ชนะ!</div>
+    <div class="p-status-bar">
+      <div class="p-stat-cell"><div class="p-stat-label">ถูกตัว</div><div class="p-stat-val bull-col" id="p1-bull">—</div></div>
+      <div class="p-stat-cell"><div class="p-stat-label">ถูกที่</div><div class="p-stat-val cow-col" id="p1-cow">—</div></div>
+      <div class="p-stat-cell"><div class="p-stat-label">ครั้งที่</div><div class="p-stat-val" id="p1-round">1</div></div>
+    </div>
+    <div class="p-digit-display-row">
+      <div class="p-digit-box active" id="p1d0" onclick="tpFocus(1,0)"><span class="ph">?</span></div>
+      <div class="p-digit-box" id="p1d1" onclick="tpFocus(1,1)"><span class="ph">?</span></div>
+      <div class="p-digit-box" id="p1d2" onclick="tpFocus(1,2)"><span class="ph">?</span></div>
+      <div class="p-digit-box" id="p1d3" onclick="tpFocus(1,3)"><span class="ph">?</span></div>
+    </div>
+    <div class="p-err-msg" id="p1-err"></div>
+    <div class="p-keypad">
+      <div class="p-key-btn" onclick="tpKey(1,1)">1</div>
+      <div class="p-key-btn" onclick="tpKey(1,2)">2</div>
+      <div class="p-key-btn" onclick="tpKey(1,3)">3</div>
+      <div class="p-key-btn" onclick="tpKey(1,4)">4</div>
+      <div class="p-key-btn" onclick="tpKey(1,5)">5</div>
+      <div class="p-key-btn" onclick="tpKey(1,6)">6</div>
+      <div class="p-key-btn" onclick="tpKey(1,7)">7</div>
+      <div class="p-key-btn" onclick="tpKey(1,8)">8</div>
+      <div class="p-key-btn" onclick="tpKey(1,9)">9</div>
+      <div class="p-key-btn del" onclick="tpDel(1)">⌫</div>
+      <div class="p-key-btn" onclick="tpKey(1,0)">0</div>
+      <div class="p-key-btn go" id="p1-submit" onclick="p2Submit(1)">ทาย →</div>
+    </div>
+    <div class="p-history" id="p1-history"></div>
+  </div>
+
+  <!-- New game bar -->
+  <div class="p2-new-game-bar" id="p2-new-game-bar">
+    <button class="submit-btn" onclick="startTwoPlayerGame()">เกมใหม่ →</button>
+  </div>
+
+</div>
+
+<script>
+function toggleRules() {
+  const btn = document.getElementById('rules-toggle');
+  const content = document.getElementById('rules-content');
+  btn.classList.toggle('open');
+  content.classList.toggle('open');
+}
+
+let secret = [];
+let round = 1;
+let currentLevel = 1;
+let timerInterval = null;
+
+function selectLevel(lv) {
+  currentLevel = lv;
+  document.getElementById('lv1-btn').classList.toggle('active', lv === 1);
+  document.getElementById('lv2-btn').classList.toggle('active', lv === 2);
+  startNewGame();
+}
+let guessLog = [];
+let soundOn = true;
+function toggleSound() {
+  soundOn = !soundOn;
+  musicOn = soundOn;
+  const btn = document.getElementById('sound-toggle');
+  btn.textContent = soundOn ? '🔊 เสียง' : '🔇 เสียง';
+  btn.classList.toggle('on', soundOn);
+  if (musicOn) {
+    resumeMusic();
+  } else {
+    pauseMusic();
+  }
+}
+
+function toggleGuesses(btn) {
+  const panel = btn.nextElementSibling;
+  const open = panel.style.display === 'flex' || panel.style.display === 'block';
+  panel.style.display = open ? 'none' : 'flex';
+  panel.style.flexDirection = 'column';
+  btn.textContent = open ? '▸ ดูประวัติการทาย (' + (panel.children.length) + ' ครั้ง)' : '▾ ซ่อนประวัติการทาย';
+}
+
+// ── Web Audio ──
+let audioCtx = null;
+function getCtx() {
+  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  return audioCtx;
+}
+
+function playTone(freq, type, duration, vol, delay) {
+  if (!soundOn) return;
+  try {
+    const ctx = getCtx();
+    const o = ctx.createOscillator();
+    const g = ctx.createGain();
+    o.connect(g); g.connect(ctx.destination);
+    o.type = type || 'sine';
+    o.frequency.setValueAtTime(freq, ctx.currentTime + (delay||0));
+    g.gain.setValueAtTime(vol || 0.3, ctx.currentTime + (delay||0));
+    g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + (delay||0) + duration);
+    o.start(ctx.currentTime + (delay||0));
+    o.stop(ctx.currentTime + (delay||0) + duration);
+  } catch(e) {}
+}
+
+function soundType() {  // key press
+  playTone(600, 'sine', 0.08, 0.15);
+}
+
+function soundSubmit() {  // submit guess
+  playTone(400, 'sine', 0.06, 0.2);
+  playTone(500, 'sine', 0.06, 0.15, 0.07);
+}
+
+function soundBull() {  // got a bull
+  playTone(660, 'triangle', 0.12, 0.25);
+  playTone(880, 'triangle', 0.10, 0.2, 0.1);
+}
+
+function soundCow() {  // got a cow only
+  playTone(440, 'sine', 0.1, 0.2);
+  playTone(380, 'sine', 0.08, 0.15, 0.1);
+}
+
+function soundMiss() {  // no matches
+  playTone(200, 'sawtooth', 0.08, 0.15);
+}
+
+function soundWin() {
+  [0, 0.12, 0.24, 0.36, 0.5].forEach((t, i) => {
+    playTone([523, 659, 784, 1047, 1319][i], 'triangle', 0.25, 0.3, t);
+  });
+}
+
+function soundError() {
+  playTone(180, 'sawtooth', 0.1, 0.2);
+}
+
+// ── Nocturne MIDI Playback Engine ──
+// ── Music Engine (MP3 via Audio API) ──
+let bgMusic = null;
+let musicStarted = false;
+let musicOn = true;
+
+function initMusic() {
+  if (bgMusic) return;
+  bgMusic = new Audio('music/CBNocturne.mp3');
+  bgMusic.loop = true;
+  bgMusic.volume = 0.4;
+  // Fade in
+  bgMusic.volume = 0;
+  bgMusic.play().then(() => {
+    let vol = 0;
+    const fadeIn = setInterval(() => {
+      vol = Math.min(vol + 0.02, 0.4);
+      bgMusic.volume = vol;
+      if (vol >= 0.4) clearInterval(fadeIn);
+    }, 100);
+  }).catch(() => {
+    // Autoplay blocked — will start on first interaction
+  });
+}
+
+function startMusic() {
+  if (!musicOn) return;
+  if (!bgMusic) { initMusic(); return; }
+  bgMusic.play().catch(() => {});
+}
+
+function pauseMusic() {
+  if (bgMusic) {
+    let vol = bgMusic.volume;
+    const fadeOut = setInterval(() => {
+      vol = Math.max(vol - 0.04, 0);
+      bgMusic.volume = vol;
+      if (vol <= 0) { clearInterval(fadeOut); bgMusic.pause(); }
+    }, 60);
+  }
+}
+
+function resumeMusic() {
+  if (!bgMusic || !musicOn) return;
+  bgMusic.play().then(() => {
+    let vol = bgMusic.volume;
+    const fadeIn = setInterval(() => {
+      vol = Math.min(vol + 0.02, 0.4);
+      bgMusic.volume = vol;
+      if (vol >= 0.4) clearInterval(fadeIn);
+    }, 100);
+  }).catch(() => {});
+}
+
+function tryStartMusic() {
+  if (!musicStarted && musicOn) {
+    musicStarted = true;
+    startMusic();
+  }
+}
+
+function soundNewRecord() {
+  // Rising sparkle arpeggio, distinct from regular win
+  const notes = [392, 523, 659, 784, 1047, 1319, 1568];
+  notes.forEach((freq, i) => {
+    playTone(freq, 'sine', 0.18, 0.28, i * 0.08);
+  });
+  // Extra shimmer on top
+  setTimeout(() => {
+    playTone(2093, 'sine', 0.3, 0.18);
+    playTone(1760, 'sine', 0.25, 0.14, 0.1);
+    playTone(2093, 'sine', 0.2, 0.12, 0.22);
+  }, 600);
+}
+let gameRecords = JSON.parse(localStorage.getItem('numgame_records') || '[]');
+
+function saveRecord(secretArr, rounds, timeMs, guessLog) {
+  // Check if this is a new best time (among records with same or more rounds)
+  const prevBestTime = gameRecords.length
+    ? Math.min(...gameRecords.map(r => r.timeMs || Infinity))
+    : Infinity;
+  const isNewRecord = timeMs < prevBestTime;
+
+  const rec = { secret: secretArr.join(' '), rounds, time: formatTime(timeMs), timeMs: timeMs, ts: Date.now(), guesses: guessLog, isNewRecord: isNewRecord, level: currentLevel };
+  gameRecords.unshift(rec);
+  if (gameRecords.length > 20) gameRecords = gameRecords.slice(0, 20);
+  localStorage.setItem('numgame_records', JSON.stringify(gameRecords));
+  renderRecords();
+  return isNewRecord;
+}
+
+function askClear() {
+  document.getElementById('clear-normal').style.display = 'none';
+  document.getElementById('clear-confirm').style.display = 'flex';
+}
+
+function cancelClear() {
+  document.getElementById('clear-confirm').style.display = 'none';
+  document.getElementById('clear-normal').style.display = 'flex';
+}
+
+function clearRecords() {
+  gameRecords = [];
+  try { localStorage.removeItem('numgame_records'); } catch(e) {}
+  cancelClear();
+  renderRecords();
+}
+
+function renderRecords() {
+  const list = document.getElementById('records-list');
+  if (!gameRecords.length) {
+    list.innerHTML = '<div class="no-records">ยังไม่มีประวัติ</div>';
+    return;
+  }
+  const minTime = Math.min(...gameRecords.map(r => r.timeMs || Infinity));
+  // records are newest-first; record[i] is a new record if timeMs < min of all older records (i+1..)
+  list.innerHTML = gameRecords.map((r, i) => {
+    const isBest = (r.timeMs || Infinity) === minTime;
+    const date = new Date(r.ts);
+    const dateStr = date.toLocaleDateString('th-TH', { day:'numeric', month:'short' }) + ' ' + date.toLocaleTimeString('th-TH', { hour:'2-digit', minute:'2-digit' });
+    const badge = isBest ? 'best' : '';
+    const olderRecords = gameRecords.slice(i + 1);
+    const prevBest = olderRecords.length
+      ? Math.min(...olderRecords.map(function(x){ return x.timeMs || Infinity; }))
+      : Infinity;
+    const isNewRec = (r.timeMs || Infinity) < prevBest;
+    const newRecBadge = isNewRec ? '<div class="record-badge new-record">⚡ สถิติใหม่</div>' : '';
+    const secretDigits = r.secret.split(' ');
+    let guessHTML = '';
+    if (r.guesses && r.guesses.length) {
+      guessHTML = '<button class="rec-toggle" onclick="toggleGuesses(this)">▸ ดูประวัติการทาย (' + r.guesses.length + ' ครั้ง)</button>'
+        + '<div class="rec-guesses" style="display:none">';
+      r.guesses.forEach(function(g, gi) {
+        guessHTML += '<div class="rec-guess-row"><span class="rec-guess-num">#' + (gi+1) + '</span><div class="rec-guess-digits">';
+        g.digits.forEach(function(d, di) {
+          var cls = (r.level || 1) === 1 ? (d == secretDigits[di] ? 'bull' : (secretDigits.includes(String(d)) ? 'cow' : '')) : '';
+          guessHTML += '<div class="rec-guess-digit ' + cls + '">' + d + '</div>';
+        });
+        guessHTML += '</div><span class="rec-guess-score">' + g.cows + ' ตัว · ' + g.bulls + ' ที่</span></div>';
+      });
+      guessHTML += '</div>';
+    }
+    return '<div class="record-row">'
+      + '<div class="record-top">'
+      + '<div class="record-num">#' + (i+1) + '</div>'
+      + '<div class="record-secret">' + r.secret + '</div>'
+      + '<div class="record-meta">'
+      + '<div class="record-badge">' + r.rounds + ' ครั้ง</div>'
+      + '<div class="record-badge ' + (isBest ? 'best' : '') + '">' + (isBest ? '🏆 ' : '') + r.time + '</div>'
+      + '<div class="record-badge" style="font-size:10px;color:var(--muted);border-color:var(--border)">' + 'Lv.' + (r.level || 1) + '</div>'
+      + '<div class="record-badge" style="font-size:10px;color:var(--dim);border:none;background:none;padding:0">' + dateStr + '</div>'
+      + '</div></div>'
+      + guessHTML
+      + '</div>';
+  }).join('');
+}
+let startTime = null;
+let elapsed = 0;
+
+function formatTime(ms) {
+  const total = Math.floor(ms / 1000);
+  const m = Math.floor(total / 60);
+  const s = total % 60;
+  return m + ':' + String(s).padStart(2, '0');
+}
+
+function startTimer() {
+  stopTimer();
+  startTime = Date.now();
+  elapsed = 0;
+  document.getElementById('timer-disp').textContent = '0:00';
+  timerInterval = setInterval(() => {
+    elapsed = Date.now() - startTime;
+    document.getElementById('timer-disp').textContent = formatTime(elapsed);
+  }, 500);
+}
+
+function stopTimer() {
+  if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
+}
+
+function generateSecret() {
+  const digits = Array.from({length:10}, (_,i) => i);
+  for (let i = digits.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [digits[i], digits[j]] = [digits[j], digits[i]];
+  }
+  return digits.slice(0, 4);
+}
+
+function startNewGame() {
+  secret = generateSecret();
+  round = 1;
+  document.getElementById('history').innerHTML = '';
+  document.getElementById('win-banner').style.display = 'none';
+  document.getElementById('lose-banner').style.display = 'none';
+  document.getElementById('win-history').style.display = 'none';
+  document.getElementById('win-history-list').innerHTML = '';
+  document.getElementById('game-area').style.display = '';
+  document.getElementById('bull-count').textContent = '—';  // ถูกตัว
+  document.getElementById('cow-count').textContent = '—';  // ถูกที่
+  document.getElementById('round-disp').textContent = '1';
+  document.getElementById('err-msg').textContent = '';
+  guessLog = [];
+  resetLogoMark();
+  clearInputs();
+  spRender();
+  startTimer();
+  // Show/hide legend based on level
+  document.getElementById('legend').style.opacity = currentLevel === 1 ? '1' : '0.2';
+}
+
+function resetLogoMark() {
+  const cells = document.querySelectorAll('.logo-cell');
+  cells.forEach(c => { c.classList.remove('lit','half'); });
+  cells[0].classList.add('lit');
+  cells[1].classList.add('half');
+  cells[3].classList.add('lit');
+}
+
+function updateLogoMark(bulls, cows) {
+  const cells = document.querySelectorAll('.logo-cell');
+  cells.forEach(c => { c.classList.remove('lit','half'); });
+  let b = bulls, c2 = cows;
+  cells.forEach(cell => {
+    if (b > 0) { cell.classList.add('lit'); b--; }
+    else if (c2 > 0) { cell.classList.add('half'); c2--; }
+  });
+}
+
+function clearInputs() {
+  spClearAll();
+}
+
+function getGuess() {
+  return spVals.map(v => v === '' ? null : parseInt(v));
+}
+
+function evaluate(guess) {
+  let bulls = 0, cows = 0;
+  guess.forEach((d, i) => {
+    if (d === secret[i]) bulls++;
+    if (secret.includes(d)) cows++;  // count all matching digits regardless of position
+  });
+  return { bulls, cows };  // cows = total digit matches, bulls = exact matches
+}
+
+function submitGuess() {
+  const guess = getGuess();
+  const err = document.getElementById('err-msg');
+
+  if (guess.some(d => d === null || isNaN(d))) { err.textContent = '! ใส่ตัวเลขให้ครบ 4 ช่อง'; soundError(); return; }
+  if (guess.some(d => d < 0 || d > 9))         { err.textContent = '! ตัวเลขต้องอยู่ระหว่าง 0–9'; soundError(); return; }
+  if (new Set(guess).size < 4)                  { err.textContent = '! ตัวเลขต้องไม่ซ้ำกัน'; soundError(); return; }
+  err.textContent = '';
+
+  const { bulls, cows } = evaluate(guess);
+
+  soundSubmit();
+  guessLog.push({ digits: guess.slice(), bulls: bulls, cows: cows });
+
+  document.getElementById('bull-count').textContent = cows;  // ถูกตัว = total digit matches
+  document.getElementById('cow-count').textContent = bulls;  // ถูกที่ = exact position matches
+  document.getElementById('round-disp').textContent = round + 1;
+  updateLogoMark(bulls, cows);
+
+  addHistory(guess, bulls, cows, round);
+
+  if (bulls === 4) {
+    setTimeout(() => {
+      stopTimer();
+      const isNewRec = saveRecord(secret, round, elapsed, guessLog);
+      if (isNewRec) {
+        soundNewRecord();
+      } else {
+        soundWin();
+      }
+      document.getElementById('win-banner').style.display = 'flex';
+      const newRecLabel = isNewRec ? ' 🏅 สถิติใหม่!' : '';
+      document.getElementById('win-sub').textContent = `${round} ครั้ง  ·  ${formatTime(elapsed)}  ·  รหัสลับ: ${secret.join(' ')}` + newRecLabel;
+      document.getElementById('game-area').style.display = 'none';
+
+      const histSrc = document.getElementById('history');
+      const winList = document.getElementById('win-history-list');
+      winList.innerHTML = '';
+      const rows = Array.from(histSrc.children).reverse();
+      rows.forEach((row, i) => {
+        const clone = row.cloneNode(true);
+        if (i === rows.length - 1) clone.classList.add('last-row');
+        winList.appendChild(clone);
+      });
+      if (rows.length > 0) document.getElementById('win-history').style.display = 'block';
+
+      const cells = document.querySelectorAll('.logo-cell');
+      cells.forEach(c => { c.classList.remove('lit','half'); });
+      cells.forEach(c => c.classList.add('lit'));
+    }, 300);
+    return;
+  }
+
+  round++;
+  document.getElementById('round-disp').textContent = round;
+  clearInputs();
+  document.getElementById('d0').focus();
+}
+
+function addHistory(guess, bulls, cows, r) {
+  const hist = document.getElementById('history');
+  const row = document.createElement('div');
+  row.className = 'hist-row';
+
+  const roundSpan = document.createElement('div');
+  roundSpan.className = 'round-num';
+  roundSpan.textContent = '#' + r;
+
+  const numDiv = document.createElement('div');
+  numDiv.className = 'hist-num';
+  guess.forEach((d, i) => {
+    const dd = document.createElement('div');
+    dd.className = 'hist-digit';
+    if (currentLevel === 1) {
+      if (d === secret[i]) dd.classList.add('bull');
+      else if (secret.includes(d)) dd.classList.add('cow');
+    }
+    dd.textContent = d;
+    numDiv.appendChild(dd);
+  });
+
+  const scores = document.createElement('div');
+  scores.className = 'hist-scores';
+  scores.innerHTML = `<div class="score-pill bull-p">${cows} ตัว</div><div class="score-pill cow-p">${bulls} ที่</div>`;
+
+  row.appendChild(roundSpan);
+  row.appendChild(numDiv);
+  row.appendChild(scores);
+  hist.insertBefore(row, hist.firstChild);
+}
+
+// ── Single-player custom keypad ──
+let spVals = ['','','',''];
+let spCursor = 0;
+
+function spRender() {
+  for (let i = 0; i < 4; i++) {
+    const box = document.getElementById('d' + i);
+    box.classList.toggle('active', i === spCursor);
+    // remove old cursor
+    const old = box.querySelector('.digit-cursor');
+    if (old) old.remove();
+    if (spVals[i] !== '') {
+      box.innerHTML = spVals[i];
+    } else {
+      box.innerHTML = '<span class="ph">?</span>';
+    }
+    if (i === spCursor) {
+      const cur = document.createElement('div');
+      cur.className = 'digit-cursor';
+      box.appendChild(cur);
+    }
+  }
+}
+
+function spFocus(i) { spCursor = i; spRender(); }
+
+function spKey(n) {
+  tryStartMusic();
+  soundType();
+  spVals[spCursor] = String(n);
+  if (spCursor < 3) spCursor++;
+  spRender();
+}
+
+function spDel() {
+  if (spVals[spCursor] !== '') {
+    spVals[spCursor] = '';
+  } else if (spCursor > 0) {
+    spCursor--;
+    spVals[spCursor] = '';
+  }
+  spRender();
+}
+
+function spClearAll() {
+  spVals = ['','','',''];
+  spCursor = 0;
+  spRender();
+}
+
+// Also support physical keyboard for desktop
+document.addEventListener('keydown', function(e) {
+  if (currentMode !== 1) return;
+  if (document.getElementById('game-area').style.display === 'none') return;
+  if (e.key === 'Enter') { submitGuess(); return; }
+  if (e.key === 'Backspace') { spDel(); return; }
+  if (e.key === 'ArrowLeft' && spCursor > 0) { spCursor--; spRender(); return; }
+  if (e.key === 'ArrowRight' && spCursor < 3) { spCursor++; spRender(); return; }
+  if (/^[0-9]$/.test(e.key)) { tryStartMusic(); spKey(parseInt(e.key)); return; }
+});
+
+renderRecords();
+
+// ── Mode & 2-player vars ──
+let currentMode = 1;
+let p1Round = 1, p2Round = 1;
+let p1Done = false, p2Done = false;
+let twoTimerInterval = null;
+let twoElapsed = 0;
+let twoSecret = [];
+
+function selectMode(m) {
+  currentMode = m;
+  // sync all mode buttons (top bar + mid divider)
+  ['mode1-btn','mid-mode1-btn'].forEach(id => { const el = document.getElementById(id); if(el) el.classList.toggle('active', m === 1); });
+  ['mode2-btn','mid-mode2-btn'].forEach(id => { const el = document.getElementById(id); if(el) el.classList.toggle('active', m === 2); });
+  if (m === 1) {
+    document.getElementById('two-player-wrap').style.display = 'none';
+    document.getElementById('single-wrap').style.display = '';
+    document.getElementById('shared-mode-selector').style.display = 'flex';
+    document.getElementById('records-section').style.display = '';
+    document.body.style.padding = '';
+    document.body.style.minHeight = '';
+    startNewGame();
+  } else {
+    document.getElementById('single-wrap').style.display = 'none';
+    document.getElementById('two-player-wrap').style.display = 'flex';
+    document.getElementById('shared-mode-selector').style.display = 'none';
+    document.getElementById('records-section').style.display = 'none';
+    document.body.style.padding = '0';
+    document.body.style.alignItems = 'center';
+    startTwoPlayerGame();
+  }
+}
+
+function startTwoPlayerGame() {
+  twoSecret = generateSecret();
+  p1Round = 1; p2Round = 1;
+  p1Done = false; p2Done = false;
+  twoElapsed = 0;
+
+  ['p1-bull','p1-cow','p2-bull','p2-cow'].forEach(id => document.getElementById(id).textContent = '—');
+  document.getElementById('p1-round').textContent = '1';
+  document.getElementById('p2-round').textContent = '1';
+  document.getElementById('p1-err').textContent = '';
+  document.getElementById('p2-err').textContent = '';
+  document.getElementById('p1-history').innerHTML = '';
+  document.getElementById('p2-history').innerHTML = '';
+  document.getElementById('p1-win-box').style.display = 'none';
+  document.getElementById('p2-win-box').style.display = 'none';
+  document.getElementById('p2-new-game-bar').style.display = 'none';
+  document.getElementById('p1-submit').removeAttribute('disabled');
+  document.getElementById('p2-submit').removeAttribute('disabled');
+  clearPInputs(1); clearPInputs(2);
+  tpRender(1); tpRender(2);
+
+  // start shared timer
+  if (twoTimerInterval) clearInterval(twoTimerInterval);
+  const t0 = Date.now();
+  twoTimerInterval = setInterval(() => {
+    twoElapsed = Date.now() - t0;
+    document.getElementById('two-timer').textContent = formatTime(twoElapsed);
+  }, 500);
+
+  document.getElementById('p1d0').focus();
+}
+
+function clearPInputs(p) {
+  tpClearAll(p);
+}
+
+function getPGuess(p) {
+  return tpVals[p].map(v => v === '' ? null : parseInt(v));
+}
+
+function p2Submit(p) {
+  if (p === 1 && p1Done) return;
+  if (p === 2 && p2Done) return;
+
+  const guess = getPGuess(p);
+  const errEl = document.getElementById('p' + p + '-err');
+
+  if (guess.some(d => d === null || isNaN(d))) { errEl.textContent = '! ใส่ตัวเลขให้ครบ 4 ช่อง'; soundError(); return; }
+  if (new Set(guess).size < 4) { errEl.textContent = '! ตัวเลขต้องไม่ซ้ำกัน'; soundError(); return; }
+  errEl.textContent = '';
+
+  // evaluate against shared secret
+  let bulls = 0, cows = 0;
+  guess.forEach((d, i) => {
+    if (d === twoSecret[i]) bulls++;
+    if (twoSecret.includes(d)) cows++;
+  });
+
+  soundSubmit();
+
+  const round = p === 1 ? p1Round : p2Round;
+  document.getElementById('p' + p + '-bull').textContent = cows;
+  document.getElementById('p' + p + '-cow').textContent = bulls;
+
+  // Add to history
+  const hist = document.getElementById('p' + p + '-history');
+  const row = document.createElement('div');
+  row.className = 'p-hist-row';
+  const rNum = document.createElement('div');
+  rNum.className = 'p-hist-num';
+  rNum.textContent = '#' + round;
+  const digits = document.createElement('div');
+  digits.className = 'p-hist-digits';
+  guess.forEach((d, i) => {
+    const dd = document.createElement('div');
+    dd.className = 'p-hist-digit';
+    if (currentLevel === 1) {
+      if (d === twoSecret[i]) dd.classList.add('bull');
+      else if (twoSecret.includes(d)) dd.classList.add('cow');
+    }
+    dd.textContent = d;
+    digits.appendChild(dd);
+  });
+  const sc = document.createElement('div');
+  sc.className = 'p-scores';
+  sc.innerHTML = '<div class="p-score-pill p-bull-p">' + cows + ' ตัว</div><div class="p-score-pill p-cow-p">' + bulls + ' ที่</div>';
+  row.appendChild(rNum); row.appendChild(digits); row.appendChild(sc);
+  hist.insertBefore(row, hist.firstChild);
+
+  if (p === 1) p1Round++; else p2Round++;
+  document.getElementById('p' + p + '-round').textContent = p === 1 ? p1Round : p2Round;
+
+  if (bulls === 4) {
+    if (twoTimerInterval) { clearInterval(twoTimerInterval); twoTimerInterval = null; }
+    const other = p === 1 ? 2 : 1;
+    if (p === 1) p1Done = true; else p2Done = true;
+
+    const winBox = document.getElementById('p' + p + '-win-box');
+    winBox.style.display = 'flex';
+    winBox.textContent = '🏆 ผู้เล่น ' + p + ' ชนะ! (' + (round) + ' ครั้ง · ' + formatTime(twoElapsed) + ')';
+
+    const loseBox = document.getElementById('p' + other + '-win-box');
+    loseBox.className = 'p-win-box loser';
+    loseBox.style.display = 'flex';
+    loseBox.textContent = '💀 ผู้เล่น ' + other + ' แพ้ — รหัสลับ: ' + twoSecret.join(' ');
+
+    document.getElementById('p1-submit').setAttribute('disabled','');
+    document.getElementById('p2-submit').setAttribute('disabled','');
+    document.getElementById('p2-new-game-bar').style.display = 'flex';
+    soundWin();
+    return;
+  }
+
+  if (bulls > 0) setTimeout(soundBull, 150);
+  else if (cows > 0) setTimeout(soundCow, 150);
+  else setTimeout(soundMiss, 150);
+
+  clearPInputs(p);
+}
+
+// ── 2-player custom keypad ──
+let tpVals = { 1: ['','','',''], 2: ['','','',''] };
+let tpCursor = { 1: 0, 2: 0 };
+
+function tpRender(p) {
+  const isP2 = p === 2;
+  for (let i = 0; i < 4; i++) {
+    const box = document.getElementById('p' + p + 'd' + i);
+    const isActive = i === tpCursor[p];
+    box.className = 'p-digit-box' + (isActive ? (isP2 ? ' p2-active' : ' active') : '');
+    const old = box.querySelector('.p-digit-cursor');
+    if (old) old.remove();
+    if (tpVals[p][i] !== '') {
+      box.innerHTML = tpVals[p][i];
+    } else {
+      box.innerHTML = '<span class="ph">?</span>';
+    }
+    if (isActive) {
+      const cur = document.createElement('div');
+      cur.className = 'p-digit-cursor' + (isP2 ? ' p2c' : '');
+      box.appendChild(cur);
+    }
+  }
+}
+
+function tpFocus(p, i) { tpCursor[p] = i; tpRender(p); }
+
+function tpKey(p, n) {
+  tryStartMusic();
+  soundType();
+  tpVals[p][tpCursor[p]] = String(n);
+  if (tpCursor[p] < 3) tpCursor[p]++;
+  tpRender(p);
+}
+
+function tpDel(p) {
+  if (tpVals[p][tpCursor[p]] !== '') {
+    tpVals[p][tpCursor[p]] = '';
+  } else if (tpCursor[p] > 0) {
+    tpCursor[p]--;
+    tpVals[p][tpCursor[p]] = '';
+  }
+  tpRender(p);
+}
+
+function tpClearAll(p) {
+  tpVals[p] = ['','','',''];
+  tpCursor[p] = 0;
+  tpRender(p);
+}
+
+startNewGame();
+</script>
+</body>
+</html>
