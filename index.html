@@ -729,12 +729,12 @@ body {
 
 .ph-digit {
   flex: 1;
-  height: 52px;
+  height: 44px;
   font-family: "Courier New", monospace;
-  font-size: 22px;
+  font-size: 18px;
   font-weight: 700;
   border: 1.5px solid var(--border2);
-  border-radius: 10px;
+  border-radius: 8px;
   background: var(--surface);
   color: var(--text);
   display: flex;
@@ -761,10 +761,10 @@ body {
 
 .ph-key {
   font-family: "Courier New", monospace;
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 700;
-  border: 1.5px solid var(--border2);
-  border-radius: 8px;
+  border: 1px solid var(--border2);
+  border-radius: 6px;
   background: var(--surface2);
   color: var(--text);
   cursor: pointer;
@@ -773,6 +773,7 @@ body {
   justify-content: center;
   user-select: none;
   -webkit-tap-highlight-color: transparent;
+  min-height: 36px;
 }
 
 .ph-key:active { background: var(--border2); transform: scale(0.94); }
@@ -1440,6 +1441,7 @@ body {
       <div class="ph-key" onclick="tpKey(2,0)">0</div>
       <div class="ph-key go p2g" id="p2-submit" onclick="p2Submit(2)">ทาย →</div>
     </div>
+    <div id="p2-history" style="overflow-y:auto;flex-shrink:1;margin-top:4px;display:flex;flex-direction:column;gap:3px;min-height:0;"></div>
   </div>
 
   <!-- Middle -->
@@ -1479,6 +1481,7 @@ body {
       <div class="ph-key" onclick="tpKey(1,0)">0</div>
       <div class="ph-key go" id="p1-submit" onclick="p2Submit(1)">ทาย →</div>
     </div>
+    <div id="p1-history" style="overflow-y:auto;flex-shrink:1;margin-top:4px;display:flex;flex-direction:column;gap:3px;min-height:0;"></div>
   </div>
 
   <!-- New game -->
@@ -2045,10 +2048,12 @@ function startTwoPlayerGame() {
   // start shared timer
   if (twoTimerInterval) clearInterval(twoTimerInterval);
   const t0 = Date.now();
+  document.getElementById('two-timer').textContent = '0:00';
   twoTimerInterval = setInterval(() => {
     twoElapsed = Date.now() - t0;
-    document.getElementById('two-timer').textContent = formatTime(twoElapsed);
-  }, 500);
+    const el = document.getElementById('two-timer');
+    if (el) el.textContent = formatTime(twoElapsed);
+  }, 200);
 
   document.getElementById('p1d0').focus();
 }
