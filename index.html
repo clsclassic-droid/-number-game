@@ -2024,12 +2024,14 @@ function tpClearAll(p) {
 }
 
 // Ensure single player mode on load
-document.getElementById('two-player-wrap').style.display = 'none';
-document.getElementById('single-wrap').style.display = '';
-document.getElementById('shared-mode-selector').style.display = 'flex';
-document.getElementById('records-section').style.display = '';
-renderRecords();
-startNewGame();
+document.addEventListener('DOMContentLoaded', function() {
+  document.getElementById('two-player-wrap').style.display = 'none';
+  document.getElementById('single-wrap').style.display = '';
+  document.getElementById('shared-mode-selector').style.display = 'flex';
+  document.getElementById('records-section').style.display = '';
+  renderRecords();
+  startNewGame();
+});
 </script>
 </body>
 </html>
