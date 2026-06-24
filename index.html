@@ -659,6 +659,7 @@ body {
   width: 100%;
   max-width: 460px;
   height: 100vh;
+  height: 100dvh;
   overflow: hidden;
   position: fixed;
   top: 0;
@@ -666,13 +667,16 @@ body {
   transform: translateX(-50%);
   z-index: 100;
   background: var(--bg);
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
+  box-sizing: border-box;
 }
 
 .player-half {
   flex: 1;
   display: flex;
   flex-direction: column;
-  padding: 6px 12px;
+  padding: 5px 10px;
   overflow: hidden;
   min-height: 0;
 }
@@ -687,35 +691,35 @@ body {
 }
 
 .ph-label {
-  font-size: 10px;
+  font-size: 9px;
   font-weight: 700;
   letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--dim);
-  margin-bottom: 4px;
+  margin-bottom: 3px;
   display: flex;
   align-items: center;
   gap: 6px;
   flex-shrink: 0;
 }
 
-.ph-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); flex-shrink: 0; }
+.ph-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); flex-shrink: 0; }
 .p2-half .ph-dot { background: var(--cow); }
 
 .ph-status {
   display: flex;
   gap: 0;
   border: 1px solid var(--border);
-  border-radius: 8px;
+  border-radius: 7px;
   overflow: hidden;
   background: var(--surface);
-  margin-bottom: 4px;
+  margin-bottom: 3px;
   flex-shrink: 0;
 }
 
-.ph-stat { flex: 1; padding: 3px 8px; border-right: 1px solid var(--border); }
+.ph-stat { flex: 1; padding: 2px 8px; border-right: 1px solid var(--border); }
 .ph-stat:last-child { border-right: none; }
-.ph-stat-label { font-size: 9px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--dim); }
+.ph-stat-label { font-size: 8px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--dim); }
 .ph-stat-val { font-family: "Courier New", monospace; font-size: 13px; font-weight: 700; color: var(--text); }
 .ph-stat-val.gc { color: var(--bull); }
 .ph-stat-val.yc { color: var(--cow); }
@@ -723,18 +727,18 @@ body {
 .ph-digits {
   display: flex;
   gap: 5px;
-  margin-bottom: 4px;
+  margin-bottom: 3px;
   flex-shrink: 0;
 }
 
 .ph-digit {
   flex: 1;
-  height: 36px;
+  height: 34px;
   font-family: "Courier New", monospace;
   font-size: 16px;
   font-weight: 700;
   border: 1.5px solid var(--border2);
-  border-radius: 8px;
+  border-radius: 7px;
   background: var(--surface);
   color: var(--text);
   display: flex;
@@ -747,14 +751,14 @@ body {
 
 .ph-digit.active { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(124,111,247,0.2); }
 .ph-digit.p2a { border-color: var(--cow); box-shadow: 0 0 0 2px rgba(251,191,36,0.2); }
-.ph-digit .ph-cur { position: absolute; bottom: 5px; width: 16px; height: 2px; border-radius: 2px; background: var(--accent); animation: kblink 1s infinite; }
+.ph-digit .ph-cur { position: absolute; bottom: 4px; width: 14px; height: 2px; border-radius: 2px; background: var(--accent); animation: kblink 1s infinite; }
 .ph-digit .ph-cur.p2c { background: var(--cow); }
-.ph-digit .ph { color: var(--dim); font-size: 18px; }
+.ph-digit .ph { color: var(--dim); font-size: 16px; }
 
 .ph-keypad {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
-  gap: 4px;
+  gap: 3px;
   flex-shrink: 0;
 }
 
@@ -772,28 +776,28 @@ body {
   justify-content: center;
   user-select: none;
   -webkit-tap-highlight-color: transparent;
-  height: 36px;
+  height: 34px;
 }
 
 .ph-key:active { background: var(--border2); transform: scale(0.94); }
 .ph-key.del { font-size: 13px; color: var(--muted); }
-.ph-key.go { background: var(--accent); color: #fff; border-color: var(--accent); font-family: "Segoe UI", sans-serif; font-size: 11px; font-weight: 700; grid-column: span 2; }
+.ph-key.go { background: var(--accent); color: #fff; border-color: var(--accent); font-family: "Segoe UI", sans-serif; font-size: 12px; font-weight: 700; grid-column: span 4; }
 .ph-key.go.p2g { background: #a0790f; border-color: #a0790f; }
 .ph-key.go:active { opacity: 0.8; }
 .ph-key.go:disabled { background: var(--border2); color: var(--dim); }
 
-.ph-err { font-size: 10px; color: #f87171; min-height: 12px; font-family: "Courier New", monospace; flex-shrink: 0; margin-bottom: 2px; }
+.ph-err { font-size: 9px; color: #f87171; min-height: 11px; font-family: "Courier New", monospace; flex-shrink: 0; margin-bottom: 2px; }
 
 .ph-win {
   display: none;
   background: var(--bull-bg);
   border: 1px solid var(--bull-bd);
-  border-radius: 8px;
-  padding: 5px 10px;
-  font-size: 12px;
+  border-radius: 7px;
+  padding: 4px 10px;
+  font-size: 11px;
   font-weight: 700;
   color: var(--bull);
-  margin-bottom: 4px;
+  margin-bottom: 3px;
   flex-shrink: 0;
 }
 .ph-win.loser { background: var(--surface2); border-color: var(--border2); color: var(--muted); }
@@ -802,7 +806,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 6px 12px;
+  padding: 4px 10px;
   border-top: 2px dashed var(--border2);
   border-bottom: 2px dashed var(--border2);
   flex-shrink: 0;
@@ -811,7 +815,7 @@ body {
 
 .two-mid-timer {
   font-family: "Courier New", monospace;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 700;
   color: var(--muted);
   flex: 1;
@@ -990,24 +994,24 @@ body {
 .p-hist-row {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 7px 10px;
-  border-radius: 8px;
+  gap: 6px;
+  padding: 4px 8px;
+  border-radius: 6px;
   border: 1px solid var(--border);
   background: var(--surface);
-  font-size: 12px;
+  font-size: 11px;
 }
 
-.p-hist-num { font-family: 'Courier New', 'Consolas', monospace; font-size: 10px; color: var(--dim); min-width: 20px; }
-.p-hist-digits { display: flex; gap: 4px; }
+.p-hist-num { font-family: 'Courier New', 'Consolas', monospace; font-size: 9px; color: var(--dim); min-width: 18px; }
+.p-hist-digits { display: flex; gap: 3px; }
 
 .p-hist-digit {
-  width: 28px; height: 28px;
+  width: 22px; height: 22px;
   display: flex; align-items: center; justify-content: center;
-  border-radius: 6px;
+  border-radius: 4px;
   font-family: 'Courier New', 'Consolas', monospace;
   font-weight: 700;
-  font-size: 13px;
+  font-size: 11px;
   background: var(--surface2);
   color: var(--dim);
   border: 1px solid var(--border);
@@ -1016,12 +1020,12 @@ body {
 .p-hist-digit.bull { background: var(--bull-bg); color: var(--bull); border-color: var(--bull-bd); }
 .p-hist-digit.cow  { background: var(--cow-bg);  color: var(--cow);  border-color: var(--cow-bd); }
 
-.p-scores { margin-left: auto; display: flex; gap: 5px; }
+.p-scores { margin-left: auto; display: flex; gap: 4px; }
 .p-score-pill {
   font-family: 'Courier New', 'Consolas', monospace;
-  font-size: 10px;
+  font-size: 9px;
   font-weight: 700;
-  padding: 3px 7px;
+  padding: 2px 5px;
   border-radius: 20px;
 }
 .p-bull-p { background: var(--bull-bg); color: var(--bull); border: 1px solid var(--bull-bd); }
@@ -1440,7 +1444,7 @@ body {
       <div class="ph-key del" onclick="tpDel(2)">⌫</div>
       <div class="ph-key go p2g" id="p2-submit" onclick="p2Submit(2)" style="grid-column:span 4">ทาย →</div>
     </div>
-    <div id="p2-history" style="overflow-y:auto;flex:1;margin-top:4px;display:flex;flex-direction:column;gap:3px;min-height:0;max-height:120px;"></div>
+    <div id="p2-history" style="overflow-y:auto;flex:1;margin-top:3px;display:flex;flex-direction:column;gap:2px;min-height:0;"></div>
   </div>
 
   <!-- Middle -->
@@ -1480,7 +1484,7 @@ body {
       <div class="ph-key del" onclick="tpDel(1)">⌫</div>
       <div class="ph-key go" id="p1-submit" onclick="p2Submit(1)" style="grid-column:span 4">ทาย →</div>
     </div>
-    <div id="p1-history" style="overflow-y:auto;flex:1;margin-top:4px;display:flex;flex-direction:column;gap:3px;min-height:0;max-height:120px;"></div>
+    <div id="p1-history" style="overflow-y:auto;flex:1;margin-top:3px;display:flex;flex-direction:column;gap:2px;min-height:0;"></div>
   </div>
 
   <!-- New game -->
