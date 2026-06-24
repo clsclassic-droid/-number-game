@@ -754,9 +754,9 @@ body {
 .ph-keypad {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 5px;
-  flex: 1;
-  min-height: 0;
+  gap: 4px;
+  flex-shrink: 0;
+  height: 160px;
 }
 
 .ph-key {
@@ -1441,7 +1441,7 @@ body {
       <div class="ph-key" onclick="tpKey(2,0)">0</div>
       <div class="ph-key go p2g" id="p2-submit" onclick="p2Submit(2)">ทาย →</div>
     </div>
-    <div id="p2-history" style="overflow-y:auto;flex-shrink:1;margin-top:4px;display:flex;flex-direction:column;gap:3px;min-height:0;"></div>
+    <div id="p2-history" style="overflow-y:auto;flex:1;margin-top:4px;display:flex;flex-direction:column;gap:3px;min-height:0;max-height:120px;"></div>
   </div>
 
   <!-- Middle -->
@@ -1481,7 +1481,7 @@ body {
       <div class="ph-key" onclick="tpKey(1,0)">0</div>
       <div class="ph-key go" id="p1-submit" onclick="p2Submit(1)">ทาย →</div>
     </div>
-    <div id="p1-history" style="overflow-y:auto;flex-shrink:1;margin-top:4px;display:flex;flex-direction:column;gap:3px;min-height:0;"></div>
+    <div id="p1-history" style="overflow-y:auto;flex:1;margin-top:4px;display:flex;flex-direction:column;gap:3px;min-height:0;max-height:120px;"></div>
   </div>
 
   <!-- New game -->
