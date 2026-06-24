@@ -672,7 +672,7 @@ body {
   flex: 1;
   display: flex;
   flex-direction: column;
-  padding: 8px 12px;
+  padding: 6px 12px;
   overflow: hidden;
   min-height: 0;
 }
@@ -692,7 +692,7 @@ body {
   letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--dim);
-  margin-bottom: 6px;
+  margin-bottom: 4px;
   display: flex;
   align-items: center;
   gap: 6px;
@@ -709,29 +709,29 @@ body {
   border-radius: 8px;
   overflow: hidden;
   background: var(--surface);
-  margin-bottom: 6px;
+  margin-bottom: 4px;
   flex-shrink: 0;
 }
 
-.ph-stat { flex: 1; padding: 5px 8px; border-right: 1px solid var(--border); }
+.ph-stat { flex: 1; padding: 3px 8px; border-right: 1px solid var(--border); }
 .ph-stat:last-child { border-right: none; }
 .ph-stat-label { font-size: 9px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--dim); }
-.ph-stat-val { font-family: "Courier New", monospace; font-size: 15px; font-weight: 700; color: var(--text); }
+.ph-stat-val { font-family: "Courier New", monospace; font-size: 13px; font-weight: 700; color: var(--text); }
 .ph-stat-val.gc { color: var(--bull); }
 .ph-stat-val.yc { color: var(--cow); }
 
 .ph-digits {
   display: flex;
-  gap: 6px;
-  margin-bottom: 6px;
+  gap: 5px;
+  margin-bottom: 4px;
   flex-shrink: 0;
 }
 
 .ph-digit {
   flex: 1;
-  height: 44px;
+  height: 36px;
   font-family: "Courier New", monospace;
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 700;
   border: 1.5px solid var(--border2);
   border-radius: 8px;
@@ -753,15 +753,14 @@ body {
 
 .ph-keypad {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(5, 1fr);
   gap: 4px;
   flex-shrink: 0;
-  height: 160px;
 }
 
 .ph-key {
   font-family: "Courier New", monospace;
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 700;
   border: 1px solid var(--border2);
   border-radius: 6px;
@@ -773,28 +772,28 @@ body {
   justify-content: center;
   user-select: none;
   -webkit-tap-highlight-color: transparent;
-  min-height: 36px;
+  height: 36px;
 }
 
 .ph-key:active { background: var(--border2); transform: scale(0.94); }
 .ph-key.del { font-size: 13px; color: var(--muted); }
-.ph-key.go { background: var(--accent); color: #fff; border-color: var(--accent); font-family: "Segoe UI", sans-serif; font-size: 11px; font-weight: 700; }
+.ph-key.go { background: var(--accent); color: #fff; border-color: var(--accent); font-family: "Segoe UI", sans-serif; font-size: 11px; font-weight: 700; grid-column: span 2; }
 .ph-key.go.p2g { background: #a0790f; border-color: #a0790f; }
 .ph-key.go:active { opacity: 0.8; }
 .ph-key.go:disabled { background: var(--border2); color: var(--dim); }
 
-.ph-err { font-size: 10px; color: #f87171; min-height: 14px; font-family: "Courier New", monospace; flex-shrink: 0; margin-bottom: 2px; }
+.ph-err { font-size: 10px; color: #f87171; min-height: 12px; font-family: "Courier New", monospace; flex-shrink: 0; margin-bottom: 2px; }
 
 .ph-win {
   display: none;
   background: var(--bull-bg);
   border: 1px solid var(--bull-bd);
   border-radius: 8px;
-  padding: 8px 12px;
-  font-size: 13px;
+  padding: 5px 10px;
+  font-size: 12px;
   font-weight: 700;
   color: var(--bull);
-  margin-bottom: 6px;
+  margin-bottom: 4px;
   flex-shrink: 0;
 }
 .ph-win.loser { background: var(--surface2); border-color: var(--border2); color: var(--muted); }
@@ -1437,9 +1436,9 @@ body {
       <div class="ph-key" onclick="tpKey(2,7)">7</div>
       <div class="ph-key" onclick="tpKey(2,8)">8</div>
       <div class="ph-key" onclick="tpKey(2,9)">9</div>
-      <div class="ph-key del" onclick="tpDel(2)">⌫</div>
       <div class="ph-key" onclick="tpKey(2,0)">0</div>
-      <div class="ph-key go p2g" id="p2-submit" onclick="p2Submit(2)">ทาย →</div>
+      <div class="ph-key del" onclick="tpDel(2)">⌫</div>
+      <div class="ph-key go p2g" id="p2-submit" onclick="p2Submit(2)" style="grid-column:span 4">ทาย →</div>
     </div>
     <div id="p2-history" style="overflow-y:auto;flex:1;margin-top:4px;display:flex;flex-direction:column;gap:3px;min-height:0;max-height:120px;"></div>
   </div>
@@ -1477,9 +1476,9 @@ body {
       <div class="ph-key" onclick="tpKey(1,7)">7</div>
       <div class="ph-key" onclick="tpKey(1,8)">8</div>
       <div class="ph-key" onclick="tpKey(1,9)">9</div>
-      <div class="ph-key del" onclick="tpDel(1)">⌫</div>
       <div class="ph-key" onclick="tpKey(1,0)">0</div>
-      <div class="ph-key go" id="p1-submit" onclick="p2Submit(1)">ทาย →</div>
+      <div class="ph-key del" onclick="tpDel(1)">⌫</div>
+      <div class="ph-key go" id="p1-submit" onclick="p2Submit(1)" style="grid-column:span 4">ทาย →</div>
     </div>
     <div id="p1-history" style="overflow-y:auto;flex:1;margin-top:4px;display:flex;flex-direction:column;gap:3px;min-height:0;max-height:120px;"></div>
   </div>
@@ -2069,9 +2068,6 @@ function getPGuess(p) {
 function p2Submit(p) {
   if (p === 1 && p1Done) return;
   if (p === 2 && p2Done) return;
-  // ถ้าอีกฝ่ายชนะไปก่อนแล้ว ล็อคไว้เลย (กันกรณี disabled ไม่ทำงานทัน)
-  if (p === 1 && p2Done) return;
-  if (p === 2 && p1Done) return;
 
   const guess = getPGuess(p);
   const errEl = document.getElementById('p' + p + '-err');
@@ -2122,10 +2118,6 @@ function p2Submit(p) {
   document.getElementById('p' + p + '-round').textContent = p === 1 ? p1Round : p2Round;
 
   if (bulls === 4) {
-    // ถ้าอีกฝ่ายชนะก่อนแล้ว อย่า overwrite ผล
-    const alreadyWon = (p === 1) ? p2Done : p1Done;
-    if (alreadyWon) return;
-
     if (twoTimerInterval) { clearInterval(twoTimerInterval); twoTimerInterval = null; }
     const other = p === 1 ? 2 : 1;
     if (p === 1) p1Done = true; else p2Done = true;
