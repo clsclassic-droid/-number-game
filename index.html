@@ -34,17 +34,46 @@ html { background: #0d0f14; }
 
 body {
   font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
-  background: #0d0f14;
-  background: var(--bg);
+  background: transparent;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
   padding: 2.5rem 1rem 4rem;
   color: var(--text);
+  position: relative;
+  z-index: 1;
 }
 
-.wrap { width: 100%; max-width: 460px; }
+/* ── Grid Glow Background ── */
+#bg-canvas {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.85;
+}
+
+.rules-box,
+.status-bar,
+.win-banner,
+.lose-banner,
+.hist-row,
+.record-row,
+.mode-btn,
+.level-btn,
+.records-section,
+.two-player-wrap,
+.player-half,
+.two-mid {
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+}
+
+.wrap { width: 100%; max-width: 460px; position: relative; z-index: 1; }
+#shared-mode-selector { position: relative; z-index: 1; }
 
 /* ── Header ── */
 .header { text-align: center; margin-bottom: 2rem; }
@@ -1199,356 +1228,10 @@ body {
   .submit-btn  { height: 60px; padding: 0 14px; font-size: 13px; }
   .game-title  { font-size: 22px; }
 }
-
-/* ── Google Login button ── */
-.login-btn {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 6px 12px;
-  border: 1.5px solid var(--border2);
-  border-radius: 20px;
-  background: var(--surface);
-  color: var(--text);
-  font-size: 12px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.15s;
-  white-space: nowrap;
-}
-.login-btn:hover { border-color: var(--accent); color: var(--accent); }
-.login-btn.logged-in { border-color: var(--bull-bd); color: var(--bull); background: var(--bull-bg); }
-.login-btn img { width: 16px; height: 16px; border-radius: 50%; }
-
-/* ── Scoreboard FAB ── */
-.sb-fab {
-  position: fixed;
-  top: 14px;
-  left: 14px;
-  z-index: 150;
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-  background: var(--surface);
-  border: 1.5px solid var(--border2);
-  color: var(--text);
-  font-size: 20px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  box-shadow: 0 2px 12px rgba(0,0,0,0.4);
-  transition: all 0.15s;
-}
-.sb-fab:hover { border-color: var(--cow); transform: scale(1.05); }
-
-/* ── Scoreboard Overlay ── */
-.sb-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.85);
-  z-index: 300;
-  display: none;
-  flex-direction: column;
-  align-items: center;
-  padding: 0;
-  overflow: hidden;
-}
-.sb-overlay.open { display: flex; }
-
-.sb-panel {
-  width: 100%;
-  max-width: 460px;
-  height: 100%;
-  background: var(--bg);
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-}
-
-.sb-panel-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 16px 18px 12px;
-  border-bottom: 1px solid var(--border);
-  flex-shrink: 0;
-}
-
-.sb-panel-title {
-  font-size: 17px;
-  font-weight: 700;
-  color: var(--text);
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.sb-close-btn {
-  width: 34px; height: 34px;
-  border-radius: 50%;
-  border: 1px solid var(--border2);
-  background: var(--surface);
-  color: var(--muted);
-  font-size: 16px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.sb-list {
-  flex: 1;
-  overflow-y: auto;
-  padding: 12px 16px;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.sb-row {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 10px 14px;
-  border-radius: 12px;
-  border: 1px solid var(--border);
-  background: var(--surface);
-}
-.sb-row.sb-me {
-  border-color: var(--accent);
-  background: rgba(124,111,247,0.08);
-}
-.sb-row.sb-top1 { border-color: #b45309; background: rgba(180,83,9,0.08); }
-.sb-row.sb-top2 { border-color: #6b7280; background: rgba(107,114,128,0.06); }
-.sb-row.sb-top3 { border-color: #92400e; background: rgba(146,64,14,0.06); }
-
-.sb-rank { font-size: 18px; min-width: 30px; text-align: center; }
-.sb-avatar {
-  width: 32px; height: 32px;
-  border-radius: 50%;
-  background: var(--surface2);
-  border: 1px solid var(--border2);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 14px;
-  flex-shrink: 0;
-  overflow: hidden;
-}
-.sb-avatar img { width: 100%; height: 100%; }
-.sb-info { flex: 1; min-width: 0; }
-.sb-name { font-size: 14px; font-weight: 600; color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.sb-tag { font-size: 10px; color: var(--dim); margin-top: 1px; }
-.sb-coins { font-family: 'Courier New', monospace; font-size: 14px; font-weight: 700; color: var(--cow); background: var(--cow-bg); border: 1px solid var(--cow-bd); padding: 4px 10px; border-radius: 20px; white-space: nowrap; }
-
-/* ── Name & Coin UI ── */
-.player-name-bar { display:flex; align-items:center; justify-content:space-between; margin-bottom:1rem; gap:10px; }
-.player-name-display { font-size:14px; font-weight:700; color:var(--text); display:flex; align-items:center; gap:8px; }
-.player-name-display .pn-edit { font-size:11px; color:var(--dim); cursor:pointer; border:none; background:none; padding:2px 6px; border-radius:4px; }
-.coin-display { display:flex; align-items:center; gap:5px; font-family:'Courier New',monospace; font-size:15px; font-weight:700; color:var(--cow); background:var(--cow-bg); border:1px solid var(--cow-bd); padding:4px 12px; border-radius:20px; }
-.ph-coin { font-family:'Courier New',monospace; font-size:12px; font-weight:700; color:var(--cow); }
-
-/* ── Name Modal ── */
-.name-modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.7); z-index:200; display:flex; align-items:center; justify-content:center; padding:20px; }
-.name-modal { background:var(--surface); border:1px solid var(--border2); border-radius:16px; padding:24px 20px; width:100%; max-width:340px; display:flex; flex-direction:column; gap:14px; }
-.name-modal-title { font-size:16px; font-weight:700; color:var(--text); text-align:center; }
-.name-modal-sub { font-size:12px; color:var(--muted); text-align:center; margin-top:-8px; }
-.name-field { display:flex; flex-direction:column; gap:6px; }
-.name-field label { font-size:11px; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; color:var(--dim); }
-.name-input { width:100%; height:44px; padding:0 14px; font-size:15px; font-weight:600; background:var(--bg); border:1.5px solid var(--border2); border-radius:10px; color:var(--text); outline:none; }
-.name-input:focus { border-color:var(--accent); }
-.name-input.p2-input:focus { border-color:var(--cow); }
-.name-modal-btn { height:46px; font-size:14px; font-weight:700; border:none; border-radius:10px; background:var(--accent); color:#fff; cursor:pointer; }
-
-/* ── Coin pop ── */
-.coin-pop { position:fixed; font-size:22px; font-weight:700; color:var(--cow); pointer-events:none; z-index:999; animation:coinFloat 1.4s ease-out forwards; text-shadow:0 0 12px rgba(251,191,36,0.6); }
-@keyframes coinFloat { 0%{opacity:1;transform:translateY(0) scale(1)} 60%{opacity:1;transform:translateY(-60px) scale(1.2)} 100%{opacity:0;transform:translateY(-100px) scale(0.8)} }
-
-/* ── Login nudge in win banner ── */
-.login-nudge {
-  margin-top: 10px;
-  padding: 10px 14px;
-  background: rgba(124,111,247,0.1);
-  border: 1px solid var(--accent);
-  border-radius: 10px;
-  font-size: 13px;
-  color: var(--accent);
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-.login-nudge-btn {
-  margin-left: auto;
-  padding: 5px 12px;
-  background: var(--accent);
-  color: #fff;
-  border: none;
-  border-radius: 8px;
-  font-size: 12px;
-  font-weight: 700;
-  cursor: pointer;
-  white-space: nowrap;
-}
 </style>
-
-<!-- Firebase -->
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-app.js";
-import { getDatabase, ref, set, get, onValue, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-database.js";
-import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-auth.js";
-
-const firebaseConfig = {
-  apiKey: "AIzaSyDNH6mMX564DLsJBkmlerzSucCayQBcdCc",
-  authDomain: "number-game-263fe.firebaseapp.com",
-  databaseURL: "https://number-game-263fe-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId: "number-game-263fe",
-  storageBucket: "number-game-263fe.firebasestorage.app",
-  messagingSenderId: "80584236951",
-  appId: "1:80584236951:web:b2cd31936ce07e0a056ed2",
-  measurementId: "G-2XMZZPS1MY"
-};
-
-const app = initializeApp(firebaseConfig);
-const db = getDatabase(app);
-const auth = getAuth(app);
-const provider = new GoogleAuthProvider();
-
-let currentUser = null;
-
-// ── Auth state ──
-onAuthStateChanged(auth, (user) => {
-  currentUser = user;
-  window.currentUser = user;
-  updateLoginBtn();
-});
-
-function updateLoginBtn() {
-  const btn = document.getElementById('login-btn');
-  if (!btn) return;
-  if (currentUser) {
-    btn.innerHTML = currentUser.photoURL
-      ? `<img src="${currentUser.photoURL}"> ${currentUser.displayName?.split(' ')[0] || 'ออกจากระบบ'}`
-      : `👤 ${currentUser.displayName?.split(' ')[0] || 'ออกจากระบบ'}`;
-    btn.classList.add('logged-in');
-    btn.title = 'กดเพื่อออกจากระบบ';
-  } else {
-    btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg> Login';
-    btn.classList.remove('logged-in');
-    btn.title = 'Login ด้วย Google เพื่อขึ้น Scoreboard';
-  }
-}
-
-window.toggleLogin = async function() {
-  if (currentUser) {
-    await signOut(auth);
-  } else {
-    try {
-      await signInWithPopup(auth, provider);
-    } catch(e) { console.warn('Login error:', e); }
-  }
-};
-
-// ── Upload score ──
-window.fbUpdateScore = async function(coins) {
-  if (!currentUser) return;
-  try {
-    const uid = currentUser.uid;
-    const snap = await get(ref(db, 'scoreboard/' + uid));
-    const existing = snap.exists() ? (snap.val().coins || 0) : 0;
-    await set(ref(db, 'scoreboard/' + uid), {
-      name: currentUser.displayName || 'ผู้เล่น',
-      photo: currentUser.photoURL || '',
-      coins: Math.max(existing + coins, existing),
-      totalCoins: (snap.exists() ? (snap.val().totalCoins || 0) : 0) + coins,
-      updatedAt: serverTimestamp()
-    });
-  } catch(e) { console.warn('Firebase error:', e); }
-};
-
-// ── Scoreboard listener ──
-onValue(ref(db, 'scoreboard'), (snap) => {
-  const data = snap.val();
-  if (!data) { renderSbList([]); return; }
-  const arr = Object.entries(data)
-    .map(([uid, v]) => ({ uid, ...v }))
-    .sort((a, b) => (b.totalCoins || b.coins || 0) - (a.totalCoins || a.coins || 0))
-    .slice(0, 20);
-  renderSbList(arr);
-});
-
-function renderSbList(arr) {
-  const el = document.getElementById('sb-list');
-  if (!el) return;
-  if (!arr.length) {
-    el.innerHTML = '<div style="text-align:center;color:var(--dim);padding:32px;font-size:13px">ยังไม่มีข้อมูล<br>เล่นและชนะเพื่อขึ้น Scoreboard!</div>';
-    return;
-  }
-  const medals = ['🥇','🥈','🥉'];
-  const topClass = ['sb-top1','sb-top2','sb-top3'];
-  el.innerHTML = arr.map((p, i) => {
-    const isMe = currentUser && p.uid === currentUser.uid;
-    const cls = isMe ? 'sb-me' : (topClass[i] || '');
-    const avatar = p.photo
-      ? `<img src="${p.photo}" referrerpolicy="no-referrer">`
-      : (p.name ? p.name[0].toUpperCase() : '?');
-    const totalCoins = p.totalCoins || p.coins || 0;
-    return `<div class="sb-row ${cls}">
-      <div class="sb-rank">${medals[i] || (i+1)}</div>
-      <div class="sb-avatar">${p.photo ? `<img src="${p.photo}" referrerpolicy="no-referrer">` : (p.name?.[0] || '?')}</div>
-      <div class="sb-info">
-        <div class="sb-name">${p.name}${isMe ? ' 👤' : ''}</div>
-      </div>
-      <div class="sb-coins">🪙 ${totalCoins}</div>
-    </div>`;
-  }).join('');
-}
-
-window.openScoreboard = function() {
-  document.getElementById('sb-overlay').classList.add('open');
-};
-window.closeScoreboard = function() {
-  document.getElementById('sb-overlay').classList.remove('open');
-};
-</script>
 </head>
 <body>
-
-<!-- 🏆 Scoreboard FAB -->
-<button class="sb-fab" onclick="openScoreboard()" title="Scoreboard โลก">🏆</button>
-
-<!-- Scoreboard Overlay -->
-<div class="sb-overlay" id="sb-overlay">
-  <div class="sb-panel">
-    <div class="sb-panel-header">
-      <div class="sb-panel-title">
-        <span class="sb-live-dot" style="width:8px;height:8px;border-radius:50%;background:var(--bull);animation:sbpulse 1.5s ease infinite;display:inline-block"></span>
-        🏆 Scoreboard โลก
-      </div>
-      <button class="sb-close-btn" onclick="closeScoreboard()">✕</button>
-    </div>
-    <div class="sb-list" id="sb-list">
-      <div style="text-align:center;color:var(--dim);padding:32px;font-size:13px">กำลังโหลด...</div>
-    </div>
-  </div>
-</div>
-
-<!-- Name Modal -->
-<div class="name-modal-overlay" id="name-modal" style="display:none">
-  <div class="name-modal">
-    <div class="name-modal-title" id="modal-title">ตั้งชื่อผู้เล่น</div>
-    <div class="name-modal-sub" id="modal-sub">ใส่ชื่อเพื่อแสดงในเกม</div>
-    <div class="name-field">
-      <label id="modal-label1">ชื่อผู้เล่น</label>
-      <input class="name-input" id="modal-input1" type="text" maxlength="12" placeholder="เช่น ส้ม" autocomplete="off" onkeydown="if(event.key==='Enter')confirmNames()">
-    </div>
-    <div class="name-field" id="modal-field2" style="display:none">
-      <label style="color:var(--cow)">ชื่อผู้เล่น 2</label>
-      <input class="name-input p2-input" id="modal-input2" type="text" maxlength="12" placeholder="เช่น มิ้น" autocomplete="off" onkeydown="if(event.key==='Enter')confirmNames()">
-    </div>
-    <button class="name-modal-btn" onclick="confirmNames()">เริ่มเกม →</button>
-  </div>
-</div>
+<canvas id="bg-canvas"></canvas>
 <!-- Shared mode bar -->
 <div style="width:100%;max-width:460px;margin-bottom:12px">
   <div class="mode-selector" id="shared-mode-selector">
@@ -1575,18 +1258,6 @@ window.closeScoreboard = function() {
     </div>
     <h1 class="game-title">ถอด<span>รหัส</span>ตัวเลข</h1>
     <p class="game-sub">ตัวเลข 4 หลักที่ซ่อนอยู่ — ถอดรหัสให้ได้!</p>
-  </div>
-
-  <!-- Player name + coin + login bar -->
-  <div class="player-name-bar">
-    <div class="player-name-display">
-      <span id="sp-name-text">ผู้เล่น</span>
-      <button class="pn-edit" onclick="openNameModal(1)">✎</button>
-    </div>
-    <div style="display:flex;gap:8px;align-items:center">
-      <div class="coin-display">🪙 <span id="sp-coin-count">0</span></div>
-      <button class="login-btn" id="login-btn" onclick="toggleLogin()">Login</button>
-    </div>
   </div>
 
   <!-- Rules -->
@@ -1773,12 +1444,11 @@ window.closeScoreboard = function() {
   <!-- Player 2 top (rotated) -->
   <div class="player-half p2-half">
     <div class="ph-win" id="p2-win-box"></div>
-    <div class="ph-label"><span class="ph-dot"></span><span id="p2-name-label">ผู้เล่น 2</span></div>
+    <div class="ph-label"><span class="ph-dot"></span>ผู้เล่น 2</div>
     <div class="ph-status">
       <div class="ph-stat"><div class="ph-stat-label">ถูกตัว</div><div class="ph-stat-val gc" id="p2-bull">—</div></div>
       <div class="ph-stat"><div class="ph-stat-label">ถูกที่</div><div class="ph-stat-val yc" id="p2-cow">—</div></div>
       <div class="ph-stat"><div class="ph-stat-label">ครั้งที่</div><div class="ph-stat-val" id="p2-round">1</div></div>
-      <div class="ph-stat"><div class="ph-stat-label">🪙</div><div class="ph-stat-val ph-coin" id="p2-coin">0</div></div>
     </div>
     <div class="ph-digits" id="p2-digits">
       <div class="ph-digit p2a" id="p2d0" onclick="tpFocus(2,0)"><span class="ph">?</span></div>
@@ -1814,12 +1484,11 @@ window.closeScoreboard = function() {
   <!-- Player 1 bottom -->
   <div class="player-half p1-half">
     <div class="ph-win" id="p1-win-box"></div>
-    <div class="ph-label"><span class="ph-dot"></span><span id="p1-name-label">ผู้เล่น 1</span></div>
+    <div class="ph-label"><span class="ph-dot"></span>ผู้เล่น 1</div>
     <div class="ph-status">
       <div class="ph-stat"><div class="ph-stat-label">ถูกตัว</div><div class="ph-stat-val gc" id="p1-bull">—</div></div>
       <div class="ph-stat"><div class="ph-stat-label">ถูกที่</div><div class="ph-stat-val yc" id="p1-cow">—</div></div>
       <div class="ph-stat"><div class="ph-stat-label">ครั้งที่</div><div class="ph-stat-val" id="p1-round">1</div></div>
-      <div class="ph-stat"><div class="ph-stat-label">🪙</div><div class="ph-stat-val ph-coin" id="p1-coin">0</div></div>
     </div>
     <div class="ph-digits" id="p1-digits">
       <div class="ph-digit active" id="p1d0" onclick="tpFocus(1,0)"><span class="ph">?</span></div>
@@ -2222,22 +1891,15 @@ function submitGuess() {
     setTimeout(() => {
       stopTimer();
       const isNewRec = saveRecord(secret, round, elapsed, guessLog);
-      if (isNewRec) soundNewRecord(); else soundWin();
-
-      // เหรียญตาม level
-      const coinReward = getCoinReward();
-      addCoins(0, coinReward);
-      showCoinPop(coinReward, document.getElementById('sp-coin-count'));
-
+      if (isNewRec) {
+        soundNewRecord();
+      } else {
+        soundWin();
+      }
       document.getElementById('win-banner').style.display = 'flex';
       const newRecLabel = isNewRec ? ' 🏅 สถิติใหม่!' : '';
-      const bonusLabel = currentLevel === 2 ? ' ⭐ โบนัส Level 2!' : '';
-      document.getElementById('win-text').textContent = (playerNames[0] || 'ผู้เล่น') + ' ถอดรหัสสำเร็จ!';
-      document.getElementById('win-sub').textContent = `${round} ครั้ง · ${formatTime(elapsed)} · รหัสลับ: ${secret.join(' ')} · +${coinReward}🪙${bonusLabel}${newRecLabel}`;
+      document.getElementById('win-sub').textContent = `${round} ครั้ง  ·  ${formatTime(elapsed)}  ·  รหัสลับ: ${secret.join(' ')}` + newRecLabel;
       document.getElementById('game-area').style.display = 'none';
-
-      // แสดง login nudge ถ้ายังไม่ได้ login
-      setTimeout(showLoginNudge, 400);
 
       const histSrc = document.getElementById('history');
       const winList = document.getElementById('win-history-list');
@@ -2368,6 +2030,7 @@ let twoSecret = [];
 
 function selectMode(m) {
   currentMode = m;
+  // sync all mode buttons (top bar + mid divider)
   ['mode1-btn','mid-mode1-btn'].forEach(id => { const el = document.getElementById(id); if(el) el.classList.toggle('active', m === 1); });
   ['mode2-btn','mid-mode2-btn'].forEach(id => { const el = document.getElementById(id); if(el) el.classList.toggle('active', m === 2); });
   if (m === 1) {
@@ -2378,7 +2041,6 @@ function selectMode(m) {
     document.body.style.padding = '';
     document.body.style.paddingTop = '';
     document.body.style.alignItems = '';
-    refreshCoinDisplays();
     startNewGame();
   } else {
     document.getElementById('single-wrap').style.display = 'none';
@@ -2388,8 +2050,7 @@ function selectMode(m) {
     document.body.style.padding = '0';
     document.body.style.alignItems = 'center';
     window.scrollTo(0, 0);
-    refreshCoinDisplays();
-    openNameModal(2);
+    startTwoPlayerGame();
   }
 }
 
@@ -2488,36 +2149,22 @@ function p2Submit(p) {
   document.getElementById('p' + p + '-round').textContent = p === 1 ? p1Round : p2Round;
 
   if (bulls === 4) {
-    const alreadyWon = (p === 1) ? p2Done : p1Done;
-    if (alreadyWon) return;
-
     if (twoTimerInterval) { clearInterval(twoTimerInterval); twoTimerInterval = null; }
     const other = p === 1 ? 2 : 1;
     if (p === 1) p1Done = true; else p2Done = true;
 
-    // เหรียญตาม level
-    const coinReward = getCoinReward();
-    const winnerIdx = p - 1;
-    addCoins(winnerIdx, coinReward);
-    showCoinPop(coinReward, document.getElementById('p' + p + '-coin'));
-
-    const winnerName = playerNames[winnerIdx] || ('ผู้เล่น ' + p);
-    const loserName  = playerNames[other - 1] || ('ผู้เล่น ' + other);
-    const bonusLabel = currentLevel === 2 ? ' ⭐' : '';
-
     const winBox = document.getElementById('p' + p + '-win-box');
     winBox.style.display = 'block';
-    winBox.textContent = '🏆 ' + winnerName + ' ชนะ! (' + round + ' ครั้ง · ' + formatTime(twoElapsed) + ') +' + coinReward + '🪙' + bonusLabel;
+    winBox.textContent = '🏆 ผู้เล่น ' + p + ' ชนะ! (' + (round) + ' ครั้ง · ' + formatTime(twoElapsed) + ')';
 
     const loseBox = document.getElementById('p' + other + '-win-box');
     loseBox.className = 'ph-win loser';
     loseBox.style.display = 'block';
-    loseBox.textContent = '💀 ' + loserName + ' แพ้ — รหัสลับ: ' + twoSecret.join(' ');
+    loseBox.textContent = '💀 ผู้เล่น ' + other + ' แพ้ — รหัสลับ: ' + twoSecret.join(' ');
 
     document.getElementById('p1-submit').setAttribute('disabled','');
     document.getElementById('p2-submit').setAttribute('disabled','');
-    document.getElementById('p2-new-game-bar').style.display = 'flex';
-    document.getElementById('p2-new-game-bar').style.flexDirection = 'column';
+    document.getElementById('p2-new-game-bar').style.display = 'flex'; document.getElementById('p2-new-game-bar').style.flexDirection = 'column';
     soundWin();
     return;
   }
@@ -2584,128 +2231,78 @@ function tpClearAll(p) {
 // Ensure single player mode on load
 document.addEventListener('DOMContentLoaded', function() {
   renderRecords();
-  refreshCoinDisplays();
   selectMode(1);
   setTimeout(function() { if (currentMode !== 1) selectMode(1); }, 200);
   setTimeout(function() { if (currentMode !== 1) selectMode(1); }, 500);
 });
 
-// ── Name & Coin System ──
-const COIN_LEVEL1 = 15;
-const COIN_LEVEL2 = 35;
-let playerNames = JSON.parse(localStorage.getItem('numgame_names') || '["ผู้เล่น","ผู้เล่น 2"]');
-window.playerNames = playerNames;
-let playerCoins = JSON.parse(localStorage.getItem('numgame_coins') || '[0,0]');
-let pendingModalMode = 1;
+// ── Grid Glow Background ──
+(function() {
+  const canvas = document.getElementById('bg-canvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  let t = 0;
+  let animFrame;
 
-function saveNames() { localStorage.setItem('numgame_names', JSON.stringify(playerNames)); }
-function saveCoins() { localStorage.setItem('numgame_coins', JSON.stringify(playerCoins)); }
-function getCoins(i) { return playerCoins[i] || 0; }
-
-function getCoinReward() {
-  return currentLevel === 2 ? COIN_LEVEL2 : COIN_LEVEL1;
-}
-
-function addCoins(playerIdx, amount) {
-  playerCoins[playerIdx] = (playerCoins[playerIdx] || 0) + amount;
-  saveCoins();
-  refreshCoinDisplays();
-  if (window.fbUpdateScore) window.fbUpdateScore(amount);
-}
-
-function refreshCoinDisplays() {
-  window.playerNames = playerNames;
-  const spCoin = document.getElementById('sp-coin-count');
-  if (spCoin) spCoin.textContent = getCoins(0);
-  const spName = document.getElementById('sp-name-text');
-  if (spName) spName.textContent = playerNames[0] || 'ผู้เล่น';
-  const p1coin = document.getElementById('p1-coin');
-  if (p1coin) p1coin.textContent = getCoins(0);
-  const p2coin = document.getElementById('p2-coin');
-  if (p2coin) p2coin.textContent = getCoins(1);
-  const p1label = document.getElementById('p1-name-label');
-  if (p1label) p1label.textContent = playerNames[0] || 'ผู้เล่น 1';
-  const p2label = document.getElementById('p2-name-label');
-  if (p2label) p2label.textContent = playerNames[1] || 'ผู้เล่น 2';
-}
-
-function showCoinPop(amount, anchorEl) {
-  const pop = document.createElement('div');
-  pop.className = 'coin-pop';
-  pop.textContent = '+' + amount + ' 🪙';
-  if (anchorEl) {
-    const rect = anchorEl.getBoundingClientRect();
-    pop.style.left = (rect.left + rect.width / 2 - 30) + 'px';
-    pop.style.top = (rect.top - 10) + 'px';
-  } else {
-    pop.style.left = '50%'; pop.style.top = '40%';
-    pop.style.transform = 'translateX(-50%)';
+  function resize() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
   }
-  document.body.appendChild(pop);
-  setTimeout(() => pop.remove(), 1500);
-}
+  resize();
+  window.addEventListener('resize', resize);
 
-function showLoginNudge() {
-  // Show nudge in win banner if not logged in
-  if (window.currentUser) return;
-  const banner = document.getElementById('win-banner');
-  if (!banner) return;
-  const existing = banner.querySelector('.login-nudge');
-  if (existing) existing.remove();
-  const nudge = document.createElement('div');
-  nudge.className = 'login-nudge';
-  nudge.innerHTML = '🏆 Login เพื่อขึ้น Scoreboard โลก! <button class="login-nudge-btn" onclick="toggleLogin()">Login ด้วย Google</button>';
-  banner.appendChild(nudge);
-}
+  function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = '#0d0f14';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-function openNameModal(mode) {
-  pendingModalMode = mode;
-  const modal = document.getElementById('name-modal');
-  if (!modal) { if (mode === 2) startTwoPlayerGame(); else startNewGame(); return; }
-  const field2 = document.getElementById('modal-field2');
-  if (mode === 2) {
-    document.getElementById('modal-title').textContent = 'ตั้งชื่อผู้เล่น';
-    document.getElementById('modal-sub').textContent = 'โหมด 2 คน — ใส่ชื่อทั้งคู่';
-    document.getElementById('modal-label1').textContent = 'ชื่อผู้เล่น 1';
-    field2.style.display = 'flex';
-    document.getElementById('modal-input2').value = playerNames[1] !== 'ผู้เล่น 2' ? playerNames[1] : '';
-  } else {
-    document.getElementById('modal-title').textContent = 'ตั้งชื่อผู้เล่น';
-    document.getElementById('modal-sub').textContent = 'ใส่ชื่อเพื่อแสดงในเกม';
-    document.getElementById('modal-label1').textContent = 'ชื่อผู้เล่น';
-    field2.style.display = 'none';
+    const step = 36;
+    for (let x = 0; x <= canvas.width + step; x += step) {
+      for (let y = 0; y <= canvas.height + step; y += step) {
+        const wave = Math.sin(x * 0.025 + t) * Math.cos(y * 0.025 + t * 0.7);
+        const pulse = Math.sin(t * 1.2 + x * 0.01) * 0.5 + 0.5;
+
+        // grid lines
+        const lineAlpha = (wave + 1) * 0.06 + 0.02;
+        ctx.strokeStyle = `rgba(124,111,247,${lineAlpha})`;
+        ctx.lineWidth = 0.5;
+        ctx.beginPath();
+        ctx.rect(x - step/2, y - step/2, step, step);
+        ctx.stroke();
+
+        // glowing cells
+        if (wave > 0.5) {
+          const cellAlpha = (wave - 0.5) * 0.18 * pulse;
+          ctx.fillStyle = `rgba(124,111,247,${cellAlpha})`;
+          ctx.fillRect(x - step/2 + 1, y - step/2 + 1, step - 2, step - 2);
+        }
+
+        // accent dots at intersections
+        if (wave > 0.7) {
+          const dotAlpha = (wave - 0.7) * 0.8 * pulse;
+          ctx.beginPath();
+          ctx.arc(x, y, 1.5, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(192,132,252,${dotAlpha})`;
+          ctx.fill();
+        }
+      }
+    }
+
+    // subtle horizontal scan line
+    const scanY = ((t * 40) % (canvas.height + 100)) - 50;
+    const scanGrad = ctx.createLinearGradient(0, scanY - 40, 0, scanY + 40);
+    scanGrad.addColorStop(0, 'rgba(124,111,247,0)');
+    scanGrad.addColorStop(0.5, 'rgba(124,111,247,0.04)');
+    scanGrad.addColorStop(1, 'rgba(124,111,247,0)');
+    ctx.fillStyle = scanGrad;
+    ctx.fillRect(0, scanY - 40, canvas.width, 80);
+
+    t += 0.008;
+    animFrame = requestAnimationFrame(draw);
   }
-  document.getElementById('modal-input1').value = (playerNames[0] !== 'ผู้เล่น' && playerNames[0] !== 'ผู้เล่น 1') ? playerNames[0] : '';
-  modal.style.display = 'flex';
-  setTimeout(() => document.getElementById('modal-input1').focus(), 100);
-}
 
-function confirmNames() {
-  const inp1 = document.getElementById('modal-input1').value.trim();
-  const inp2 = document.getElementById('modal-input2') ? document.getElementById('modal-input2').value.trim() : '';
-  if (inp1) playerNames[0] = inp1;
-  if (pendingModalMode === 2 && inp2) playerNames[1] = inp2;
-  saveNames();
-  window.playerNames = playerNames;
-  document.getElementById('name-modal').style.display = 'none';
-  refreshCoinDisplays();
-  if (pendingModalMode === 2) startTwoPlayerGame(); else startNewGame();
-}
-
-document.addEventListener('click', function(e) {
-  const modal = document.getElementById('name-modal');
-  if (modal && e.target === modal) {
-    modal.style.display = 'none';
-    if (pendingModalMode === 2) startTwoPlayerGame(); else startNewGame();
-  }
-  const sbOverlay = document.getElementById('sb-overlay');
-  if (sbOverlay && e.target === sbOverlay) sbOverlay.classList.remove('open');
-});
-
-// add missing CSS for sb-live-dot
-const sbStyle = document.createElement('style');
-sbStyle.textContent = '@keyframes sbpulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.4;transform:scale(0.7)}}';
-document.head.appendChild(sbStyle);
+  draw();
+})();
 </script>
 </body>
 </html>
