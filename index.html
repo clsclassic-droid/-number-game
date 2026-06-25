@@ -34,17 +34,35 @@ html { background: #0d0f14; }
 
 body {
   font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
-  background: #0d0f14;
-  background: var(--bg);
+  background: transparent;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
   padding: 2.5rem 1rem 4rem;
   color: var(--text);
+  position: relative;
+  z-index: 1;
 }
 
-.wrap { width: 100%; max-width: 460px; }
+/* ── Grid Glow Canvas ── */
+#bg-canvas {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  z-index: 0;
+  pointer-events: none;
+  display: block;
+}
+
+.wrap { width: 100%; max-width: 460px; position: relative; z-index: 1; }
+
+/* ── Ensure all top-level UI stays above canvas ── */
+#shared-mode-selector { position: relative; z-index: 1; }
+.sb-fab { z-index: 150 !important; }
+.sb-overlay { z-index: 300 !important; }
+.name-modal-overlay { z-index: 200 !important; }
+.coin-pop { z-index: 999 !important; }
 
 /* ── Header ── */
 .header { text-align: center; margin-bottom: 2rem; }
@@ -2624,6 +2642,7 @@ function confirmNames() {
   if (pendingModalMode === 2) startTwoPlayerGame(); else startNewGame();
 }
 
+// ── Close overlays on outside click ──
 document.addEventListener('click', function(e) {
   const modal = document.getElementById('name-modal');
   if (modal && e.target === modal) {
@@ -2633,6 +2652,70 @@ document.addEventListener('click', function(e) {
   const sb = document.getElementById('sb-overlay');
   if (sb && e.target === sb) sb.classList.remove('open');
 });
+
+// ── Grid Glow Background ──
+(function() {
+  const canvas = document.getElementById('bg-canvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  let t = 0;
+
+  function resize() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = '#0d0f14';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    const step = 36;
+    for (let x = 0; x <= canvas.width + step; x += step) {
+      for (let y = 0; y <= canvas.height + step; y += step) {
+        const wave = Math.sin(x * 0.025 + t) * Math.cos(y * 0.025 + t * 0.7);
+        const pulse = Math.sin(t * 1.2 + x * 0.01) * 0.5 + 0.5;
+
+        const lineAlpha = (wave + 1) * 0.06 + 0.02;
+        ctx.strokeStyle = `rgba(124,111,247,${lineAlpha})`;
+        ctx.lineWidth = 0.5;
+        ctx.beginPath();
+        ctx.rect(x - step/2, y - step/2, step, step);
+        ctx.stroke();
+
+        if (wave > 0.5) {
+          const cellAlpha = (wave - 0.5) * 0.18 * pulse;
+          ctx.fillStyle = `rgba(124,111,247,${cellAlpha})`;
+          ctx.fillRect(x - step/2 + 1, y - step/2 + 1, step - 2, step - 2);
+        }
+
+        if (wave > 0.7) {
+          const dotAlpha = (wave - 0.7) * 0.8 * pulse;
+          ctx.beginPath();
+          ctx.arc(x, y, 1.5, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(192,132,252,${dotAlpha})`;
+          ctx.fill();
+        }
+      }
+    }
+
+    const scanY = ((t * 40) % (canvas.height + 100)) - 50;
+    const scanGrad = ctx.createLinearGradient(0, scanY - 40, 0, scanY + 40);
+    scanGrad.addColorStop(0, 'rgba(124,111,247,0)');
+    scanGrad.addColorStop(0.5, 'rgba(124,111,247,0.04)');
+    scanGrad.addColorStop(1, 'rgba(124,111,247,0)');
+    ctx.fillStyle = scanGrad;
+    ctx.fillRect(0, scanY - 40, canvas.width, 80);
+
+    t += 0.008;
+    requestAnimationFrame(draw);
+  }
+
+  draw();
+})();
+</script>
 </script>
 </body>
 </html>
