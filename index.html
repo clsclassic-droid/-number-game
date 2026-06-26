@@ -1942,23 +1942,13 @@ window.closeScoreboard = () => document.getElementById('sb-overlay').classList.r
   <!-- Game area -->
   <div id="game-area">
     <!-- Status -->
-    <div class="status-bar">
-      <div class="stat-cell">
-        <div class="stat-label">ถูกตัว</div>
-        <div class="stat-val bull-col" id="bull-count">—</div>
+    <div style="display:flex;justify-content:flex-end;margin-bottom:1rem">
+      <div style="display:flex;align-items:center;gap:6px;font-family:'Courier New',monospace;font-size:14px;font-weight:700;color:var(--muted);background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:5px 14px">
+        ⏱ <span id="timer-disp">0:00</span>
       </div>
-      <div class="stat-cell">
-        <div class="stat-label">ถูกที่</div>
-        <div class="stat-val cow-col" id="cow-count">—</div>
-      </div>
-      <div class="stat-cell">
-        <div class="stat-label">ครั้งที่</div>
-        <div class="stat-val" id="round-disp">1</div>
-      </div>
-      <div class="stat-cell">
-        <div class="stat-label">เวลา</div>
-        <div class="stat-val" id="timer-disp" style="font-size:16px;letter-spacing:0.05em">0:00</div>
-      </div>
+    </div>
+    <div style="display:none">
+      <span id="bull-count"></span><span id="cow-count"></span><span id="round-disp"></span>
     </div>
 
     <!-- Game cols wrapper (switches between 1-col and 2-col) -->
@@ -2039,11 +2029,9 @@ window.closeScoreboard = () => document.getElementById('sb-overlay').classList.r
   <div class="player-half p2-half">
     <div class="ph-win" id="p2-win-box"></div>
     <div class="ph-label"><span class="ph-dot"></span><span id="p2-name-label">ผู้เล่น 2</span></div>
-    <div class="ph-status">
-      <div class="ph-stat"><div class="ph-stat-label">ถูกตัว</div><div class="ph-stat-val gc" id="p2-bull">—</div></div>
-      <div class="ph-stat"><div class="ph-stat-label">ถูกที่</div><div class="ph-stat-val yc" id="p2-cow">—</div></div>
-      <div class="ph-stat"><div class="ph-stat-label">ครั้งที่</div><div class="ph-stat-val" id="p2-round">1</div></div>
-      <div class="ph-stat"><div class="ph-stat-label">🪙</div><div class="ph-stat-val ph-coin" id="p2-coin">0</div></div>
+    <div style="display:none">
+      <span id="p2-bull"></span><span id="p2-cow"></span>
+      <span id="p2-round"></span><span id="p2-coin"></span>
     </div>
     <div class="ph-digits" id="p2-digits">
       <div class="ph-digit p2a" id="p2d0" onclick="tpFocus(2,0)"><span class="ph">?</span></div>
@@ -2081,11 +2069,9 @@ window.closeScoreboard = () => document.getElementById('sb-overlay').classList.r
   <div class="player-half p1-half">
     <div class="ph-win" id="p1-win-box"></div>
     <div class="ph-label"><span class="ph-dot"></span><span id="p1-name-label">ผู้เล่น 1</span></div>
-    <div class="ph-status">
-      <div class="ph-stat"><div class="ph-stat-label">ถูกตัว</div><div class="ph-stat-val gc" id="p1-bull">—</div></div>
-      <div class="ph-stat"><div class="ph-stat-label">ถูกที่</div><div class="ph-stat-val yc" id="p1-cow">—</div></div>
-      <div class="ph-stat"><div class="ph-stat-label">ครั้งที่</div><div class="ph-stat-val" id="p1-round">1</div></div>
-      <div class="ph-stat"><div class="ph-stat-label">🪙</div><div class="ph-stat-val ph-coin" id="p1-coin">0</div></div>
+    <div style="display:none">
+      <span id="p1-bull"></span><span id="p1-cow"></span>
+      <span id="p1-round"></span><span id="p1-coin"></span>
     </div>
     <div class="ph-digits" id="p1-digits">
       <div class="ph-digit active" id="p1d0" onclick="tpFocus(1,0)"><span class="ph">?</span></div>
