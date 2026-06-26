@@ -53,15 +53,15 @@
   --grid-color: 56,189,248;
 }
 
-/* ── Sunset Theme ── */
-[data-theme="sunset"] {
-  --bg: #130a0a; --surface: #1e1010; --surface2: #281515;
-  --border: #3a1a1a; --border2: #502525;
-  --text: #fff0e8; --muted: #a07060; --dim: #5a3535;
-  --accent: #f97316; --accent2: #ea580c;
-  --bull: #4ade80; --bull-bg: #0f2a1a; --bull-bd: #1e5c35;
-  --cow: #fb923c; --cow-bg: #2a1208; --cow-bd: #5c3010;
-  --grid-color: 249,115,22;
+/* ── Light Theme ── */
+[data-theme="light"] {
+  --bg: #f0f2f8; --surface: #ffffff; --surface2: #e8eaf2;
+  --border: #d0d4e8; --border2: #b8bdd8;
+  --text: #1a1d2e; --muted: #5a6080; --dim: #9098b8;
+  --accent: #5b52d9; --accent2: #4840c0;
+  --bull: #16a34a; --bull-bg: #dcfce7; --bull-bd: #86efac;
+  --cow: #d97706; --cow-bg: #fef3c7; --cow-bd: #fcd34d;
+  --grid-color: 91,82,217;
 }
 
 html { background: #0d0f14; }
@@ -1303,7 +1303,7 @@ body {
 .theme-card.active { border-color: var(--accent); background: rgba(124,111,247,0.1); }
 .theme-card.active[data-t="cyberpunk"] { border-color: #00ff88; background: rgba(0,255,136,0.08); }
 .theme-card.active[data-t="ocean"] { border-color: #38bdf8; background: rgba(56,189,248,0.08); }
-.theme-card.active[data-t="sunset"] { border-color: #f97316; background: rgba(249,115,22,0.08); }
+.theme-card.active[data-t="light"] { border-color: #5b52d9; background: rgba(91,82,217,0.08); }
 .theme-preview {
   height: 48px; border-radius: 8px; display: flex; gap: 4px;
   align-items: center; justify-content: center; padding: 6px;
@@ -1711,13 +1711,13 @@ window.closeScoreboard = () => document.getElementById('sb-overlay').classList.r
             <div class="theme-name">Ocean</div>
             <div class="theme-check">✓ กำลังใช้</div>
           </div>
-          <div class="theme-card" data-t="sunset" onclick="setTheme('sunset')">
-            <div class="theme-preview" style="background:#130a0a">
-              <div class="theme-dot" style="background:#f97316"></div>
-              <div class="theme-dot" style="background:#4ade80"></div>
-              <div class="theme-dot" style="background:#fb923c"></div>
+          <div class="theme-card" data-t="light" onclick="setTheme('light')">
+            <div class="theme-preview" style="background:#f0f2f8">
+              <div class="theme-dot" style="background:#5b52d9"></div>
+              <div class="theme-dot" style="background:#16a34a"></div>
+              <div class="theme-dot" style="background:#d97706"></div>
             </div>
-            <div class="theme-name">Sunset</div>
+            <div class="theme-name">Light</div>
             <div class="theme-check">✓ กำลังใช้</div>
           </div>
         </div>
@@ -3047,6 +3047,7 @@ function applyTheme(t) {
   if (window._gridColorMap) {
     const colors = window._gridColorMap[t] || '124,111,247';
     window._currentGridColor = colors;
+    window._currentBgColor = window._bgColorMap?.[t] || '#0d0f14';
   }
 }
 
@@ -3054,9 +3055,17 @@ window._gridColorMap = {
   'dark': '124,111,247',
   'cyberpunk': '0,255,136',
   'ocean': '56,189,248',
-  'sunset': '249,115,22'
+  'light':  '91,82,217'
 };
 window._currentGridColor = window._gridColorMap[currentTheme] || '124,111,247';
+
+window._bgColorMap = {
+  'dark':      '#0d0f14',
+  'cyberpunk': '#0a0f0a',
+  'ocean':     '#040d1a',
+  'light':     '#f0f2f8'
+};
+window._currentBgColor = window._bgColorMap[currentTheme] || '#0d0f14';
 
 function setLayout(l) {
   currentLayout = l;
@@ -3162,7 +3171,7 @@ document.addEventListener('click', function(e) {
 
   function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.fillStyle = '#0d0f14';
+    ctx.fillStyle = window._currentBgColor || '#0d0f14';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     const step = 36;
