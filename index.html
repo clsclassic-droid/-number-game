@@ -811,6 +811,36 @@ body {
   height: 160px;
 }
 
+/* ── 2-player side layout: history LEFT, input RIGHT ── */
+.player-half.side-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: auto auto auto auto 1fr;
+  grid-template-areas:
+    "win    win"
+    "label  label"
+    "status status"
+    "hist   digits"
+    "hist   keypad";
+  gap: 4px 8px;
+  align-items: start;
+}
+.player-half.side-layout .ph-win    { grid-area: win; }
+.player-half.side-layout .ph-label  { grid-area: label; }
+.player-half.side-layout .ph-status { grid-area: status; }
+.player-half.side-layout .ph-digits { grid-area: digits; margin-bottom: 0; }
+.player-half.side-layout .ph-err    { display: none; }
+.player-half.side-layout .ph-keypad { grid-area: keypad; height: auto; }
+.player-half.side-layout .ph-side-history {
+  grid-area: hist;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  align-self: stretch;
+}
+.player-half.side-layout .ph-bottom-history { display: none !important; }
+
 .ph-key {
   font-family: "Courier New", monospace;
   font-size: 14px;
@@ -2036,7 +2066,8 @@ window.closeScoreboard = () => document.getElementById('sb-overlay').classList.r
       <div class="ph-key" onclick="tpKey(2,0)">0</div>
       <div class="ph-key go p2g" id="p2-submit" onclick="p2Submit(2)">ทาย →</div>
     </div>
-    <div id="p2-history" style="overflow-y:auto;flex:1;margin-top:4px;display:flex;flex-direction:column;gap:3px;min-height:0;max-height:120px;"></div>
+    <div class="ph-side-history" id="p2-side-history"></div>
+    <div class="ph-bottom-history" id="p2-history" style="overflow-y:auto;flex:1;margin-top:4px;display:flex;flex-direction:column;gap:3px;min-height:0;max-height:120px;"></div>
   </div>
 
   <!-- Middle -->
@@ -2077,7 +2108,8 @@ window.closeScoreboard = () => document.getElementById('sb-overlay').classList.r
       <div class="ph-key" onclick="tpKey(1,0)">0</div>
       <div class="ph-key go" id="p1-submit" onclick="p2Submit(1)">ทาย →</div>
     </div>
-    <div id="p1-history" style="overflow-y:auto;flex:1;margin-top:4px;display:flex;flex-direction:column;gap:3px;min-height:0;max-height:120px;"></div>
+    <div class="ph-side-history" id="p1-side-history"></div>
+    <div class="ph-bottom-history" id="p1-history" style="overflow-y:auto;flex:1;margin-top:4px;display:flex;flex-direction:column;gap:3px;min-height:0;max-height:120px;"></div>
   </div>
 
   <!-- New game -->
@@ -2706,6 +2738,16 @@ let twoTimerInterval = null;
 let twoElapsed = 0;
 let twoSecret = [];
 
+function applyTwoPlayerLayout() {
+  const isSide = currentLayout === 'side';
+  [1, 2].forEach(p => {
+    const half = document.querySelector(p === 1 ? '.player-half.p1-half' : '.player-half.p2-half');
+    if (!half) return;
+    if (isSide) half.classList.add('side-layout');
+    else half.classList.remove('side-layout');
+  });
+}
+
 function selectMode(m) {
   currentMode = m;
   ['mode1-btn','mid-mode1-btn'].forEach(id => { const el = document.getElementById(id); if(el) el.classList.toggle('active', m === 1); });
@@ -2746,6 +2788,9 @@ function startTwoPlayerGame() {
   document.getElementById('p2-err').textContent = '';
   document.getElementById('p1-history').innerHTML = '';
   document.getElementById('p2-history').innerHTML = '';
+  document.getElementById('p1-side-history').innerHTML = '';
+  document.getElementById('p2-side-history').innerHTML = '';
+  applyTwoPlayerLayout();
   document.getElementById('p1-win-box').style.display = 'none';
   document.getElementById('p2-win-box').style.display = 'none';
   document.getElementById('p2-new-game-bar').style.display = 'none';
@@ -2800,29 +2845,59 @@ function p2Submit(p) {
   document.getElementById('p' + p + '-cow').textContent = bulls;
 
   // Add to history
-  const hist = document.getElementById('p' + p + '-history');
+  const isSideLayout = currentLayout === 'side';
+  const hist = document.getElementById(isSideLayout ? 'p' + p + '-side-history' : 'p' + p + '-history');
   const row = document.createElement('div');
-  row.className = 'p-hist-row';
-  const rNum = document.createElement('div');
-  rNum.className = 'p-hist-num';
-  rNum.textContent = '#' + round;
-  const digits = document.createElement('div');
-  digits.className = 'p-hist-digits';
-  guess.forEach((d, i) => {
-    const dd = document.createElement('div');
-    dd.className = 'p-hist-digit';
-    if (currentLevel === 1) {
-      if (d === twoSecret[i]) dd.classList.add('bull');
-      else if (twoSecret.includes(d)) dd.classList.add('cow');
-    }
-    dd.textContent = d;
-    digits.appendChild(dd);
-  });
-  const sc = document.createElement('div');
-  sc.className = 'p-scores';
-  sc.innerHTML = '<div class="p-score-pill p-bull-p">' + cows + ' ตัว</div><div class="p-score-pill p-cow-p">' + bulls + ' ที่</div>';
-  row.appendChild(rNum); row.appendChild(digits); row.appendChild(sc);
-  hist.insertBefore(row, hist.firstChild);
+
+  if (isSideLayout) {
+    row.className = 'side-hist-row';
+    const leftCol = document.createElement('div');
+    leftCol.className = 'side-hist-digits';
+    const rn = document.createElement('span');
+    rn.className = 'side-hist-num';
+    rn.textContent = '#' + round;
+    leftCol.appendChild(rn);
+    guess.forEach((d, i) => {
+      const dd = document.createElement('div');
+      dd.className = 'side-hist-digit';
+      if (currentLevel === 1) {
+        if (d === twoSecret[i]) dd.classList.add('bull');
+        else if (twoSecret.includes(d)) dd.classList.add('cow');
+      }
+      dd.textContent = d;
+      leftCol.appendChild(dd);
+    });
+    const cowCol = document.createElement('div');
+    cowCol.className = 'side-score cow-s';
+    cowCol.textContent = cows;
+    const bullCol = document.createElement('div');
+    bullCol.className = 'side-score bull-s';
+    bullCol.textContent = bulls;
+    row.appendChild(leftCol); row.appendChild(cowCol); row.appendChild(bullCol);
+    hist.appendChild(row);
+  } else {
+    row.className = 'p-hist-row';
+    const rNum = document.createElement('div');
+    rNum.className = 'p-hist-num';
+    rNum.textContent = '#' + round;
+    const digits = document.createElement('div');
+    digits.className = 'p-hist-digits';
+    guess.forEach((d, i) => {
+      const dd = document.createElement('div');
+      dd.className = 'p-hist-digit';
+      if (currentLevel === 1) {
+        if (d === twoSecret[i]) dd.classList.add('bull');
+        else if (twoSecret.includes(d)) dd.classList.add('cow');
+      }
+      dd.textContent = d;
+      digits.appendChild(dd);
+    });
+    const sc = document.createElement('div');
+    sc.className = 'p-scores';
+    sc.innerHTML = '<div class="p-score-pill p-bull-p">' + cows + ' ตัว</div><div class="p-score-pill p-cow-p">' + bulls + ' ที่</div>';
+    row.appendChild(rNum); row.appendChild(digits); row.appendChild(sc);
+    hist.insertBefore(row, hist.firstChild);
+  }
 
   if (p === 1) p1Round++; else p2Round++;
   document.getElementById('p' + p + '-round').textContent = p === 1 ? p1Round : p2Round;
@@ -3055,7 +3130,7 @@ window._gridColorMap = {
   'dark': '124,111,247',
   'cyberpunk': '0,255,136',
   'ocean': '56,189,248',
-  'light':  '91,82,217'
+  'light': '91,82,217'
 };
 window._currentGridColor = window._gridColorMap[currentTheme] || '124,111,247';
 
@@ -3071,6 +3146,7 @@ function setLayout(l) {
   currentLayout = l;
   localStorage.setItem('numgame_layout', l);
   applyLayout(l);
+  if (currentMode === 2) applyTwoPlayerLayout();
   document.getElementById('layout-bottom-btn').classList.toggle('active', l === 'bottom');
   document.getElementById('layout-side-btn').classList.toggle('active', l === 'side');
 }
