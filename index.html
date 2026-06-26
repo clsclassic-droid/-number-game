@@ -2100,13 +2100,27 @@ window.closeScoreboard = () => document.getElementById('sb-overlay').classList.r
       <div class="ph-key go p2g" id="p2-submit" onclick="p2Submit(2)">ทาย →</div>
     </div>
     <div class="ph-side-history" id="p2-side-history"></div>
-    <div class="ph-bottom-history" id="p2-history" style="overflow-y:auto;flex:1;margin-top:4px;display:flex;flex-direction:column;gap:3px;min-height:0;max-height:120px;"></div>
+    <div class="ph-bottom-history" id="p2-history" style="overflow-y:auto;flex:1;margin-top:4px;display:flex;flex-direction:column;gap:3px;min-height:0;max-height:120px;">
+      <div style="display:grid;grid-template-columns:1fr auto auto auto;gap:4px;padding:3px 6px;background:var(--surface2);border-radius:6px 6px 0 0;border:1px solid var(--border);border-bottom:none;font-size:9px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase">
+        <div style="color:var(--dim)">ประวัติ</div>
+        <div style="color:var(--cow);text-align:center;min-width:24px">ตัว</div>
+        <div style="color:var(--bull);text-align:center;min-width:24px">ที่</div>
+        <div style="color:var(--muted);text-align:right;min-width:32px">⏱</div>
+      </div>
+    </div>
   </div>
 
   <!-- Middle -->
   <div class="two-mid">
     <button class="two-mid-btn" onclick="selectMode(1)">👤 1 คน</button>
-    <div class="two-mid-timer" id="two-timer">0:00</div>
+    <div style="display:flex;flex-direction:column;align-items:center;gap:2px;flex:1">
+      <div class="two-mid-timer" id="two-timer" style="flex:none">0:00</div>
+      <div style="display:flex;gap:8px;font-family:'Courier New',monospace;font-size:11px;font-weight:700">
+        <span style="color:var(--accent)" id="two-score-p1">0</span>
+        <span style="color:var(--dim)">–</span>
+        <span style="color:var(--cow)" id="two-score-p2">0</span>
+      </div>
+    </div>
     <button class="two-mid-btn active">👥 2 คน</button>
   </div>
 
@@ -2140,7 +2154,14 @@ window.closeScoreboard = () => document.getElementById('sb-overlay').classList.r
       <div class="ph-key go" id="p1-submit" onclick="p2Submit(1)">ทาย →</div>
     </div>
     <div class="ph-side-history" id="p1-side-history"></div>
-    <div class="ph-bottom-history" id="p1-history" style="overflow-y:auto;flex:1;margin-top:4px;display:flex;flex-direction:column;gap:3px;min-height:0;max-height:120px;"></div>
+    <div class="ph-bottom-history" id="p1-history" style="overflow-y:auto;flex:1;margin-top:4px;display:flex;flex-direction:column;gap:3px;min-height:0;max-height:120px;">
+      <div style="display:grid;grid-template-columns:1fr auto auto auto;gap:4px;padding:3px 6px;background:var(--surface2);border-radius:6px 6px 0 0;border:1px solid var(--border);border-bottom:none;font-size:9px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase">
+        <div style="color:var(--dim)">ประวัติ</div>
+        <div style="color:var(--cow);text-align:center;min-width:24px">ตัว</div>
+        <div style="color:var(--bull);text-align:center;min-width:24px">ที่</div>
+        <div style="color:var(--muted);text-align:right;min-width:32px">⏱</div>
+      </div>
+    </div>
   </div>
 
   <!-- New game -->
@@ -2350,14 +2371,14 @@ function soundNewRecord() {
 }
 let gameRecords = JSON.parse(localStorage.getItem('numgame_records') || '[]');
 
-function saveRecord(secretArr, rounds, timeMs, guessLog) {
+function saveRecord(secretArr, rounds, timeMs, guessLog, winnerLabel) {
   // Check if this is a new best time (among records with same or more rounds)
   const prevBestTime = gameRecords.length
     ? Math.min(...gameRecords.map(r => r.timeMs || Infinity))
     : Infinity;
   const isNewRecord = timeMs < prevBestTime;
 
-  const rec = { secret: secretArr.join(' '), rounds, time: formatTime(timeMs), timeMs: timeMs, ts: Date.now(), guesses: guessLog, isNewRecord: isNewRecord, level: currentLevel };
+  const rec = { secret: secretArr.join(' '), rounds, time: formatTime(timeMs), timeMs: timeMs, ts: Date.now(), guesses: guessLog, isNewRecord: isNewRecord, level: currentLevel, winner: winnerLabel || null };
   gameRecords.unshift(rec);
   if (gameRecords.length > 20) gameRecords = gameRecords.slice(0, 20);
   localStorage.setItem('numgame_records', JSON.stringify(gameRecords));
@@ -2423,7 +2444,7 @@ function renderRecords() {
       + '<div class="record-meta">'
       + '<div class="record-badge">' + r.rounds + ' ครั้ง</div>'
       + '<div class="record-badge ' + (isBest ? 'best' : '') + '">' + (isBest ? '🏆 ' : '') + r.time + '</div>'
-      + '<div class="record-badge" style="font-size:10px;color:var(--muted);border-color:var(--border)">' + 'Lv.' + (r.level || 1) + '</div>'
+      + '<div class="record-badge" style="font-size:10px;color:var(--muted);border-color:var(--border)">' + (r.winner ? '👥 ' + r.winner : 'Lv.' + (r.level || 1)) + '</div>'
       + '<div class="record-badge" style="font-size:10px;color:var(--dim);border:none;background:none;padding:0">' + dateStr + '</div>'
       + '</div></div>'
       + guessHTML
@@ -2810,6 +2831,7 @@ renderRecords();
 // ── Mode & 2-player vars ──
 let currentMode = 1;
 let p1Round = 1, p2Round = 1;
+let p1Wins = 0, p2Wins = 0;
 let p1Done = false, p2Done = false;
 let twoTimerInterval = null;
 let twoElapsed = 0;
@@ -2862,8 +2884,9 @@ function startTwoPlayerGame() {
   document.getElementById('p2-round').textContent = '1';
   document.getElementById('p1-err').textContent = '';
   document.getElementById('p2-err').textContent = '';
-  document.getElementById('p1-history').innerHTML = '';
-  document.getElementById('p2-history').innerHTML = '';
+  const histHdr = '<div style="display:grid;grid-template-columns:1fr auto auto auto;gap:3px;align-items:center;padding:3px 6px;background:var(--surface2);border-radius:6px 6px 0 0;border:1px solid var(--border);border-bottom:none;font-size:9px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase"><div style="color:var(--dim)">ประวัติ</div><div style="color:var(--cow);text-align:center;min-width:24px">ตัว</div><div style="color:var(--bull);text-align:center;min-width:24px">ที่</div><div style="color:var(--muted);text-align:right;min-width:32px">⏱</div></div>';
+  document.getElementById('p1-history').innerHTML = histHdr;
+  document.getElementById('p2-history').innerHTML = histHdr;
   document.getElementById('p1-side-history').innerHTML = '';
   document.getElementById('p2-side-history').innerHTML = '';
   applyTwoPlayerLayout();
@@ -2921,51 +2944,36 @@ function p2Submit(p) {
   document.getElementById('p' + p + '-cow').textContent = bulls;
 
   // Add to history
-  const isSideLayout = currentLayout === 'side';
-  const hist = document.getElementById(isSideLayout ? 'p' + p + '-side-history' : 'p' + p + '-history');
+  const hist = document.getElementById('p' + p + '-history');
   const row = document.createElement('div');
-  if (isSideLayout) {
-    row.className = 'side-hist-row';
-    const leftCol = document.createElement('div');
-    leftCol.className = 'side-hist-digits';
-    const rn = document.createElement('span');
-    rn.className = 'side-hist-num';
-    rn.textContent = '#' + round;
-    leftCol.appendChild(rn);
-    guess.forEach((d, i) => {
-      const dd = document.createElement('div');
-      dd.className = 'side-hist-digit';
-      if (currentLevel === 1) {
-        if (d === twoSecret[i]) dd.classList.add('bull');
-        else if (twoSecret.includes(d)) dd.classList.add('cow');
-      }
-      dd.textContent = d;
-      leftCol.appendChild(dd);
-    });
-    const cowCol = document.createElement('div'); cowCol.className = 'side-score cow-s'; cowCol.textContent = cows;
-    const bullCol = document.createElement('div'); bullCol.className = 'side-score bull-s'; bullCol.textContent = bulls;
-    row.appendChild(leftCol); row.appendChild(cowCol); row.appendChild(bullCol);
-    hist.appendChild(row);
-  } else {
-    row.className = 'p-hist-row';
-    const rNum = document.createElement('div'); rNum.className = 'p-hist-num'; rNum.textContent = '#' + round;
-    const digits = document.createElement('div'); digits.className = 'p-hist-digits';
-    guess.forEach((d, i) => {
-      const dd = document.createElement('div');
-      dd.className = 'p-hist-digit';
-      if (currentLevel === 1) {
-        if (d === twoSecret[i]) dd.classList.add('bull');
-        else if (twoSecret.includes(d)) dd.classList.add('cow');
-      }
-      dd.textContent = d;
-      digits.appendChild(dd);
-    });
-    const sc = document.createElement('div');
-    sc.className = 'p-scores';
-    sc.innerHTML = '<div class="p-score-pill p-bull-p">' + cows + ' ตัว</div><div class="p-score-pill p-cow-p">' + bulls + ' ที่</div>';
-    row.appendChild(rNum); row.appendChild(digits); row.appendChild(sc);
-    hist.insertBefore(row, hist.firstChild);
-  }
+  row.style.cssText = 'display:grid;grid-template-columns:1fr auto auto auto;gap:3px;align-items:center;padding:4px 6px;border:1px solid var(--border);border-top:none;background:var(--surface);font-family:Courier New,monospace;font-size:11px';
+  const leftCol = document.createElement('div');
+  leftCol.style.cssText = 'display:flex;align-items:center;gap:3px';
+  const rn = document.createElement('span');
+  rn.style.cssText = 'font-size:9px;color:var(--dim);min-width:18px';
+  rn.textContent = '#' + round;
+  leftCol.appendChild(rn);
+  guess.forEach((d, i) => {
+    const dd = document.createElement('div');
+    dd.style.cssText = 'width:20px;height:20px;display:flex;align-items:center;justify-content:center;border-radius:4px;font-weight:700;font-size:11px;border:1px solid var(--border);background:var(--surface2);color:var(--dim)';
+    if (currentLevel === 1) {
+      if (d === twoSecret[i]) { dd.style.background='var(--bull-bg)'; dd.style.color='var(--bull)'; dd.style.borderColor='var(--bull-bd)'; }
+      else if (twoSecret.includes(d)) { dd.style.background='var(--cow-bg)'; dd.style.color='var(--cow)'; dd.style.borderColor='var(--cow-bd)'; }
+    }
+    dd.textContent = d;
+    leftCol.appendChild(dd);
+  });
+  const cowCol = document.createElement('div');
+  cowCol.style.cssText = 'color:var(--cow);font-weight:700;text-align:center;min-width:24px';
+  cowCol.textContent = cows;
+  const bullCol = document.createElement('div');
+  bullCol.style.cssText = 'color:var(--bull);font-weight:700;text-align:center;min-width:24px';
+  bullCol.textContent = bulls;
+  const timeCol = document.createElement('div');
+  timeCol.style.cssText = 'color:var(--muted);font-size:10px;text-align:right;min-width:32px';
+  timeCol.textContent = formatTime(twoElapsed);
+  row.appendChild(leftCol); row.appendChild(cowCol); row.appendChild(bullCol); row.appendChild(timeCol);
+  hist.appendChild(row);
 
   if (p === 1) p1Round++; else p2Round++;
   document.getElementById('p' + p + '-round').textContent = p === 1 ? p1Round : p2Round;
@@ -2989,6 +2997,16 @@ function p2Submit(p) {
     const winnerName = playerNames[winnerIdx] || ('ผู้เล่น ' + p);
     const loserName  = playerNames[other - 1] || ('ผู้เล่น ' + other);
     const bonusLabel = currentLevel === 2 ? ' ⭐' : '';
+
+    // Update win score
+    if (p === 1) p1Wins++; else p2Wins++;
+    const s1 = document.getElementById('two-score-p1');
+    const s2 = document.getElementById('two-score-p2');
+    if (s1) s1.textContent = p1Wins;
+    if (s2) s2.textContent = p2Wins;
+
+    // Save to records
+    saveRecord(twoSecret, round, twoElapsed, [], '2P:' + winnerName);
 
     const winBox = document.getElementById('p' + p + '-win-box');
     winBox.style.display = 'block';
