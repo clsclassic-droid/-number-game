@@ -1428,7 +1428,7 @@ body {
 /* history row in side mode — compact table style */
 .side-hist-row {
   display: grid;
-  grid-template-columns: 1fr auto auto;
+  grid-template-columns: 1fr auto auto auto;
   gap: 4px;
   align-items: center;
   padding: 5px 8px;
@@ -1456,6 +1456,7 @@ body {
 }
 .side-score.cow-s { color: var(--cow); }
 .side-score.bull-s { color: var(--bull); }
+.side-score.time-s { color: var(--muted); min-width: 36px; text-align: right; font-size: 10px; font-weight: 400; }
 .login-btn {
   display: flex; align-items: center; gap: 6px;
   padding: 5px 11px;
@@ -2651,16 +2652,15 @@ function submitGuess() {
 }
 
 function reRenderHistory(mode) {
-  // Re-render existing history rows based on guessLog
   const hist = document.getElementById('history');
   if (!hist || !guessLog.length) return;
   hist.innerHTML = '';
   guessLog.forEach((g, i) => {
-    addHistoryRow(g.digits, g.bulls, g.cows, i + 1, false);
+    addHistoryRow(g.digits, g.bulls, g.cows, i + 1, false, g.time || 0);
   });
 }
 
-function addHistoryRow(guess, bulls, cows, r, prepend) {
+function addHistoryRow(guess, bulls, cows, r, prepend, rowTime) {
   const hist = document.getElementById('history');
   const isSide = currentLayout === 'side';
 
@@ -2694,9 +2694,14 @@ function addHistoryRow(guess, bulls, cows, r, prepend) {
     bullCol.className = 'side-score bull-s';
     bullCol.textContent = bulls;
 
+    const timeCol = document.createElement('div');
+    timeCol.className = 'side-score time-s';
+    timeCol.textContent = formatTime(rowTime !== undefined ? rowTime : elapsed);
+
     row.appendChild(leftCol);
     row.appendChild(cowCol);
     row.appendChild(bullCol);
+    row.appendChild(timeCol);
     // prepend = false เพราะ side mode เรียง #1 บน
     if (prepend) {
       // ใน side mode ไม่ prepend — append เพื่อให้ลำดับถูก
@@ -2735,7 +2740,7 @@ function addHistoryRow(guess, bulls, cows, r, prepend) {
 }
 
 function addHistory(guess, bulls, cows, r) {
-  addHistoryRow(guess, bulls, cows, r, true);
+  addHistoryRow(guess, bulls, cows, r, true, elapsed);
 }
 
 // ── Single-player custom keypad ──
