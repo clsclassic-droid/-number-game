@@ -2450,6 +2450,10 @@ function startTimer() {
   }, 500);
 }
 
+function stopTimer() {
+  if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
+}
+
 function updateTimerDisplay(text) {
   const t1 = document.getElementById('timer-disp');
   const t2 = document.getElementById('timer-disp-bottom');
