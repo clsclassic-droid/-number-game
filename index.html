@@ -2490,7 +2490,9 @@ function startNewGame() {
   resetLogoMark();
   clearInputs();
   spRender();
-  startTimer();
+  stopTimer();
+  elapsed = 0;
+  updateTimerDisplay('0:00');
   // Show/hide legend based on level
   document.getElementById('legend').style.opacity = currentLevel === 1 ? '1' : '0.2';
 }
@@ -2765,6 +2767,7 @@ function spFocus(i) { spCursor = i; spRender(); }
 function spKey(n) {
   tryStartMusic();
   soundType();
+  if (!timerInterval) startTimer();
   spVals[spCursor] = String(n);
   if (spCursor < 3) spCursor++;
   spRender();
