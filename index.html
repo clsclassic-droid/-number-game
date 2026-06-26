@@ -2472,7 +2472,7 @@ function startNewGame() {
   document.getElementById('lose-banner').style.display = 'none';
   document.getElementById('win-history').style.display = 'none';
   document.getElementById('win-history-list').innerHTML = '';
-  document.getElementById('game-area').style.display = '';
+  document.getElementById('game-area').style.display = 'block';
   document.getElementById('bull-count').textContent = '—';  // ถูกตัว
   document.getElementById('cow-count').textContent = '—';  // ถูกที่
   document.getElementById('round-disp').textContent = '1';
@@ -2556,6 +2556,7 @@ function submitGuess() {
       }
 
       document.getElementById('win-banner').style.display = 'flex';
+      document.getElementById('single-wrap').style.display = 'block';
       const newRecLabel = isNewRec ? ' 🏅 สถิติใหม่!' : '';
       const bonusLabel = currentLevel === 2 ? ' ⭐ Level 2 Bonus!' : '';
       document.getElementById('win-text').textContent = (playerNames[0] || 'ผู้เล่น') + ' ถอดรหัสสำเร็จ!';
