@@ -1771,12 +1771,19 @@ window.closeScoreboard = () => document.getElementById('sb-overlay').classList.r
       <!-- Sound -->
       <div>
         <div class="settings-section-title">🔊 เสียง</div>
+        <div class="sound-row" style="margin-bottom:8px">
+          <div>
+            <div class="sound-row-label">🎵 เพลงประกอบ</div>
+            <div class="sound-row-sub">เพลง background</div>
+          </div>
+          <button class="toggle-switch on" id="music-switch" onclick="toggleMusicSwitch()"></button>
+        </div>
         <div class="sound-row">
           <div>
-            <div class="sound-row-label">เสียงเกมและดนตรี</div>
-            <div class="sound-row-sub">เสียงปุ่ม, ผลการทาย, เพลงประกอบ</div>
+            <div class="sound-row-label">🔔 เสียง SFX</div>
+            <div class="sound-row-sub">เสียงปุ่มกด, ผลการทาย, ชนะ</div>
           </div>
-          <button class="toggle-switch on" id="sound-switch" onclick="toggleSoundSwitch()"></button>
+          <button class="toggle-switch on" id="sfx-switch" onclick="toggleSfxSwitch()"></button>
         </div>
       </div>
 
@@ -3180,14 +3187,23 @@ function applyLayout(l) {
 }
 
 function toggleSoundSwitch() {
-  soundOn = !soundOn;
-  musicOn = soundOn;
-  const sw = document.getElementById('sound-switch');
-  if (sw) sw.classList.toggle('on', soundOn);
-  // sync old button if still exists
-  const btn = document.getElementById('sound-toggle');
-  if (btn) { btn.textContent = soundOn ? '🔊 เสียง' : '🔇 เสียง'; btn.classList.toggle('on', soundOn); }
+  // legacy — keep for compatibility
+  toggleSfxSwitch();
+}
+
+function toggleMusicSwitch() {
+  musicOn = !musicOn;
+  localStorage.setItem('numgame_music', musicOn ? '1' : '0');
+  const sw = document.getElementById('music-switch');
+  if (sw) sw.classList.toggle('on', musicOn);
   if (musicOn) resumeMusic(); else pauseMusic();
+}
+
+function toggleSfxSwitch() {
+  soundOn = !soundOn;
+  localStorage.setItem('numgame_sfx', soundOn ? '1' : '0');
+  const sw = document.getElementById('sfx-switch');
+  if (sw) sw.classList.toggle('on', soundOn);
 }
 
 // close settings on overlay click
@@ -3206,6 +3222,11 @@ document.addEventListener('DOMContentLoaded', function() {
   });
   document.getElementById('layout-bottom-btn')?.classList.toggle('active', currentLayout === 'bottom');
   document.getElementById('layout-side-btn')?.classList.toggle('active', currentLayout === 'side');
+  // restore sfx/music state
+  soundOn = localStorage.getItem('numgame_sfx') !== '0';
+  musicOn = localStorage.getItem('numgame_music') !== '0';
+  document.getElementById('sfx-switch')?.classList.toggle('on', soundOn);
+  document.getElementById('music-switch')?.classList.toggle('on', musicOn);
 });
 
 // ── Close overlays on outside click ──
