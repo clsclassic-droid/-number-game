@@ -2464,7 +2464,10 @@ function generateSecret() {
   return digits.slice(0, 4);
 }
 
+let gameWon = false;
+
 function startNewGame() {
+  gameWon = false;
   secret = generateSecret();
   round = 1;
   document.getElementById('history').innerHTML = '';
@@ -2522,6 +2525,7 @@ function evaluate(guess) {
 }
 
 function submitGuess() {
+  if (gameWon) return;
   const guess = getGuess();
   const err = document.getElementById('err-msg');
 
@@ -2543,6 +2547,7 @@ function submitGuess() {
   addHistory(guess, bulls, cows, round);
 
   if (bulls === 4) {
+    gameWon = true;
     setTimeout(() => {
       stopTimer();
       const isNewRec = saveRecord(secret, round, elapsed, guessLog);
