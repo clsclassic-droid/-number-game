@@ -1986,6 +1986,13 @@ window.closeScoreboard = () => document.getElementById('sb-overlay').classList.r
       <span id="bull-count"></span><span id="cow-count"></span><span id="round-disp"></span>
     </div>
 
+    <!-- Timer — always visible -->
+    <div id="timer-bottom" style="display:flex;justify-content:flex-end;margin-bottom:8px">
+      <div style="display:flex;align-items:center;gap:6px;font-family:'Courier New',monospace;font-size:13px;font-weight:700;color:var(--muted);background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:4px 12px">
+        ⏱ <span id="timer-disp-bottom">0:00</span>
+      </div>
+    </div>
+
     <!-- Game cols wrapper (switches between 1-col and 2-col) -->
     <div id="game-layout-wrap">
 
@@ -2001,11 +2008,6 @@ window.closeScoreboard = () => document.getElementById('sb-overlay').classList.r
           </div>
         </div>
         <!-- Bottom mode timer -->
-        <div id="timer-bottom" style="display:flex;justify-content:flex-end;margin-bottom:8px">
-          <div style="display:flex;align-items:center;gap:6px;font-family:'Courier New',monospace;font-size:13px;font-weight:700;color:var(--muted);background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:4px 12px">
-            ⏱ <span id="timer-disp-bottom">0:00</span>
-          </div>
-        </div>
         <hr class="divider" id="history-divider">
         <div class="history" id="history"></div>
       </div>
@@ -3219,7 +3221,6 @@ function applyLayout(l) {
     }
     if (divider) divider.style.display = 'none';
     if (histHeader) histHeader.style.display = 'block';
-    if (timerBottom) timerBottom.style.display = 'none';
     if (legend) legend.style.display = 'none';
     document.querySelectorAll('.digit-box').forEach(el => { el.style.height = '48px'; el.style.fontSize = '22px'; });
     document.querySelectorAll('#sp-keypad .key-btn').forEach(el => { el.style.height = '40px'; el.style.fontSize = '17px'; });
@@ -3232,7 +3233,6 @@ function applyLayout(l) {
     if (colHistory) wrap.appendChild(colHistory);
     if (divider) divider.style.display = '';
     if (histHeader) histHeader.style.display = 'none';
-    if (timerBottom) timerBottom.style.display = 'flex';
     if (legend) legend.style.display = '';
     document.querySelectorAll('.digit-box').forEach(el => { el.style.height = ''; el.style.fontSize = ''; });
     document.querySelectorAll('#sp-keypad .key-btn').forEach(el => { el.style.height = ''; el.style.fontSize = ''; });
