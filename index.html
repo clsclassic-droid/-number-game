@@ -28,6 +28,40 @@
   --cow:      #fbbf24;
   --cow-bg:   #241c08;
   --cow-bd:   #5c4a10;
+  --grid-color: 124,111,247;
+}
+
+/* ── Cyberpunk Theme ── */
+[data-theme="cyberpunk"] {
+  --bg: #0a0f0a; --surface: #0f1a0f; --surface2: #142014;
+  --border: #1a3a1a; --border2: #255025;
+  --text: #e0ffe0; --muted: #70a070; --dim: #3a5a3a;
+  --accent: #00ff88; --accent2: #00cc66;
+  --bull: #00ff88; --bull-bg: #002a1a; --bull-bd: #005c35;
+  --cow: #ffff00; --cow-bg: #2a2a00; --cow-bd: #5c5c00;
+  --grid-color: 0,255,136;
+}
+
+/* ── Ocean Theme ── */
+[data-theme="ocean"] {
+  --bg: #040d1a; --surface: #081525; --surface2: #0c1e30;
+  --border: #0e2d4a; --border2: #124060;
+  --text: #d0eeff; --muted: #5a90bb; --dim: #2a5070;
+  --accent: #38bdf8; --accent2: #0ea5e9;
+  --bull: #34d399; --bull-bg: #042a1a; --bull-bd: #065c35;
+  --cow: #fbbf24; --cow-bg: #241c08; --cow-bd: #5c4a10;
+  --grid-color: 56,189,248;
+}
+
+/* ── Sunset Theme ── */
+[data-theme="sunset"] {
+  --bg: #130a0a; --surface: #1e1010; --surface2: #281515;
+  --border: #3a1a1a; --border2: #502525;
+  --text: #fff0e8; --muted: #a07060; --dim: #5a3535;
+  --accent: #f97316; --accent2: #ea580c;
+  --bull: #4ade80; --bull-bg: #0f2a1a; --bull-bd: #1e5c35;
+  --cow: #fb923c; --cow-bg: #2a1208; --cow-bd: #5c3010;
+  --grid-color: 249,115,22;
 }
 
 html { background: #0d0f14; }
@@ -1218,7 +1252,153 @@ body {
   .game-title  { font-size: 22px; }
 }
 
-/* ── Google Login button ── */
+/* ── Settings FAB ── */
+.settings-fab {
+  position: fixed; top: 14px; right: 14px; z-index: 150;
+  width: 44px; height: 44px; border-radius: 50%;
+  background: var(--surface); border: 1.5px solid var(--border2);
+  color: var(--text); font-size: 20px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; box-shadow: 0 2px 12px rgba(0,0,0,0.5);
+  transition: all 0.15s;
+}
+.settings-fab:hover { border-color: var(--accent); transform: scale(1.05); }
+
+/* ── Settings Panel ── */
+.settings-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.85);
+  z-index: 300; display: none; flex-direction: column; align-items: center;
+}
+.settings-overlay.open { display: flex; }
+.settings-panel {
+  width: 100%; max-width: 460px; height: 100%;
+  background: var(--bg); display: flex; flex-direction: column; overflow-y: auto;
+}
+.settings-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 16px 18px 12px; border-bottom: 1px solid var(--border); flex-shrink: 0;
+}
+.settings-title { font-size: 17px; font-weight: 700; color: var(--text); }
+.settings-close {
+  width: 34px; height: 34px; border-radius: 50%;
+  border: 1px solid var(--border2); background: var(--surface);
+  color: var(--muted); font-size: 16px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+}
+.settings-body { padding: 16px; display: flex; flex-direction: column; gap: 24px; }
+.settings-section-title {
+  font-size: 10px; font-weight: 700; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--dim); margin-bottom: 10px;
+}
+
+/* Theme cards */
+.theme-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+.theme-card {
+  border: 2px solid var(--border2); border-radius: 12px;
+  padding: 12px; cursor: pointer; transition: all 0.15s;
+  display: flex; flex-direction: column; gap: 8px;
+  background: var(--surface);
+}
+.theme-card:hover { border-color: var(--accent); }
+.theme-card.active { border-color: var(--accent); background: rgba(124,111,247,0.1); }
+.theme-card.active[data-t="cyberpunk"] { border-color: #00ff88; background: rgba(0,255,136,0.08); }
+.theme-card.active[data-t="ocean"] { border-color: #38bdf8; background: rgba(56,189,248,0.08); }
+.theme-card.active[data-t="sunset"] { border-color: #f97316; background: rgba(249,115,22,0.08); }
+.theme-preview {
+  height: 48px; border-radius: 8px; display: flex; gap: 4px;
+  align-items: center; justify-content: center; padding: 6px;
+}
+.theme-dot { width: 14px; height: 14px; border-radius: 4px; }
+.theme-name { font-size: 13px; font-weight: 700; color: var(--text); }
+.theme-check { font-size: 11px; color: var(--accent); font-weight: 700; display: none; }
+.theme-card.active .theme-check { display: block; }
+
+/* Layout toggle */
+.layout-toggle {
+  display: flex; gap: 8px;
+}
+.layout-btn {
+  flex: 1; padding: 12px 8px; border: 2px solid var(--border2);
+  border-radius: 10px; background: var(--surface); color: var(--muted);
+  cursor: pointer; transition: all 0.15s; text-align: center;
+  font-family: system-ui, sans-serif; font-size: 13px; font-weight: 600;
+}
+.layout-btn:hover { border-color: var(--accent); color: var(--text); }
+.layout-btn.active { border-color: var(--accent); background: rgba(124,111,247,0.12); color: var(--text); }
+.layout-btn .lb-icon { font-size: 22px; display: block; margin-bottom: 4px; }
+.layout-btn .lb-name { font-size: 12px; display: block; }
+
+/* Sound toggle in settings */
+.sound-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 16px; border: 1px solid var(--border);
+  border-radius: 10px; background: var(--surface);
+}
+.sound-row-label { font-size: 14px; font-weight: 600; color: var(--text); }
+.sound-row-sub { font-size: 11px; color: var(--dim); margin-top: 2px; }
+.toggle-switch {
+  width: 44px; height: 24px; border-radius: 12px;
+  background: var(--border2); cursor: pointer; position: relative;
+  transition: background 0.2s; flex-shrink: 0; border: none;
+}
+.toggle-switch.on { background: var(--accent); }
+.toggle-switch::after {
+  content: ''; position: absolute;
+  width: 18px; height: 18px; border-radius: 50%;
+  background: white; top: 3px; left: 3px;
+  transition: transform 0.2s;
+}
+.toggle-switch.on::after { transform: translateX(20px); }
+
+/* ── 2-column game layout ── */
+.game-cols {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  align-items: start;
+}
+.game-cols .col-input { display: flex; flex-direction: column; gap: 6px; }
+.game-cols .col-history {
+  display: flex; flex-direction: column; gap: 4px;
+  overflow: visible;
+  min-height: 0;
+}
+.game-cols .digit-box { height: 48px; font-size: 22px; border-radius: 10px; }
+.game-cols .key-btn { height: 40px; font-size: 17px; border-radius: 9px; }
+.game-cols .legend { flex-direction: column; gap: 2px; margin-bottom: 0; font-size: 10px; }
+.game-cols .divider { display: none; }
+
+/* history row in side mode — compact table style */
+.side-hist-row {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  gap: 4px;
+  align-items: center;
+  padding: 5px 8px;
+  border: 1px solid var(--border);
+  border-top: none;
+  background: var(--surface);
+  animation: slideIn 0.2s ease;
+}
+.side-hist-row:first-child { border-top: 1px solid var(--border); }
+.side-hist-row:last-child { border-radius: 0 0 8px 8px; }
+.side-hist-digits { display: flex; gap: 3px; align-items: center; }
+.side-hist-num { font-family: 'Courier New', monospace; font-size: 9px; color: var(--dim); margin-right: 3px; }
+.side-hist-digit {
+  width: 22px; height: 22px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 4px;
+  font-family: 'Courier New', monospace; font-weight: 700; font-size: 11px;
+  background: var(--surface2); color: var(--dim); border: 1px solid var(--border);
+}
+.side-hist-digit.bull { background: var(--bull-bg); color: var(--bull); border-color: var(--bull-bd); }
+.side-hist-digit.cow  { background: var(--cow-bg);  color: var(--cow);  border-color: var(--cow-bd); }
+.side-score {
+  font-family: 'Courier New', monospace; font-size: 11px; font-weight: 700;
+  min-width: 28px; text-align: center;
+}
+.side-score.cow-s { color: var(--cow); }
+.side-score.bull-s { color: var(--bull); }
 .login-btn {
   display: flex; align-items: center; gap: 6px;
   padding: 5px 11px;
@@ -1488,6 +1668,92 @@ window.closeScoreboard = () => document.getElementById('sb-overlay').classList.r
   </div>
 </div>
 
+<!-- ⚙️ Settings FAB -->
+<button class="settings-fab" onclick="openSettings()" title="ตั้งค่า">⚙️</button>
+
+<!-- Settings Panel -->
+<div class="settings-overlay" id="settings-overlay">
+  <div class="settings-panel">
+    <div class="settings-header">
+      <div class="settings-title">⚙️ ตั้งค่า</div>
+      <button class="settings-close" onclick="closeSettings()">✕</button>
+    </div>
+    <div class="settings-body">
+
+      <!-- Theme -->
+      <div>
+        <div class="settings-section-title">🎨 ธีม UI</div>
+        <div class="theme-grid">
+          <div class="theme-card active" data-t="dark" onclick="setTheme('dark')">
+            <div class="theme-preview" style="background:#0d0f14">
+              <div class="theme-dot" style="background:#7c6ff7"></div>
+              <div class="theme-dot" style="background:#4ade80"></div>
+              <div class="theme-dot" style="background:#fbbf24"></div>
+            </div>
+            <div class="theme-name">Dark Purple</div>
+            <div class="theme-check">✓ กำลังใช้</div>
+          </div>
+          <div class="theme-card" data-t="cyberpunk" onclick="setTheme('cyberpunk')">
+            <div class="theme-preview" style="background:#0a0f0a">
+              <div class="theme-dot" style="background:#00ff88"></div>
+              <div class="theme-dot" style="background:#00ff88"></div>
+              <div class="theme-dot" style="background:#ffff00"></div>
+            </div>
+            <div class="theme-name">Cyberpunk</div>
+            <div class="theme-check">✓ กำลังใช้</div>
+          </div>
+          <div class="theme-card" data-t="ocean" onclick="setTheme('ocean')">
+            <div class="theme-preview" style="background:#040d1a">
+              <div class="theme-dot" style="background:#38bdf8"></div>
+              <div class="theme-dot" style="background:#34d399"></div>
+              <div class="theme-dot" style="background:#fbbf24"></div>
+            </div>
+            <div class="theme-name">Ocean</div>
+            <div class="theme-check">✓ กำลังใช้</div>
+          </div>
+          <div class="theme-card" data-t="sunset" onclick="setTheme('sunset')">
+            <div class="theme-preview" style="background:#130a0a">
+              <div class="theme-dot" style="background:#f97316"></div>
+              <div class="theme-dot" style="background:#4ade80"></div>
+              <div class="theme-dot" style="background:#fb923c"></div>
+            </div>
+            <div class="theme-name">Sunset</div>
+            <div class="theme-check">✓ กำลังใช้</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Layout -->
+      <div>
+        <div class="settings-section-title">📋 Layout ประวัติการทาย</div>
+        <div class="layout-toggle">
+          <button class="layout-btn" id="layout-side-btn" onclick="setLayout('side')">
+            <span class="lb-icon">⬅️</span>
+            <span class="lb-name">ด้านข้าง</span>
+          </button>
+          <button class="layout-btn active" id="layout-bottom-btn" onclick="setLayout('bottom')">
+            <span class="lb-icon">⬇️</span>
+            <span class="lb-name">ด้านล่าง</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Sound -->
+      <div>
+        <div class="settings-section-title">🔊 เสียง</div>
+        <div class="sound-row">
+          <div>
+            <div class="sound-row-label">เสียงเกมและดนตรี</div>
+            <div class="sound-row-sub">เสียงปุ่ม, ผลการทาย, เพลงประกอบ</div>
+          </div>
+          <button class="toggle-switch on" id="sound-switch" onclick="toggleSoundSwitch()"></button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
 <!-- Name Modal -->
 <div class="name-modal-overlay" id="name-modal" style="display:none">
   <div class="name-modal">
@@ -1564,8 +1830,8 @@ window.closeScoreboard = () => document.getElementById('sb-overlay').classList.r
 
       <h3>คำใบ้</h3>
       <ul>
-        <li><span class="tag-bull">ตัว</span> — จำนวนตัวเลขที่ตรงกับรหัส (ไม่สนตำแหน่ง)</li>
-        <li><span class="tag-cow">ที่</span> — จำนวนตัวเลขที่ถูกทั้งตัวและตำแหน่ง</li>
+        <li><span class="tag-cow">ตัว</span> — ตัวเลขถูก แต่ตำแหน่งผิด</li>
+        <li><span class="tag-bull">ที่</span> — ตัวเลขถูก และตำแหน่งถูก</li>
         <li>ตัวเลขที่ไม่มีในรหัส จะไม่นับทั้งคู่</li>
       </ul>
 
@@ -1574,9 +1840,9 @@ window.closeScoreboard = () => document.getElementById('sb-overlay').classList.r
         <div class="ex-row">
           <span class="ex-label">#1</span>
           <div class="ex-digits">
-            <div class="ex-digit">1</div><div class="ex-digit">5</div><div class="ex-digit">6</div><div class="ex-digit">8</div>
+            <div class="ex-digit cow">1</div><div class="ex-digit">5</div><div class="ex-digit">6</div><div class="ex-digit">8</div>
           </div>
-          <span class="ex-result">→ 1 ตัว &nbsp;0 ที่ &nbsp;(เลข 1 มีในรหัส ผิดที่)</span>
+          <span class="ex-result">→ 1 ตัว &nbsp;0 ที่ &nbsp;(เลข 1 อยู่ในรหัส แต่ผิดตำแหน่ง)</span>
         </div>
         <div class="ex-row">
           <span class="ex-label">#2</span>
@@ -1665,41 +1931,55 @@ window.closeScoreboard = () => document.getElementById('sb-overlay').classList.r
       </div>
     </div>
 
-    <!-- Input -->
-    <div class="input-label">ใส่รหัส 4 หลัก</div>
-    <div class="digit-display-row" id="digit-display-row">
-      <div class="digit-box active" id="d0" onclick="spFocus(0)"><span class="ph">?</span></div>
-      <div class="digit-box" id="d1" onclick="spFocus(1)"><span class="ph">?</span></div>
-      <div class="digit-box" id="d2" onclick="spFocus(2)"><span class="ph">?</span></div>
-      <div class="digit-box" id="d3" onclick="spFocus(3)"><span class="ph">?</span></div>
+    <!-- Game cols wrapper (switches between 1-col and 2-col) -->
+    <div id="game-layout-wrap">
+
+      <!-- History col (LEFT in side mode) -->
+      <div id="col-history">
+        <!-- Side mode header -->
+        <div id="history-header-side" style="display:none">
+          <div style="display:grid;grid-template-columns:1fr auto auto;gap:4px;padding:5px 8px;background:var(--surface2);border-radius:8px 8px 0 0;border:1px solid var(--border);border-bottom:none">
+            <div style="font-size:9px;font-weight:700;letter-spacing:0.07em;text-transform:uppercase;color:var(--dim)">ประวัติ</div>
+            <div style="font-size:9px;font-weight:700;color:var(--cow);text-align:center;min-width:28px">ตัว</div>
+            <div style="font-size:9px;font-weight:700;color:var(--bull);text-align:center;min-width:28px">ที่</div>
+          </div>
+        </div>
+        <hr class="divider" id="history-divider">
+        <div class="history" id="history"></div>
+      </div>
+
+      <!-- Input col (RIGHT in side mode) -->
+      <div id="col-input">
+        <div class="input-label">ใส่รหัส 4 หลัก</div>
+        <div class="digit-display-row" id="digit-display-row">
+          <div class="digit-box active" id="d0" onclick="spFocus(0)"><span class="ph">?</span></div>
+          <div class="digit-box" id="d1" onclick="spFocus(1)"><span class="ph">?</span></div>
+          <div class="digit-box" id="d2" onclick="spFocus(2)"><span class="ph">?</span></div>
+          <div class="digit-box" id="d3" onclick="spFocus(3)"><span class="ph">?</span></div>
+        </div>
+        <div class="err-msg" id="err-msg"></div>
+        <div class="keypad" id="sp-keypad">
+          <div class="key-btn" onclick="spKey(1)">1</div>
+          <div class="key-btn" onclick="spKey(2)">2</div>
+          <div class="key-btn" onclick="spKey(3)">3</div>
+          <div class="key-btn" onclick="spKey(4)">4</div>
+          <div class="key-btn" onclick="spKey(5)">5</div>
+          <div class="key-btn" onclick="spKey(6)">6</div>
+          <div class="key-btn" onclick="spKey(7)">7</div>
+          <div class="key-btn" onclick="spKey(8)">8</div>
+          <div class="key-btn" onclick="spKey(9)">9</div>
+          <div class="key-btn del" onclick="spDel()">⌫</div>
+          <div class="key-btn" onclick="spKey(0)">0</div>
+          <div class="key-btn go" id="sp-go-btn" onclick="submitGuess()">ทาย →</div>
+        </div>
+        <div class="legend" id="legend">
+          <span><span class="legend-dot" style="background:var(--cow)"></span>ตัวเลขถูก ตำแหน่งผิด</span>
+          <span><span class="legend-dot" style="background:var(--bull)"></span>ตัวเลขถูก ตำแหน่งถูก</span>
+          <span><span class="legend-dot" style="background:var(--dim);opacity:0.5"></span>ไม่มีในรหัส</span>
+        </div>
+      </div>
+
     </div>
-
-    <div class="err-msg" id="err-msg"></div>
-
-    <div class="keypad" id="sp-keypad">
-      <div class="key-btn" onclick="spKey(1)">1</div>
-      <div class="key-btn" onclick="spKey(2)">2</div>
-      <div class="key-btn" onclick="spKey(3)">3</div>
-      <div class="key-btn" onclick="spKey(4)">4</div>
-      <div class="key-btn" onclick="spKey(5)">5</div>
-      <div class="key-btn" onclick="spKey(6)">6</div>
-      <div class="key-btn" onclick="spKey(7)">7</div>
-      <div class="key-btn" onclick="spKey(8)">8</div>
-      <div class="key-btn" onclick="spKey(9)">9</div>
-      <div class="key-btn del" onclick="spDel()">⌫</div>
-      <div class="key-btn" onclick="spKey(0)">0</div>
-      <div class="key-btn go" id="sp-go-btn" onclick="submitGuess()">ทาย →</div>
-    </div>
-
-    <!-- Legend -->
-    <div class="legend" id="legend">
-      <span><span class="legend-dot" style="background:var(--bull)"></span>ถูกตัว (ไม่สนตำแหน่ง)</span>
-      <span><span class="legend-dot" style="background:var(--cow)"></span>ถูกที่ (ถูกทั้งตัวและตำแหน่ง)</span>
-      <span><span class="legend-dot" style="background:var(--dim);opacity:0.5"></span>ไม่มีในรหัส</span>
-    </div>
-
-    <hr class="divider">
-    <div class="history" id="history"></div>
   </div>
 
   <!-- Records -->
@@ -1707,7 +1987,6 @@ window.closeScoreboard = () => document.getElementById('sb-overlay').classList.r
     <div class="records-header">
       <div class="records-title">ประวัติรหัสที่ถอดแล้ว</div>
       <div style="display:flex;gap:6px;align-items:center">
-        <button class="sound-toggle on" id="sound-toggle" onclick="toggleSound()">🔊 เสียง</button>
         <div id="clear-normal" style="display:flex">
           <button class="clear-btn" onclick="askClear()">ล้างทั้งหมด</button>
         </div>
@@ -2165,7 +2444,7 @@ function submitGuess() {
   const { bulls, cows } = evaluate(guess);
 
   soundSubmit();
-  guessLog.push({ digits: guess.slice(), bulls: bulls, cows: cows });
+  guessLog.push({ digits: guess.slice(), bulls: bulls, cows: cows, time: elapsed });
 
   document.getElementById('bull-count').textContent = cows;  // ถูกตัว = total digit matches
   document.getElementById('cow-count').textContent = bulls;  // ถูกที่ = exact position matches
@@ -2197,16 +2476,63 @@ function submitGuess() {
       // Login nudge ถ้ายังไม่ได้ login
       setTimeout(showLoginNudge, 400);
 
-      const histSrc = document.getElementById('history');
       const winList = document.getElementById('win-history-list');
       winList.innerHTML = '';
-      const rows = Array.from(histSrc.children).reverse();
-      rows.forEach((row, i) => {
-        const clone = row.cloneNode(true);
-        if (i === rows.length - 1) clone.classList.add('last-row');
-        winList.appendChild(clone);
-      });
-      if (rows.length > 0) document.getElementById('win-history').style.display = 'block';
+
+      if (guessLog.length > 0) {
+        // Header row
+        const hdr = document.createElement('div');
+        hdr.style.cssText = 'display:grid;grid-template-columns:1fr auto auto auto;gap:4px;padding:4px 10px;background:var(--surface2);border-radius:6px 6px 0 0;border:1px solid var(--border);border-bottom:none;margin-bottom:0';
+        hdr.innerHTML = `
+          <div style="font-size:9px;font-weight:700;letter-spacing:0.07em;text-transform:uppercase;color:var(--dim)">ประวัติ</div>
+          <div style="font-size:9px;font-weight:700;color:var(--cow);text-align:center;min-width:32px">ตัว</div>
+          <div style="font-size:9px;font-weight:700;color:var(--bull);text-align:center;min-width:32px">ที่</div>
+          <div style="font-size:9px;font-weight:700;color:var(--muted);text-align:right;min-width:40px">เวลา</div>`;
+        winList.appendChild(hdr);
+
+        guessLog.forEach((g, i) => {
+          const isLast = i === guessLog.length - 1;
+          const row = document.createElement('div');
+          row.style.cssText = `display:grid;grid-template-columns:1fr auto auto auto;gap:4px;align-items:center;padding:7px 10px;border:1px solid ${isLast ? 'var(--bull-bd)' : 'var(--border)'};background:${isLast ? 'var(--bull-bg)' : 'var(--surface)'};${i === 0 ? 'border-top:none;' : ''}${isLast ? 'border-radius:0 0 6px 6px;' : i===0?'border-top:none':''};animation:slideIn 0.2s ease`;
+
+          const leftCol = document.createElement('div');
+          leftCol.style.cssText = 'display:flex;align-items:center;gap:4px';
+          const rn = document.createElement('span');
+          rn.style.cssText = 'font-family:Courier New,monospace;font-size:9px;color:var(--dim);min-width:18px';
+          rn.textContent = '#' + (i + 1);
+          leftCol.appendChild(rn);
+          g.digits.forEach((d, di) => {
+            const dd = document.createElement('div');
+            dd.style.cssText = 'width:26px;height:26px;display:flex;align-items:center;justify-content:center;border-radius:5px;font-family:Courier New,monospace;font-weight:700;font-size:12px;border:1px solid var(--border);background:var(--surface2);color:var(--dim)';
+            if (currentLevel === 1) {
+              if (d === secret[di]) { dd.style.background='var(--bull-bg)'; dd.style.color='var(--bull)'; dd.style.borderColor='var(--bull-bd)'; }
+              else if (secret.includes(d)) { dd.style.background='var(--cow-bg)'; dd.style.color='var(--cow)'; dd.style.borderColor='var(--cow-bd)'; }
+            }
+            dd.textContent = d;
+            leftCol.appendChild(dd);
+          });
+
+          const cowCell = document.createElement('div');
+          cowCell.style.cssText = 'font-family:Courier New,monospace;font-size:12px;font-weight:700;color:var(--cow);text-align:center;min-width:32px';
+          cowCell.textContent = g.cows;
+
+          const bullCell = document.createElement('div');
+          bullCell.style.cssText = 'font-family:Courier New,monospace;font-size:12px;font-weight:700;color:var(--bull);text-align:center;min-width:32px';
+          bullCell.textContent = g.bulls;
+
+          const timeCell = document.createElement('div');
+          timeCell.style.cssText = 'font-family:Courier New,monospace;font-size:11px;color:var(--muted);text-align:right;min-width:40px';
+          timeCell.textContent = formatTime(g.time || 0);
+
+          row.appendChild(leftCol);
+          row.appendChild(cowCell);
+          row.appendChild(bullCell);
+          row.appendChild(timeCell);
+          winList.appendChild(row);
+        });
+
+        document.getElementById('win-history').style.display = 'block';
+      }
 
       const cells = document.querySelectorAll('.logo-cell');
       cells.forEach(c => { c.classList.remove('lit','half'); });
@@ -2221,36 +2547,92 @@ function submitGuess() {
   document.getElementById('d0').focus();
 }
 
-function addHistory(guess, bulls, cows, r) {
+function reRenderHistory(mode) {
+  // Re-render existing history rows based on guessLog
   const hist = document.getElementById('history');
-  const row = document.createElement('div');
-  row.className = 'hist-row';
-
-  const roundSpan = document.createElement('div');
-  roundSpan.className = 'round-num';
-  roundSpan.textContent = '#' + r;
-
-  const numDiv = document.createElement('div');
-  numDiv.className = 'hist-num';
-  guess.forEach((d, i) => {
-    const dd = document.createElement('div');
-    dd.className = 'hist-digit';
-    if (currentLevel === 1) {
-      if (d === secret[i]) dd.classList.add('bull');
-      else if (secret.includes(d)) dd.classList.add('cow');
-    }
-    dd.textContent = d;
-    numDiv.appendChild(dd);
+  if (!hist || !guessLog.length) return;
+  hist.innerHTML = '';
+  guessLog.forEach((g, i) => {
+    addHistoryRow(g.digits, g.bulls, g.cows, i + 1, false);
   });
+}
 
-  const scores = document.createElement('div');
-  scores.className = 'hist-scores';
-  scores.innerHTML = `<div class="score-pill bull-p">${cows} ตัว</div><div class="score-pill cow-p">${bulls} ที่</div>`;
+function addHistoryRow(guess, bulls, cows, r, prepend) {
+  const hist = document.getElementById('history');
+  const isSide = currentLayout === 'side';
 
-  row.appendChild(roundSpan);
-  row.appendChild(numDiv);
-  row.appendChild(scores);
-  hist.insertBefore(row, hist.firstChild);
+  if (isSide) {
+    // Table-style compact row
+    const row = document.createElement('div');
+    row.className = 'side-hist-row';
+
+    const leftCol = document.createElement('div');
+    leftCol.className = 'side-hist-digits';
+    const rn = document.createElement('span');
+    rn.className = 'side-hist-num';
+    rn.textContent = '#' + r;
+    leftCol.appendChild(rn);
+    guess.forEach((d, i) => {
+      const dd = document.createElement('div');
+      dd.className = 'side-hist-digit';
+      if (currentLevel === 1) {
+        if (d === secret[i]) dd.classList.add('bull');
+        else if (secret.includes(d)) dd.classList.add('cow');
+      }
+      dd.textContent = d;
+      leftCol.appendChild(dd);
+    });
+
+    const cowCol = document.createElement('div');
+    cowCol.className = 'side-score cow-s';
+    cowCol.textContent = cows;
+
+    const bullCol = document.createElement('div');
+    bullCol.className = 'side-score bull-s';
+    bullCol.textContent = bulls;
+
+    row.appendChild(leftCol);
+    row.appendChild(cowCol);
+    row.appendChild(bullCol);
+    // prepend = false เพราะ side mode เรียง #1 บน
+    if (prepend) {
+      // ใน side mode ไม่ prepend — append เพื่อให้ลำดับถูก
+      hist.appendChild(row);
+    } else {
+      hist.appendChild(row);
+    }
+  } else {
+    // Original bottom layout
+    const row = document.createElement('div');
+    row.className = 'hist-row';
+    const roundSpan = document.createElement('div');
+    roundSpan.className = 'round-num';
+    roundSpan.textContent = '#' + r;
+    const numDiv = document.createElement('div');
+    numDiv.className = 'hist-num';
+    guess.forEach((d, i) => {
+      const dd = document.createElement('div');
+      dd.className = 'hist-digit';
+      if (currentLevel === 1) {
+        if (d === secret[i]) dd.classList.add('bull');
+        else if (secret.includes(d)) dd.classList.add('cow');
+      }
+      dd.textContent = d;
+      numDiv.appendChild(dd);
+    });
+    const scores = document.createElement('div');
+    scores.className = 'hist-scores';
+    scores.innerHTML = `<div class="score-pill cow-p">${cows} ตัว</div><div class="score-pill bull-p">${bulls} ที่</div>`;
+    row.appendChild(roundSpan);
+    row.appendChild(numDiv);
+    row.appendChild(scores);
+    if (prepend) hist.insertBefore(row, hist.firstChild);
+    else hist.appendChild(row);
+  }
+}
+
+function addHistory(guess, bulls, cows, r) {
+  addHistoryRow(guess, bulls, cows, r, true);
 }
 
 // ── Single-player custom keypad ──
@@ -2642,6 +3024,117 @@ function confirmNames() {
   if (pendingModalMode === 2) startTwoPlayerGame(); else startNewGame();
 }
 
+// ── Settings System ──
+let currentTheme = localStorage.getItem('numgame_theme') || 'dark';
+let currentLayout = localStorage.getItem('numgame_layout') || 'bottom';
+
+function openSettings() { document.getElementById('settings-overlay').classList.add('open'); }
+function closeSettings() { document.getElementById('settings-overlay').classList.remove('open'); }
+
+function setTheme(t) {
+  currentTheme = t;
+  localStorage.setItem('numgame_theme', t);
+  applyTheme(t);
+  // update theme cards
+  document.querySelectorAll('.theme-card').forEach(c => {
+    c.classList.toggle('active', c.dataset.t === t);
+  });
+}
+
+function applyTheme(t) {
+  document.documentElement.setAttribute('data-theme', t === 'dark' ? '' : t);
+  // update grid color for canvas
+  if (window._gridColorMap) {
+    const colors = window._gridColorMap[t] || '124,111,247';
+    window._currentGridColor = colors;
+  }
+}
+
+window._gridColorMap = {
+  'dark': '124,111,247',
+  'cyberpunk': '0,255,136',
+  'ocean': '56,189,248',
+  'sunset': '249,115,22'
+};
+window._currentGridColor = window._gridColorMap[currentTheme] || '124,111,247';
+
+function setLayout(l) {
+  currentLayout = l;
+  localStorage.setItem('numgame_layout', l);
+  applyLayout(l);
+  document.getElementById('layout-bottom-btn').classList.toggle('active', l === 'bottom');
+  document.getElementById('layout-side-btn').classList.toggle('active', l === 'side');
+}
+
+function applyLayout(l) {
+  const wrap = document.getElementById('game-layout-wrap');
+  const divider = document.getElementById('history-divider');
+  const histHeader = document.getElementById('history-header-side');
+  const legend = document.getElementById('legend');
+
+  if (l === 'side') {
+    wrap.style.display = 'grid';
+    wrap.style.gridTemplateColumns = '1fr 1fr';
+    wrap.style.gap = '10px';
+    wrap.style.alignItems = 'start';
+    // history LEFT, input RIGHT
+    const colHistory = document.getElementById('col-history');
+    const colInput = document.getElementById('col-input');
+    if (colHistory && colInput && colHistory.nextSibling !== colInput) {
+      wrap.insertBefore(colHistory, wrap.firstChild);
+    }
+    if (divider) divider.style.display = 'none';
+    if (histHeader) histHeader.style.display = 'block';
+    if (legend) legend.style.display = 'none';
+    document.querySelectorAll('.digit-box').forEach(el => { el.style.height = '48px'; el.style.fontSize = '22px'; });
+    document.querySelectorAll('#sp-keypad .key-btn').forEach(el => { el.style.height = '40px'; el.style.fontSize = '17px'; });
+    // re-render history as table rows
+    reRenderHistory('side');
+  } else {
+    wrap.style.display = 'block';
+    wrap.style.gridTemplateColumns = '';
+    wrap.style.gap = '';
+    // history AFTER input
+    const colHistory = document.getElementById('col-history');
+    if (colHistory) wrap.appendChild(colHistory);
+    if (divider) divider.style.display = '';
+    if (histHeader) histHeader.style.display = 'none';
+    if (legend) legend.style.display = '';
+    document.querySelectorAll('.digit-box').forEach(el => { el.style.height = ''; el.style.fontSize = ''; });
+    document.querySelectorAll('#sp-keypad .key-btn').forEach(el => { el.style.height = ''; el.style.fontSize = ''; });
+    reRenderHistory('bottom');
+  }
+}
+
+function toggleSoundSwitch() {
+  soundOn = !soundOn;
+  musicOn = soundOn;
+  const sw = document.getElementById('sound-switch');
+  if (sw) sw.classList.toggle('on', soundOn);
+  // sync old button if still exists
+  const btn = document.getElementById('sound-toggle');
+  if (btn) { btn.textContent = soundOn ? '🔊 เสียง' : '🔇 เสียง'; btn.classList.toggle('on', soundOn); }
+  if (musicOn) resumeMusic(); else pauseMusic();
+}
+
+// close settings on overlay click
+document.addEventListener('click', function(e) {
+  const so = document.getElementById('settings-overlay');
+  if (so && e.target === so) so.classList.remove('open');
+});
+
+// apply saved settings on load
+document.addEventListener('DOMContentLoaded', function() {
+  applyTheme(currentTheme);
+  applyLayout(currentLayout);
+  // sync theme cards
+  document.querySelectorAll('.theme-card').forEach(c => {
+    c.classList.toggle('active', c.dataset.t === currentTheme);
+  });
+  document.getElementById('layout-bottom-btn')?.classList.toggle('active', currentLayout === 'bottom');
+  document.getElementById('layout-side-btn')?.classList.toggle('active', currentLayout === 'side');
+});
+
 // ── Close overlays on outside click ──
 document.addEventListener('click', function(e) {
   const modal = document.getElementById('name-modal');
@@ -2679,7 +3172,8 @@ document.addEventListener('click', function(e) {
         const pulse = Math.sin(t * 1.2 + x * 0.01) * 0.5 + 0.5;
 
         const lineAlpha = (wave + 1) * 0.06 + 0.02;
-        ctx.strokeStyle = `rgba(124,111,247,${lineAlpha})`;
+        const gc = window._currentGridColor || '124,111,247';
+        ctx.strokeStyle = `rgba(${gc},${lineAlpha})`;
         ctx.lineWidth = 0.5;
         ctx.beginPath();
         ctx.rect(x - step/2, y - step/2, step, step);
@@ -2687,7 +3181,7 @@ document.addEventListener('click', function(e) {
 
         if (wave > 0.5) {
           const cellAlpha = (wave - 0.5) * 0.18 * pulse;
-          ctx.fillStyle = `rgba(124,111,247,${cellAlpha})`;
+          ctx.fillStyle = `rgba(${gc},${cellAlpha})`;
           ctx.fillRect(x - step/2 + 1, y - step/2 + 1, step - 2, step - 2);
         }
 
@@ -2695,7 +3189,7 @@ document.addEventListener('click', function(e) {
           const dotAlpha = (wave - 0.7) * 0.8 * pulse;
           ctx.beginPath();
           ctx.arc(x, y, 1.5, 0, Math.PI * 2);
-          ctx.fillStyle = `rgba(192,132,252,${dotAlpha})`;
+          ctx.fillStyle = `rgba(${gc},${dotAlpha})`;
           ctx.fill();
         }
       }
