@@ -2172,10 +2172,11 @@ let currentLevel = 1;
 let timerInterval = null;
 
 function selectLevel(lv) {
+  const prevLevel = currentLevel;
   currentLevel = lv;
   document.getElementById('lv1-btn').classList.toggle('active', lv === 1);
   document.getElementById('lv2-btn').classList.toggle('active', lv === 2);
-  startNewGame();
+  if (prevLevel !== lv) startNewGame();
 }
 let guessLog = [];
 let soundOn = true;
@@ -3049,9 +3050,8 @@ function tpClearAll(p) {
 document.addEventListener('DOMContentLoaded', function() {
   renderRecords();
   refreshCoinDisplays();
+  currentMode = 0; // reset so selectMode(1) triggers startNewGame
   selectMode(1);
-  setTimeout(function() { if (currentMode !== 1) selectMode(1); }, 200);
-  setTimeout(function() { if (currentMode !== 1) selectMode(1); }, 500);
 });
 
 // ── Name & Coin System ──
