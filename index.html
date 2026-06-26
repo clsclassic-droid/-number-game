@@ -2805,6 +2805,7 @@ function applyTwoPlayerLayout() {
 }
 
 function selectMode(m) {
+  const prevMode = currentMode;
   currentMode = m;
   ['mode1-btn','mid-mode1-btn','combo-mode1-btn'].forEach(id => { const el = document.getElementById(id); if(el) el.classList.toggle('active', m === 1); });
   ['mode2-btn','mid-mode2-btn','combo-mode2-btn'].forEach(id => { const el = document.getElementById(id); if(el) el.classList.toggle('active', m === 2); });
@@ -2816,7 +2817,7 @@ function selectMode(m) {
     document.body.style.paddingTop = '';
     document.body.style.alignItems = '';
     refreshCoinDisplays();
-    startNewGame();
+    if (prevMode !== 1) startNewGame();
   } else {
     document.getElementById('single-wrap').style.display = 'none';
     document.getElementById('two-player-wrap').style.display = 'flex';
