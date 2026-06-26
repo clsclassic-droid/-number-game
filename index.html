@@ -53,15 +53,15 @@
   --grid-color: 56,189,248;
 }
 
-/* ── Light Theme ── */
-[data-theme="light"] {
-  --bg: #f0f2f8; --surface: #ffffff; --surface2: #e8eaf2;
-  --border: #d0d4e8; --border2: #b8bdd8;
-  --text: #1a1d2e; --muted: #5a6080; --dim: #9098b8;
-  --accent: #5b52d9; --accent2: #4840c0;
-  --bull: #16a34a; --bull-bg: #dcfce7; --bull-bd: #86efac;
-  --cow: #d97706; --cow-bg: #fef3c7; --cow-bd: #fcd34d;
-  --grid-color: 91,82,217;
+/* ── Sunset Theme ── */
+[data-theme="sunset"] {
+  --bg: #130a0a; --surface: #1e1010; --surface2: #281515;
+  --border: #3a1a1a; --border2: #502525;
+  --text: #fff0e8; --muted: #a07060; --dim: #5a3535;
+  --accent: #f97316; --accent2: #ea580c;
+  --bull: #4ade80; --bull-bg: #0f2a1a; --bull-bd: #1e5c35;
+  --cow: #fb923c; --cow-bg: #2a1208; --cow-bd: #5c3010;
+  --grid-color: 249,115,22;
 }
 
 html { background: #0d0f14; }
@@ -811,36 +811,6 @@ body {
   height: 160px;
 }
 
-/* ── 2-player side layout: history LEFT, input RIGHT ── */
-.player-half.side-layout {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  grid-template-rows: auto auto auto auto 1fr;
-  grid-template-areas:
-    "win    win"
-    "label  label"
-    "status status"
-    "hist   digits"
-    "hist   keypad";
-  gap: 4px 8px;
-  align-items: start;
-}
-.player-half.side-layout .ph-win    { grid-area: win; }
-.player-half.side-layout .ph-label  { grid-area: label; }
-.player-half.side-layout .ph-status { grid-area: status; }
-.player-half.side-layout .ph-digits { grid-area: digits; margin-bottom: 0; }
-.player-half.side-layout .ph-err    { display: none; }
-.player-half.side-layout .ph-keypad { grid-area: keypad; height: auto; }
-.player-half.side-layout .ph-side-history {
-  grid-area: hist;
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-  align-self: stretch;
-}
-.player-half.side-layout .ph-bottom-history { display: none !important; }
-
 .ph-key {
   font-family: "Courier New", monospace;
   font-size: 14px;
@@ -1333,7 +1303,7 @@ body {
 .theme-card.active { border-color: var(--accent); background: rgba(124,111,247,0.1); }
 .theme-card.active[data-t="cyberpunk"] { border-color: #00ff88; background: rgba(0,255,136,0.08); }
 .theme-card.active[data-t="ocean"] { border-color: #38bdf8; background: rgba(56,189,248,0.08); }
-.theme-card.active[data-t="light"] { border-color: #5b52d9; background: rgba(91,82,217,0.08); }
+.theme-card.active[data-t="sunset"] { border-color: #f97316; background: rgba(249,115,22,0.08); }
 .theme-preview {
   height: 48px; border-radius: 8px; display: flex; gap: 4px;
   align-items: center; justify-content: center; padding: 6px;
@@ -1741,13 +1711,13 @@ window.closeScoreboard = () => document.getElementById('sb-overlay').classList.r
             <div class="theme-name">Ocean</div>
             <div class="theme-check">✓ กำลังใช้</div>
           </div>
-          <div class="theme-card" data-t="light" onclick="setTheme('light')">
-            <div class="theme-preview" style="background:#f0f2f8">
-              <div class="theme-dot" style="background:#5b52d9"></div>
-              <div class="theme-dot" style="background:#16a34a"></div>
-              <div class="theme-dot" style="background:#d97706"></div>
+          <div class="theme-card" data-t="sunset" onclick="setTheme('sunset')">
+            <div class="theme-preview" style="background:#130a0a">
+              <div class="theme-dot" style="background:#f97316"></div>
+              <div class="theme-dot" style="background:#4ade80"></div>
+              <div class="theme-dot" style="background:#fb923c"></div>
             </div>
-            <div class="theme-name">Light</div>
+            <div class="theme-name">Sunset</div>
             <div class="theme-check">✓ กำลังใช้</div>
           </div>
         </div>
@@ -2066,8 +2036,7 @@ window.closeScoreboard = () => document.getElementById('sb-overlay').classList.r
       <div class="ph-key" onclick="tpKey(2,0)">0</div>
       <div class="ph-key go p2g" id="p2-submit" onclick="p2Submit(2)">ทาย →</div>
     </div>
-    <div class="ph-side-history" id="p2-side-history"></div>
-    <div class="ph-bottom-history" id="p2-history" style="overflow-y:auto;flex:1;margin-top:4px;display:flex;flex-direction:column;gap:3px;min-height:0;max-height:120px;"></div>
+    <div id="p2-history" style="overflow-y:auto;flex:1;margin-top:4px;display:flex;flex-direction:column;gap:3px;min-height:0;max-height:120px;"></div>
   </div>
 
   <!-- Middle -->
@@ -2108,8 +2077,7 @@ window.closeScoreboard = () => document.getElementById('sb-overlay').classList.r
       <div class="ph-key" onclick="tpKey(1,0)">0</div>
       <div class="ph-key go" id="p1-submit" onclick="p2Submit(1)">ทาย →</div>
     </div>
-    <div class="ph-side-history" id="p1-side-history"></div>
-    <div class="ph-bottom-history" id="p1-history" style="overflow-y:auto;flex:1;margin-top:4px;display:flex;flex-direction:column;gap:3px;min-height:0;max-height:120px;"></div>
+    <div id="p1-history" style="overflow-y:auto;flex:1;margin-top:4px;display:flex;flex-direction:column;gap:3px;min-height:0;max-height:120px;"></div>
   </div>
 
   <!-- New game -->
@@ -2120,6 +2088,13 @@ window.closeScoreboard = () => document.getElementById('sb-overlay').classList.r
 </div>
 
 <script>
+// ── Resume AudioContext on any user interaction ──
+function resumeAudioCtx() {
+  if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+}
+document.addEventListener('touchstart', resumeAudioCtx, { passive: true });
+document.addEventListener('mousedown', resumeAudioCtx, { passive: true });
+
 function toggleRules() {
   const btn = document.getElementById('rules-toggle');
   const content = document.getElementById('rules-content');
@@ -2165,6 +2140,7 @@ function toggleGuesses(btn) {
 let audioCtx = null;
 function getCtx() {
   if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  if (audioCtx.state === 'suspended') audioCtx.resume();
   return audioCtx;
 }
 
@@ -2272,6 +2248,7 @@ function resumeMusic() {
 }
 
 function tryStartMusic() {
+  if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
   if (!musicStarted && musicOn) {
     musicStarted = true;
     startMusic();
@@ -2738,16 +2715,6 @@ let twoTimerInterval = null;
 let twoElapsed = 0;
 let twoSecret = [];
 
-function applyTwoPlayerLayout() {
-  const isSide = currentLayout === 'side';
-  [1, 2].forEach(p => {
-    const half = document.querySelector(p === 1 ? '.player-half.p1-half' : '.player-half.p2-half');
-    if (!half) return;
-    if (isSide) half.classList.add('side-layout');
-    else half.classList.remove('side-layout');
-  });
-}
-
 function selectMode(m) {
   currentMode = m;
   ['mode1-btn','mid-mode1-btn'].forEach(id => { const el = document.getElementById(id); if(el) el.classList.toggle('active', m === 1); });
@@ -2788,9 +2755,6 @@ function startTwoPlayerGame() {
   document.getElementById('p2-err').textContent = '';
   document.getElementById('p1-history').innerHTML = '';
   document.getElementById('p2-history').innerHTML = '';
-  document.getElementById('p1-side-history').innerHTML = '';
-  document.getElementById('p2-side-history').innerHTML = '';
-  applyTwoPlayerLayout();
   document.getElementById('p1-win-box').style.display = 'none';
   document.getElementById('p2-win-box').style.display = 'none';
   document.getElementById('p2-new-game-bar').style.display = 'none';
@@ -2845,59 +2809,29 @@ function p2Submit(p) {
   document.getElementById('p' + p + '-cow').textContent = bulls;
 
   // Add to history
-  const isSideLayout = currentLayout === 'side';
-  const hist = document.getElementById(isSideLayout ? 'p' + p + '-side-history' : 'p' + p + '-history');
+  const hist = document.getElementById('p' + p + '-history');
   const row = document.createElement('div');
-
-  if (isSideLayout) {
-    row.className = 'side-hist-row';
-    const leftCol = document.createElement('div');
-    leftCol.className = 'side-hist-digits';
-    const rn = document.createElement('span');
-    rn.className = 'side-hist-num';
-    rn.textContent = '#' + round;
-    leftCol.appendChild(rn);
-    guess.forEach((d, i) => {
-      const dd = document.createElement('div');
-      dd.className = 'side-hist-digit';
-      if (currentLevel === 1) {
-        if (d === twoSecret[i]) dd.classList.add('bull');
-        else if (twoSecret.includes(d)) dd.classList.add('cow');
-      }
-      dd.textContent = d;
-      leftCol.appendChild(dd);
-    });
-    const cowCol = document.createElement('div');
-    cowCol.className = 'side-score cow-s';
-    cowCol.textContent = cows;
-    const bullCol = document.createElement('div');
-    bullCol.className = 'side-score bull-s';
-    bullCol.textContent = bulls;
-    row.appendChild(leftCol); row.appendChild(cowCol); row.appendChild(bullCol);
-    hist.appendChild(row);
-  } else {
-    row.className = 'p-hist-row';
-    const rNum = document.createElement('div');
-    rNum.className = 'p-hist-num';
-    rNum.textContent = '#' + round;
-    const digits = document.createElement('div');
-    digits.className = 'p-hist-digits';
-    guess.forEach((d, i) => {
-      const dd = document.createElement('div');
-      dd.className = 'p-hist-digit';
-      if (currentLevel === 1) {
-        if (d === twoSecret[i]) dd.classList.add('bull');
-        else if (twoSecret.includes(d)) dd.classList.add('cow');
-      }
-      dd.textContent = d;
-      digits.appendChild(dd);
-    });
-    const sc = document.createElement('div');
-    sc.className = 'p-scores';
-    sc.innerHTML = '<div class="p-score-pill p-bull-p">' + cows + ' ตัว</div><div class="p-score-pill p-cow-p">' + bulls + ' ที่</div>';
-    row.appendChild(rNum); row.appendChild(digits); row.appendChild(sc);
-    hist.insertBefore(row, hist.firstChild);
-  }
+  row.className = 'p-hist-row';
+  const rNum = document.createElement('div');
+  rNum.className = 'p-hist-num';
+  rNum.textContent = '#' + round;
+  const digits = document.createElement('div');
+  digits.className = 'p-hist-digits';
+  guess.forEach((d, i) => {
+    const dd = document.createElement('div');
+    dd.className = 'p-hist-digit';
+    if (currentLevel === 1) {
+      if (d === twoSecret[i]) dd.classList.add('bull');
+      else if (twoSecret.includes(d)) dd.classList.add('cow');
+    }
+    dd.textContent = d;
+    digits.appendChild(dd);
+  });
+  const sc = document.createElement('div');
+  sc.className = 'p-scores';
+  sc.innerHTML = '<div class="p-score-pill p-bull-p">' + cows + ' ตัว</div><div class="p-score-pill p-cow-p">' + bulls + ' ที่</div>';
+  row.appendChild(rNum); row.appendChild(digits); row.appendChild(sc);
+  hist.insertBefore(row, hist.firstChild);
 
   if (p === 1) p1Round++; else p2Round++;
   document.getElementById('p' + p + '-round').textContent = p === 1 ? p1Round : p2Round;
@@ -3122,7 +3056,6 @@ function applyTheme(t) {
   if (window._gridColorMap) {
     const colors = window._gridColorMap[t] || '124,111,247';
     window._currentGridColor = colors;
-    window._currentBgColor = window._bgColorMap?.[t] || '#0d0f14';
   }
 }
 
@@ -3130,23 +3063,14 @@ window._gridColorMap = {
   'dark': '124,111,247',
   'cyberpunk': '0,255,136',
   'ocean': '56,189,248',
-  'light': '91,82,217'
+  'sunset': '249,115,22'
 };
 window._currentGridColor = window._gridColorMap[currentTheme] || '124,111,247';
-
-window._bgColorMap = {
-  'dark':      '#0d0f14',
-  'cyberpunk': '#0a0f0a',
-  'ocean':     '#040d1a',
-  'light':     '#f0f2f8'
-};
-window._currentBgColor = window._bgColorMap[currentTheme] || '#0d0f14';
 
 function setLayout(l) {
   currentLayout = l;
   localStorage.setItem('numgame_layout', l);
   applyLayout(l);
-  if (currentMode === 2) applyTwoPlayerLayout();
   document.getElementById('layout-bottom-btn').classList.toggle('active', l === 'bottom');
   document.getElementById('layout-side-btn').classList.toggle('active', l === 'side');
 }
@@ -3247,7 +3171,7 @@ document.addEventListener('click', function(e) {
 
   function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.fillStyle = window._currentBgColor || '#0d0f14';
+    ctx.fillStyle = '#0d0f14';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     const step = 36;
