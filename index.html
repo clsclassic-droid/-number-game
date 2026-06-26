@@ -2108,7 +2108,11 @@ window.closeScoreboard = () => document.getElementById('sb-overlay').classList.r
 <script>
 // ── Resume AudioContext on any user interaction ──
 function resumeAudioCtx() {
-  if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+  if (!audioCtx) {
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  } else if (audioCtx.state === 'suspended') {
+    audioCtx.resume();
+  }
 }
 document.addEventListener('touchstart', resumeAudioCtx, { passive: true });
 document.addEventListener('mousedown', resumeAudioCtx, { passive: true });
@@ -2166,6 +2170,7 @@ function playTone(freq, type, duration, vol, delay) {
   if (!soundOn) return;
   try {
     const ctx = getCtx();
+    if (!ctx || ctx.state === 'suspended') return;
     const o = ctx.createOscillator();
     const g = ctx.createGain();
     o.connect(g); g.connect(ctx.destination);
