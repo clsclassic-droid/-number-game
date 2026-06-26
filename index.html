@@ -2168,7 +2168,9 @@ function toggleGuesses(btn) {
 // ── Web Audio ──
 let audioCtx = null;
 function getCtx() {
-  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  if (!audioCtx) {
+    try { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); } catch(e) { return null; }
+  }
   if (audioCtx.state === 'suspended') audioCtx.resume();
   return audioCtx;
 }
@@ -2177,16 +2179,25 @@ function playTone(freq, type, duration, vol, delay) {
   if (!soundOn) return;
   try {
     const ctx = getCtx();
-    if (!ctx || ctx.state === 'suspended') return;
-    const o = ctx.createOscillator();
-    const g = ctx.createGain();
-    o.connect(g); g.connect(ctx.destination);
-    o.type = type || 'sine';
-    o.frequency.setValueAtTime(freq, ctx.currentTime + (delay||0));
-    g.gain.setValueAtTime(vol || 0.3, ctx.currentTime + (delay||0));
-    g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + (delay||0) + duration);
-    o.start(ctx.currentTime + (delay||0));
-    o.stop(ctx.currentTime + (delay||0) + duration);
+    if (!ctx) return;
+    const doPlay = () => {
+      try {
+        const o = ctx.createOscillator();
+        const g = ctx.createGain();
+        o.connect(g); g.connect(ctx.destination);
+        o.type = type || 'sine';
+        o.frequency.setValueAtTime(freq, ctx.currentTime + (delay||0));
+        g.gain.setValueAtTime(vol || 0.3, ctx.currentTime + (delay||0));
+        g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + (delay||0) + duration);
+        o.start(ctx.currentTime + (delay||0));
+        o.stop(ctx.currentTime + (delay||0) + duration);
+      } catch(e) {}
+    };
+    if (ctx.state === 'suspended') {
+      ctx.resume().then(doPlay);
+    } else {
+      doPlay();
+    }
   } catch(e) {}
 }
 
