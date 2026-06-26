@@ -280,7 +280,7 @@ body {
 .digit-display-row {
   display: flex;
   gap: 8px;
-  margin-bottom: 10px;
+  margin-bottom: 4px;
 }
 
 .digit-box {
@@ -382,8 +382,8 @@ body {
 .err-msg {
   font-size: 12px;
   color: #f87171;
-  min-height: 18px;
-  margin-bottom: 10px;
+  min-height: 14px;
+  margin-bottom: 4px;
   font-family: 'Courier New', 'Consolas', monospace;
 }
 
@@ -1183,10 +1183,37 @@ body {
 .mode-btn-mid:hover { color: var(--text); border-color: var(--accent); }
 .mode-btn-mid.active { color: var(--text); border-color: var(--accent); background: rgba(124,111,247,0.12); }
 
-.level-selector {
+.combined-selector {
   display: flex;
-  gap: 8px;
+  gap: 6px;
   margin-bottom: 1.5rem;
+  align-items: stretch;
+}
+.combo-btn {
+  flex: 1;
+  padding: 10px 6px;
+  border: 1.5px solid var(--border2);
+  border-radius: 10px;
+  background: var(--surface);
+  color: var(--muted);
+  cursor: pointer;
+  text-align: center;
+  font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  transition: all 0.15s;
+}
+.combo-btn:hover { border-color: var(--accent); color: var(--text); }
+.combo-btn.active { border-color: var(--accent); background: rgba(124,111,247,0.12); color: var(--text); }
+.combo-btn .cb-icon { font-size: 16px; }
+.combo-btn .cb-name { font-size: 12px; font-weight: 700; display: block; }
+.combo-btn .cb-desc { font-size: 9px; color: var(--dim); font-weight: 400; display: block; }
+.combo-btn.active .cb-desc { color: var(--muted); }
+.combo-divider {
+  width: 1px; background: var(--border2);
+  align-self: stretch; margin: 4px 0; flex-shrink: 0;
 }
 
 .level-btn {
@@ -1808,17 +1835,11 @@ window.closeScoreboard = () => document.getElementById('sb-overlay').classList.r
   </div>
 </div>
 
-<!-- Shared mode bar -->
-<div style="width:100%;max-width:460px;margin-bottom:12px">
-  <div class="mode-selector" id="shared-mode-selector">
-    <button class="mode-btn active" id="mode1-btn" onclick="selectMode(1)">
-      <span class="md-name">👤 1 คน</span>
-      <span class="md-desc">เล่นคนเดียว</span>
-    </button>
-    <button class="mode-btn" id="mode2-btn" onclick="selectMode(2)">
-      <span class="md-name">👥 2 คน</span>
-      <span class="md-desc">แข่งกัน บน/ล่าง</span>
-    </button>
+<!-- Shared mode bar (hidden, keep for JS) -->
+<div style="display:none">
+  <div id="shared-mode-selector">
+    <button id="mode1-btn"></button>
+    <button id="mode2-btn"></button>
   </div>
 </div>
 
@@ -1906,15 +1927,28 @@ window.closeScoreboard = () => document.getElementById('sb-overlay').classList.r
     </div>
   </div>
 
-  <!-- Level selector -->
-  <div class="level-selector">
-    <button class="level-btn active" id="lv1-btn" onclick="selectLevel(1)">
-      <span class="lv-name">Level 1</span>
-      <span class="lv-desc">ง่าย — เห็นสีใบ้</span>
+  <!-- Combined mode + level selector -->
+  <div class="combined-selector">
+    <button class="combo-btn active" id="combo-mode1-btn" onclick="selectMode(1)">
+      <span class="cb-icon">👤</span>
+      <span class="cb-name">1 คน</span>
+      <span class="cb-desc">คนเดียว</span>
     </button>
-    <button class="level-btn" id="lv2-btn" onclick="selectLevel(2)">
-      <span class="lv-name">Level 2</span>
-      <span class="lv-desc">ปานกลาง — ไม่มีสี</span>
+    <button class="combo-btn" id="combo-mode2-btn" onclick="selectMode(2)">
+      <span class="cb-icon">👥</span>
+      <span class="cb-name">2 คน</span>
+      <span class="cb-desc">บน/ล่าง</span>
+    </button>
+    <div class="combo-divider"></div>
+    <button class="combo-btn active" id="lv1-btn" onclick="selectLevel(1)">
+      <span class="cb-icon">🟢</span>
+      <span class="cb-name">Lv.1</span>
+      <span class="cb-desc">มีสีใบ้</span>
+    </button>
+    <button class="combo-btn" id="lv2-btn" onclick="selectLevel(2)">
+      <span class="cb-icon">⚫</span>
+      <span class="cb-name">Lv.2</span>
+      <span class="cb-desc">ไม่มีสี</span>
     </button>
   </div>
 
@@ -1948,12 +1982,6 @@ window.closeScoreboard = () => document.getElementById('sb-overlay').classList.r
 
   <!-- Game area -->
   <div id="game-area">
-    <!-- Status -->
-    <div style="display:flex;justify-content:flex-end;margin-bottom:1rem">
-      <div style="display:flex;align-items:center;gap:6px;font-family:'Courier New',monospace;font-size:14px;font-weight:700;color:var(--muted);background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:5px 14px">
-        ⏱ <span id="timer-disp">0:00</span>
-      </div>
-    </div>
     <div style="display:none">
       <span id="bull-count"></span><span id="cow-count"></span><span id="round-disp"></span>
     </div>
@@ -1965,10 +1993,17 @@ window.closeScoreboard = () => document.getElementById('sb-overlay').classList.r
       <div id="col-history">
         <!-- Side mode header -->
         <div id="history-header-side" style="display:none">
-          <div style="display:grid;grid-template-columns:1fr auto auto;gap:4px;padding:5px 8px;background:var(--surface2);border-radius:8px 8px 0 0;border:1px solid var(--border);border-bottom:none">
+          <div style="display:grid;grid-template-columns:1fr auto auto auto;gap:4px;padding:5px 8px;background:var(--surface2);border-radius:8px 8px 0 0;border:1px solid var(--border);border-bottom:none">
             <div style="font-size:9px;font-weight:700;letter-spacing:0.07em;text-transform:uppercase;color:var(--dim)">ประวัติ</div>
             <div style="font-size:9px;font-weight:700;color:var(--cow);text-align:center;min-width:28px">ตัว</div>
             <div style="font-size:9px;font-weight:700;color:var(--bull);text-align:center;min-width:28px">ที่</div>
+            <div style="font-family:'Courier New',monospace;font-size:9px;font-weight:700;color:var(--muted);text-align:right;min-width:36px">⏱ <span id="timer-disp">0:00</span></div>
+          </div>
+        </div>
+        <!-- Bottom mode timer -->
+        <div id="timer-bottom" style="display:flex;justify-content:flex-end;margin-bottom:8px">
+          <div style="display:flex;align-items:center;gap:6px;font-family:'Courier New',monospace;font-size:13px;font-weight:700;color:var(--muted);background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:4px 12px">
+            ⏱ <span id="timer-disp-bottom">0:00</span>
           </div>
         </div>
         <hr class="divider" id="history-divider">
@@ -2405,15 +2440,18 @@ function startTimer() {
   stopTimer();
   startTime = Date.now();
   elapsed = 0;
-  document.getElementById('timer-disp').textContent = '0:00';
+  updateTimerDisplay('0:00');
   timerInterval = setInterval(() => {
     elapsed = Date.now() - startTime;
-    document.getElementById('timer-disp').textContent = formatTime(elapsed);
+    updateTimerDisplay(formatTime(elapsed));
   }, 500);
 }
 
-function stopTimer() {
-  if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
+function updateTimerDisplay(text) {
+  const t1 = document.getElementById('timer-disp');
+  const t2 = document.getElementById('timer-disp-bottom');
+  if (t1) t1.textContent = text;
+  if (t2) t2.textContent = text;
 }
 
 function generateSecret() {
@@ -2768,12 +2806,11 @@ function applyTwoPlayerLayout() {
 
 function selectMode(m) {
   currentMode = m;
-  ['mode1-btn','mid-mode1-btn'].forEach(id => { const el = document.getElementById(id); if(el) el.classList.toggle('active', m === 1); });
-  ['mode2-btn','mid-mode2-btn'].forEach(id => { const el = document.getElementById(id); if(el) el.classList.toggle('active', m === 2); });
+  ['mode1-btn','mid-mode1-btn','combo-mode1-btn'].forEach(id => { const el = document.getElementById(id); if(el) el.classList.toggle('active', m === 1); });
+  ['mode2-btn','mid-mode2-btn','combo-mode2-btn'].forEach(id => { const el = document.getElementById(id); if(el) el.classList.toggle('active', m === 2); });
   if (m === 1) {
     document.getElementById('two-player-wrap').style.display = 'none';
     document.getElementById('single-wrap').style.display = 'block';
-    document.getElementById('shared-mode-selector').style.display = 'flex';
     document.getElementById('records-section').style.display = 'block';
     document.body.style.padding = '';
     document.body.style.paddingTop = '';
@@ -2783,7 +2820,6 @@ function selectMode(m) {
   } else {
     document.getElementById('single-wrap').style.display = 'none';
     document.getElementById('two-player-wrap').style.display = 'flex';
-    document.getElementById('shared-mode-selector').style.display = 'none';
     document.getElementById('records-section').style.display = 'none';
     document.body.style.padding = '0';
     document.body.style.alignItems = 'center';
@@ -3161,6 +3197,7 @@ function applyLayout(l) {
   const wrap = document.getElementById('game-layout-wrap');
   const divider = document.getElementById('history-divider');
   const histHeader = document.getElementById('history-header-side');
+  const timerBottom = document.getElementById('timer-bottom');
   const legend = document.getElementById('legend');
 
   if (l === 'side') {
@@ -3168,7 +3205,6 @@ function applyLayout(l) {
     wrap.style.gridTemplateColumns = '1fr 1fr';
     wrap.style.gap = '10px';
     wrap.style.alignItems = 'start';
-    // history LEFT, input RIGHT
     const colHistory = document.getElementById('col-history');
     const colInput = document.getElementById('col-input');
     if (colHistory && colInput && colHistory.nextSibling !== colInput) {
@@ -3176,20 +3212,20 @@ function applyLayout(l) {
     }
     if (divider) divider.style.display = 'none';
     if (histHeader) histHeader.style.display = 'block';
+    if (timerBottom) timerBottom.style.display = 'none';
     if (legend) legend.style.display = 'none';
     document.querySelectorAll('.digit-box').forEach(el => { el.style.height = '48px'; el.style.fontSize = '22px'; });
     document.querySelectorAll('#sp-keypad .key-btn').forEach(el => { el.style.height = '40px'; el.style.fontSize = '17px'; });
-    // re-render history as table rows
     reRenderHistory('side');
   } else {
     wrap.style.display = 'block';
     wrap.style.gridTemplateColumns = '';
     wrap.style.gap = '';
-    // history AFTER input
     const colHistory = document.getElementById('col-history');
     if (colHistory) wrap.appendChild(colHistory);
     if (divider) divider.style.display = '';
     if (histHeader) histHeader.style.display = 'none';
+    if (timerBottom) timerBottom.style.display = 'flex';
     if (legend) legend.style.display = '';
     document.querySelectorAll('.digit-box').forEach(el => { el.style.height = ''; el.style.fontSize = ''; });
     document.querySelectorAll('#sp-keypad .key-btn').forEach(el => { el.style.height = ''; el.style.fontSize = ''; });
