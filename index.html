@@ -2377,23 +2377,58 @@ let bgMusic = null;
 let musicStarted = false;
 let musicOn = true;
 
+// ── Music Playlist ──
+const MUSIC_PLAYLIST = [
+  'music/CBNocturne.mp3',
+  'music/Crystal-Ball.mp3',
+  'music/avp-stage4.mp3'
+];
+let _musicPlaylist = [];     // shuffled queue
+let _musicFading = false;
+const MUSIC_VOL = 0.4;
+
+function _shufflePlaylist(excludeSrc) {
+  // Fisher-Yates shuffle, optionally skip a track to avoid repeat
+  let pool = MUSIC_PLAYLIST.filter(t => t !== excludeSrc);
+  if (!pool.length) pool = MUSIC_PLAYLIST.slice();
+  for (let i = pool.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [pool[i], pool[j]] = [pool[j], pool[i]];
+  }
+  _musicPlaylist = pool;
+}
+
+function _nextTrack() {
+  if (!_musicPlaylist.length) _shufflePlaylist(bgMusic ? bgMusic.src : null);
+  return _musicPlaylist.shift();
+}
+
+function _playTrack(src, fadeIn) {
+  bgMusic = new Audio(src);
+  bgMusic.volume = fadeIn ? 0 : MUSIC_VOL;
+  bgMusic.addEventListener('ended', _onTrackEnd);
+  bgMusic.play().then(() => {
+    if (fadeIn) {
+      let vol = 0;
+      const fi = setInterval(() => {
+        vol = Math.min(vol + 0.02, MUSIC_VOL);
+        bgMusic.volume = vol;
+        if (vol >= MUSIC_VOL) clearInterval(fi);
+      }, 100);
+    }
+  }).catch(() => {});
+}
+
+function _onTrackEnd() {
+  if (!musicOn) return;
+  const next = _nextTrack();
+  _playTrack(next, true);
+}
+
 function initMusic() {
   if (bgMusic) return;
-  bgMusic = new Audio('music/CBNocturne.mp3');
-  bgMusic.loop = true;
-  bgMusic.volume = 0.4;
-  // Fade in
-  bgMusic.volume = 0;
-  bgMusic.play().then(() => {
-    let vol = 0;
-    const fadeIn = setInterval(() => {
-      vol = Math.min(vol + 0.02, 0.4);
-      bgMusic.volume = vol;
-      if (vol >= 0.4) clearInterval(fadeIn);
-    }, 100);
-  }).catch(() => {
-    // Autoplay blocked — will start on first interaction
-  });
+  _shufflePlaylist(null);
+  _playTrack(_musicPlaylist.shift(), true);
 }
 
 function startMusic() {
@@ -2403,24 +2438,24 @@ function startMusic() {
 }
 
 function pauseMusic() {
-  if (bgMusic) {
-    let vol = bgMusic.volume;
-    const fadeOut = setInterval(() => {
-      vol = Math.max(vol - 0.04, 0);
-      bgMusic.volume = vol;
-      if (vol <= 0) { clearInterval(fadeOut); bgMusic.pause(); }
-    }, 60);
-  }
+  if (!bgMusic || _musicFading) return;
+  _musicFading = true;
+  let vol = bgMusic.volume;
+  const fo = setInterval(() => {
+    vol = Math.max(vol - 0.04, 0);
+    bgMusic.volume = vol;
+    if (vol <= 0) { clearInterval(fo); bgMusic.pause(); _musicFading = false; }
+  }, 60);
 }
 
 function resumeMusic() {
   if (!bgMusic || !musicOn) return;
   bgMusic.play().then(() => {
     let vol = bgMusic.volume;
-    const fadeIn = setInterval(() => {
-      vol = Math.min(vol + 0.02, 0.4);
+    const fi = setInterval(() => {
+      vol = Math.min(vol + 0.02, MUSIC_VOL);
       bgMusic.volume = vol;
-      if (vol >= 0.4) clearInterval(fadeIn);
+      if (vol >= MUSIC_VOL) clearInterval(fi);
     }, 100);
   }).catch(() => {});
 }
