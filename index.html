@@ -3549,33 +3549,39 @@ document.addEventListener('click', function(e) {
 
 // ── showSecretDigitPops — ตัวเลขรหัสลับลอยขึ้นทีละตัว ──
 function showSecretDigitPops(digits, onDone) {
-  const subEl = document.getElementById('win-sub');
-  const rect = subEl ? subEl.getBoundingClientRect() : null;
+  // delay 80ms รอ DOM render ก่อนแล้วค่อยหา rect
+  setTimeout(function() {
+    var subEl = document.getElementById('win-sub');
+    var rect = subEl ? subEl.getBoundingClientRect() : null;
+    var hasRect = rect && rect.width > 0 && rect.top > 0;
 
-  digits.forEach(function(d, i) {
-    setTimeout(function() {
-      const pop = document.createElement('div');
-      pop.className = 'digit-pop';
-      pop.textContent = d;
-      // ขนาดสุ่มนิดหน่อยให้ดูมีชีวิต
-      pop.style.fontSize = (52 + Math.random() * 12) + 'px';
-      if (rect) {
-        // วางตรงแนวตัวเลขใน win-sub
-        const spacing = rect.width / 5;
-        const xBase = rect.left + spacing * (i + 1);
-        pop.style.left = Math.round(xBase - 20) + 'px';
-        pop.style.top  = Math.round(rect.top - 8) + 'px';
-      } else {
-        // 2-player: กระจายกลางจอ
-        pop.style.left = (15 + i * 18) + 'vw';
-        pop.style.top  = '45vh';
-      }
-      document.body.appendChild(pop);
-      setTimeout(function(){ pop.remove(); }, 2000);
-    }, i * 350);
-  });
+    digits.forEach(function(d, i) {
+      setTimeout(function() {
+        var pop = document.createElement('div');
+        pop.className = 'digit-pop';
+        pop.textContent = d;
+        pop.style.fontSize = (52 + Math.random() * 12) + 'px';
 
-  if (onDone) setTimeout(onDone, digits.length * 350 + 500);
+        if (hasRect) {
+          var spacing = rect.width / 5;
+          var xBase = rect.left + spacing * (i + 1);
+          pop.style.left = Math.round(xBase - 22) + 'px';
+          pop.style.top  = Math.round(rect.top - 10) + 'px';
+        } else {
+          // fallback: กระจายกลางจอ
+          var vw = window.innerWidth;
+          var vh = window.innerHeight;
+          pop.style.left = Math.round(vw * (0.15 + i * 0.17)) + 'px';
+          pop.style.top  = Math.round(vh * 0.45) + 'px';
+        }
+
+        document.body.appendChild(pop);
+        setTimeout(function(){ pop.remove(); }, 2100);
+      }, i * 350);
+    });
+
+    if (onDone) setTimeout(onDone, digits.length * 350 + 500);
+  }, 80);
 }
 
 // ── Settings System ──
