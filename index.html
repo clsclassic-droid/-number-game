@@ -2088,17 +2088,17 @@ window.closeScoreboard = () => document.getElementById('sb-overlay').classList.r
         </div>
         <div class="err-msg" id="err-msg"></div>
         <div class="keypad" id="sp-keypad">
-          <div class="key-btn" onclick="spKey(1)">1</div>
-          <div class="key-btn" onclick="spKey(2)">2</div>
-          <div class="key-btn" onclick="spKey(3)">3</div>
-          <div class="key-btn" onclick="spKey(4)">4</div>
-          <div class="key-btn" onclick="spKey(5)">5</div>
-          <div class="key-btn" onclick="spKey(6)">6</div>
-          <div class="key-btn" onclick="spKey(7)">7</div>
-          <div class="key-btn" onclick="spKey(8)">8</div>
-          <div class="key-btn" onclick="spKey(9)">9</div>
+          <div class="key-btn" onclick="spKey(1)" oncontextmenu="spDel();return false;">1</div>
+          <div class="key-btn" onclick="spKey(2)" oncontextmenu="spDel();return false;">2</div>
+          <div class="key-btn" onclick="spKey(3)" oncontextmenu="spDel();return false;">3</div>
+          <div class="key-btn" onclick="spKey(4)" oncontextmenu="spDel();return false;">4</div>
+          <div class="key-btn" onclick="spKey(5)" oncontextmenu="spDel();return false;">5</div>
+          <div class="key-btn" onclick="spKey(6)" oncontextmenu="spDel();return false;">6</div>
+          <div class="key-btn" onclick="spKey(7)" oncontextmenu="spDel();return false;">7</div>
+          <div class="key-btn" onclick="spKey(8)" oncontextmenu="spDel();return false;">8</div>
+          <div class="key-btn" onclick="spKey(9)" oncontextmenu="spDel();return false;">9</div>
           <div class="key-btn del" onclick="spDel()">⌫</div>
-          <div class="key-btn" onclick="spKey(0)">0</div>
+          <div class="key-btn" onclick="spKey(0)" oncontextmenu="spDel();return false;">0</div>
           <div class="key-btn go" id="sp-go-btn" onclick="submitGuess()">ทาย →</div>
         </div>
         <div class="legend" id="legend">
@@ -2162,17 +2162,17 @@ window.closeScoreboard = () => document.getElementById('sb-overlay').classList.r
       </div>
       <div class="ph-err" id="p2-err"></div>
       <div class="ph-keypad">
-        <div class="ph-key" onclick="tpKey(2,1)">1</div>
-        <div class="ph-key" onclick="tpKey(2,2)">2</div>
-        <div class="ph-key" onclick="tpKey(2,3)">3</div>
-        <div class="ph-key" onclick="tpKey(2,4)">4</div>
-        <div class="ph-key" onclick="tpKey(2,5)">5</div>
-        <div class="ph-key" onclick="tpKey(2,6)">6</div>
-        <div class="ph-key" onclick="tpKey(2,7)">7</div>
-        <div class="ph-key" onclick="tpKey(2,8)">8</div>
-        <div class="ph-key" onclick="tpKey(2,9)">9</div>
+        <div class="ph-key" onclick="tpKey(2,1)" oncontextmenu="tpDel(2);return false;">1</div>
+        <div class="ph-key" onclick="tpKey(2,2)" oncontextmenu="tpDel(2);return false;">2</div>
+        <div class="ph-key" onclick="tpKey(2,3)" oncontextmenu="tpDel(2);return false;">3</div>
+        <div class="ph-key" onclick="tpKey(2,4)" oncontextmenu="tpDel(2);return false;">4</div>
+        <div class="ph-key" onclick="tpKey(2,5)" oncontextmenu="tpDel(2);return false;">5</div>
+        <div class="ph-key" onclick="tpKey(2,6)" oncontextmenu="tpDel(2);return false;">6</div>
+        <div class="ph-key" onclick="tpKey(2,7)" oncontextmenu="tpDel(2);return false;">7</div>
+        <div class="ph-key" onclick="tpKey(2,8)" oncontextmenu="tpDel(2);return false;">8</div>
+        <div class="ph-key" onclick="tpKey(2,9)" oncontextmenu="tpDel(2);return false;">9</div>
         <div class="ph-key del" onclick="tpDel(2)">⌫</div>
-        <div class="ph-key" onclick="tpKey(2,0)">0</div>
+        <div class="ph-key" onclick="tpKey(2,0)" oncontextmenu="tpDel(2);return false;">0</div>
         <div class="ph-key go p2g" id="p2-submit" onclick="p2Submit(2)">ทาย →</div>
       </div>
     </div>
@@ -2223,17 +2223,17 @@ window.closeScoreboard = () => document.getElementById('sb-overlay').classList.r
       </div>
       <div class="ph-err" id="p1-err"></div>
       <div class="ph-keypad">
-        <div class="ph-key" onclick="tpKey(1,1)">1</div>
-        <div class="ph-key" onclick="tpKey(1,2)">2</div>
-        <div class="ph-key" onclick="tpKey(1,3)">3</div>
-        <div class="ph-key" onclick="tpKey(1,4)">4</div>
-        <div class="ph-key" onclick="tpKey(1,5)">5</div>
-        <div class="ph-key" onclick="tpKey(1,6)">6</div>
-        <div class="ph-key" onclick="tpKey(1,7)">7</div>
-        <div class="ph-key" onclick="tpKey(1,8)">8</div>
-        <div class="ph-key" onclick="tpKey(1,9)">9</div>
+        <div class="ph-key" onclick="tpKey(1,1)" oncontextmenu="tpDel(1);return false;">1</div>
+        <div class="ph-key" onclick="tpKey(1,2)" oncontextmenu="tpDel(1);return false;">2</div>
+        <div class="ph-key" onclick="tpKey(1,3)" oncontextmenu="tpDel(1);return false;">3</div>
+        <div class="ph-key" onclick="tpKey(1,4)" oncontextmenu="tpDel(1);return false;">4</div>
+        <div class="ph-key" onclick="tpKey(1,5)" oncontextmenu="tpDel(1);return false;">5</div>
+        <div class="ph-key" onclick="tpKey(1,6)" oncontextmenu="tpDel(1);return false;">6</div>
+        <div class="ph-key" onclick="tpKey(1,7)" oncontextmenu="tpDel(1);return false;">7</div>
+        <div class="ph-key" onclick="tpKey(1,8)" oncontextmenu="tpDel(1);return false;">8</div>
+        <div class="ph-key" onclick="tpKey(1,9)" oncontextmenu="tpDel(1);return false;">9</div>
         <div class="ph-key del" onclick="tpDel(1)">⌫</div>
-        <div class="ph-key" onclick="tpKey(1,0)">0</div>
+        <div class="ph-key" onclick="tpKey(1,0)" oncontextmenu="tpDel(1);return false;">0</div>
         <div class="ph-key go" id="p1-submit" onclick="p2Submit(1)">ทาย →</div>
       </div>
     </div>
@@ -2365,6 +2365,19 @@ function soundWin() {
   [0, 0.12, 0.24, 0.36, 0.5].forEach((t, i) => {
     playTone([523, 659, 784, 1047, 1319][i], 'triangle', 0.25, 0.3, t);
   });
+}
+
+
+function soundBullUp(bullCount) {
+  // เสียงต่างกันตามจำนวน bulls 1-3
+  var configs = {
+    1: [[523, 'triangle', 0.12, 0.28, 0]],
+    2: [[523, 'triangle', 0.12, 0.25, 0], [659, 'triangle', 0.13, 0.28, 0.1]],
+    3: [[523, 'triangle', 0.12, 0.22, 0], [659, 'triangle', 0.13, 0.25, 0.1], [784, 'triangle', 0.15, 0.30, 0.2]]
+  };
+  var tones = configs[Math.min(bullCount, 3)] || configs[1];
+  tones.forEach(function(a) { playTone(a[0], a[1], a[2], a[3], a[4]); });
+  setTimeout(function() { playTone(1046, 'sine', 0.08, 0.12); }, (tones.length - 1) * 100 + 80);
 }
 
 function soundError() {
@@ -2625,9 +2638,11 @@ function generateSecret() {
 }
 
 let gameWon = false;
+let prevBulls = 0;  // track bulls จากครั้งก่อน
 
 function startNewGame() {
   gameWon = false;
+  prevBulls = 0;
   secret = generateSecret();
   round = 1;
   document.getElementById('history').innerHTML = '';
@@ -2797,6 +2812,18 @@ function submitGuess() {
     }, 300);
     return;
   }
+
+  // sound: bulls เพิ่มขึ้นจากครั้งก่อน
+  if (bulls > 0 && bulls > prevBulls) {
+    setTimeout(function() { soundBullUp(bulls); }, 150);
+  } else if (bulls > 0) {
+    setTimeout(soundBull, 150);
+  } else if (cows > 0) {
+    setTimeout(soundCow, 150);
+  } else {
+    setTimeout(soundMiss, 150);
+  }
+  prevBulls = bulls;
 
   round++;
   document.getElementById('round-disp').textContent = round;
@@ -3007,6 +3034,7 @@ function selectMode(m) {
 }
 
 function startTwoPlayerGame() {
+  prevBulls = 0;
   twoSecret = generateSecret();
   p1Round = 1; p2Round = 1;
   p1Done = false; p2Done = false;
@@ -3204,9 +3232,16 @@ function p2Submit(p) {
     return;
   }
 
-  if (bulls > 0) setTimeout(soundBull, 150);
-  else if (cows > 0) setTimeout(soundCow, 150);
-  else setTimeout(soundMiss, 150);
+  if (bulls > 0 && bulls > prevBulls) {
+    setTimeout(function() { soundBullUp(bulls); }, 150);
+  } else if (bulls > 0) {
+    setTimeout(soundBull, 150);
+  } else if (cows > 0) {
+    setTimeout(soundCow, 150);
+  } else {
+    setTimeout(soundMiss, 150);
+  }
+  prevBulls = bulls;
 
   clearPInputs(p);
 }
