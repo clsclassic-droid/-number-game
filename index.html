@@ -2005,6 +2005,12 @@ window.closeScoreboard = () => document.getElementById('sb-overlay').classList.r
       <span class="cb-desc">บน/ล่าง</span>
     </button>
     <div class="combo-divider"></div>
+    <button class="combo-btn" id="custom-secret-btn" onclick="openCustomSecretModal()">
+      <span class="cb-icon">🔐</span>
+      <span class="cb-name">ตั้งรหัส</span>
+      <span class="cb-desc">ท้าเพื่อน</span>
+    </button>
+    <div class="combo-divider"></div>
     <button class="combo-btn active" id="lv1-btn" onclick="selectLevel(1)">
       <span class="cb-icon">🟢</span>
       <span class="cb-name">Lv.1</span>
@@ -2129,6 +2135,45 @@ window.closeScoreboard = () => document.getElementById('sb-overlay').classList.r
     <div id="records-list"><div class="no-records">ยังไม่มีประวัติ</div></div>
   </div>
 
+</div>
+
+
+<!-- Custom Secret Modal -->
+<div id="custom-secret-modal" class="name-modal-overlay" style="display:none">
+  <div class="name-modal" style="max-width:340px">
+    <div class="name-modal-title" id="cs-title">ตั้งรหัสลับ</div>
+    <div class="name-modal-sub" id="cs-sub">ใส่ตัวเลข 4 หลัก ไม่ซ้ำกัน แล้วให้เพื่อนแก้!</div>
+    <div style="display:flex;gap:8px;justify-content:center;margin:16px 0 8px">
+      <div class="digit-box" id="cs-d0" onclick="csFocus(0)" style="width:56px;height:56px;font-size:26px">
+        <span class="ph" style="font-size:20px">?</span>
+      </div>
+      <div class="digit-box" id="cs-d1" onclick="csFocus(1)" style="width:56px;height:56px;font-size:26px">
+        <span class="ph" style="font-size:20px">?</span>
+      </div>
+      <div class="digit-box" id="cs-d2" onclick="csFocus(2)" style="width:56px;height:56px;font-size:26px">
+        <span class="ph" style="font-size:20px">?</span>
+      </div>
+      <div class="digit-box" id="cs-d3" onclick="csFocus(3)" style="width:56px;height:56px;font-size:26px">
+        <span class="ph" style="font-size:20px">?</span>
+      </div>
+    </div>
+    <div class="err-msg" id="cs-err" style="text-align:center;min-height:16px;margin-bottom:4px"></div>
+    <div class="keypad" style="margin-bottom:12px">
+      <div class="key-btn" onclick="csKey(1)" oncontextmenu="csDel();return false;">1</div>
+      <div class="key-btn" onclick="csKey(2)" oncontextmenu="csDel();return false;">2</div>
+      <div class="key-btn" onclick="csKey(3)" oncontextmenu="csDel();return false;">3</div>
+      <div class="key-btn" onclick="csKey(4)" oncontextmenu="csDel();return false;">4</div>
+      <div class="key-btn" onclick="csKey(5)" oncontextmenu="csDel();return false;">5</div>
+      <div class="key-btn" onclick="csKey(6)" oncontextmenu="csDel();return false;">6</div>
+      <div class="key-btn" onclick="csKey(7)" oncontextmenu="csDel();return false;">7</div>
+      <div class="key-btn" onclick="csKey(8)" oncontextmenu="csDel();return false;">8</div>
+      <div class="key-btn" onclick="csKey(9)" oncontextmenu="csDel();return false;">9</div>
+      <div class="key-btn del" onclick="csDel()">⌫</div>
+      <div class="key-btn" onclick="csKey(0)" oncontextmenu="csDel();return false;">0</div>
+      <div class="key-btn go" onclick="confirmCustomSecret()">ตกลง ✓</div>
+    </div>
+    <button class="name-modal-cancel" onclick="closeCustomSecretModal()">ยกเลิก</button>
+  </div>
 </div>
 
 <!-- 2-Player Layout -->
@@ -2386,103 +2431,6 @@ function soundError() {
 
 // ── Nocturne MIDI Playback Engine ──
 
-// ── Coin Rain Animation ──
-function startCoinRain() {
-  var existing = document.getElementById('coin-rain-canvas');
-  if (existing) existing.remove();
-
-  var cv = document.createElement('canvas');
-  cv.id = 'coin-rain-canvas';
-  cv.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:9998';
-  document.body.appendChild(cv);
-
-  var W = window.innerWidth, H = window.innerHeight;
-  cv.width = W; cv.height = H;
-  var ctx = cv.getContext('2d');
-  var coins = [], animId = null, fadeStart = Date.now() + 2800;
-
-  for (var i = 0; i < 60; i++) {
-    coins.push({
-      x: Math.random()*W,
-      y: -14 - Math.random()*260,
-      vy: 1.6+Math.random()*2.8,
-      vx: (Math.random()-0.5)*1.4,
-      r: 10+Math.random()*10,
-      wave: Math.random()*6.28,
-      tilt: Math.random()*6.28,
-      tiltV: (Math.random()-0.5)*0.09+0.04,
-      alpha: 1
-    });
-  }
-
-  function drawCoin(x,y,r,alpha,tilt) {
-    var cosT=Math.cos(tilt), absCos=Math.max(0.08,Math.abs(cosT));
-    var facingRight=cosT>=0, rx=r*absCos, THICK=r*0.52;
-    ctx.save();
-    ctx.globalAlpha=alpha;
-    ctx.translate(x,y);
-
-    if(absCos<0.90){
-      var edgeD=THICK*(1-absCos), sign=facingRight?1:-1;
-      ctx.save();
-      ctx.beginPath();
-      ctx.ellipse(sign*edgeD*0.5,0,rx+edgeD,r,0,0,Math.PI*2);
-      ctx.fillStyle='#b07800'; ctx.fill();
-      ctx.beginPath();
-      ctx.ellipse(sign*edgeD*0.5,0,rx+edgeD,r,0,0,Math.PI*2);
-      var eg=ctx.createLinearGradient(-rx-edgeD,0,rx+edgeD,0);
-      eg.addColorStop(0,'#c89000'); eg.addColorStop(0.3,'#e8a800');
-      eg.addColorStop(0.5,'#a06800'); eg.addColorStop(0.7,'#7a5000');
-      eg.addColorStop(1,'#5a3800');
-      ctx.fillStyle=eg; ctx.fill();
-      ctx.restore();
-    }
-
-    ctx.save();
-    ctx.beginPath(); ctx.ellipse(0,0,rx,r,0,0,Math.PI*2); ctx.clip();
-    ctx.shadowColor='rgba(255,180,0,0.7)'; ctx.shadowBlur=r*1.1; ctx.shadowOffsetY=r*0.2;
-    ctx.beginPath(); ctx.ellipse(0,0,rx,r,0,0,Math.PI*2);
-    var body=ctx.createRadialGradient(-rx*0.3,-r*0.25,r*0.02,rx*0.1,r*0.1,r*1.1);
-    body.addColorStop(0,'#fff5b0'); body.addColorStop(0.15,'#ffe033');
-    body.addColorStop(0.42,'#d4a000'); body.addColorStop(0.70,'#a87200');
-    body.addColorStop(1,'#6b4800');
-    ctx.fillStyle=body; ctx.fill();
-    ctx.shadowBlur=0; ctx.shadowOffsetY=0;
-    ctx.beginPath(); ctx.ellipse(0,0,rx,r,0,0,Math.PI*2);
-    ctx.strokeStyle='#7a5200'; ctx.lineWidth=r*0.13; ctx.stroke();
-    ctx.beginPath(); ctx.ellipse(0,0,rx*0.72,r*0.72,0,0,Math.PI*2);
-    ctx.strokeStyle='rgba(100,60,0,0.5)'; ctx.lineWidth=r*0.065; ctx.stroke();
-    ctx.beginPath(); ctx.ellipse(0,0,rx*0.94,r*0.94,0,Math.PI*1.1,Math.PI*1.9);
-    ctx.strokeStyle='rgba(255,245,180,0.68)'; ctx.lineWidth=r*0.09; ctx.stroke();
-    var bw=rx*0.22,bh=r*0.58,hw=rx*0.52,hh=r*0.13;
-    ctx.fillStyle='rgba(110,60,0,0.85)';
-    ctx.beginPath(); ctx.roundRect(-bw/2,-bh/2,bw,bh,bw*0.4); ctx.fill();
-    ctx.beginPath(); ctx.roundRect(-hw/2,-bh/2,hw,hh,hh*0.4); ctx.fill();
-    ctx.beginPath(); ctx.roundRect(-hw/2,bh/2-hh,hw,hh,hh*0.4); ctx.fill();
-    ctx.beginPath(); ctx.ellipse(-rx*0.30,-r*0.28,rx*0.26,r*0.15,-0.5,0,Math.PI*2);
-    ctx.fillStyle='rgba(255,255,230,0.72)'; ctx.fill();
-    ctx.beginPath(); ctx.ellipse(-rx*0.10,-r*0.45,rx*0.10,r*0.06,-0.3,0,Math.PI*2);
-    ctx.fillStyle='rgba(255,255,255,0.55)'; ctx.fill();
-    ctx.restore();
-    ctx.restore();
-  }
-
-  function loop() {
-    ctx.clearRect(0,0,W,H);
-    var fe=Math.max(0,Date.now()-fadeStart), any=false;
-    for(var i=0;i<coins.length;i++){
-      var c=coins[i];
-      c.y+=c.vy; c.x+=c.vx+Math.sin(c.wave)*0.55;
-      c.wave+=0.045; c.tilt+=c.tiltV;
-      if(fe>0) c.alpha=Math.max(0,1-fe/900);
-      if(c.y<H+20&&c.alpha>0){any=true;drawCoin(c.x,c.y,c.r,c.alpha,c.tilt);}
-    }
-    if(any){ animId=requestAnimationFrame(loop); }
-    else { cv.remove(); }
-  }
-  loop();
-}
-
 // ── Music Engine (MP3 via Audio API) ──
 let bgMusic = null;
 let musicStarted = false;
@@ -2738,10 +2686,10 @@ function generateSecret() {
 let gameWon = false;
 let prevBulls = 0;  // track bulls จากครั้งก่อน
 
-function startNewGame() {
+function startNewGame(useExistingSecret) {
   gameWon = false;
   prevBulls = 0;
-  secret = generateSecret();
+  if (!useExistingSecret) { secret = generateSecret(); customSecretMode = false; }
   round = 1;
   document.getElementById('history').innerHTML = '';
   document.getElementById('win-banner').style.display = 'none';
@@ -2827,14 +2775,14 @@ function submitGuess() {
       stopTimer();
       const isNewRec = saveRecord(secret, round, elapsed, guessLog);
       if (isNewRec) soundNewRecord(); else soundWin();
-      startCoinRain();
-
-      // เหรียญ — ให้เฉพาะตอน login
-      if (window.currentUser) {
-        const reward = getCoinReward();
-        awardCoins(0, reward);
-        showCoinPop(reward, document.getElementById('sp-coin-count'));
-      }
+      showSecretDigitPops(secret, function() {
+        // coin pop หลัง effect รหัสลับครบ — เฉพาะตอน login
+        if (window.currentUser) {
+          const reward = getCoinReward();
+          awardCoins(0, reward);
+          showCoinPop(reward, document.getElementById('sp-coin-count'));
+        }
+      });
 
       document.getElementById('win-banner').style.display = 'flex';
       document.getElementById('single-wrap').style.display = 'block';
@@ -3328,7 +3276,7 @@ function p2Submit(p) {
     document.getElementById('p2-new-game-bar').style.display = 'flex';
     document.getElementById('p2-new-game-bar').style.flexDirection = 'column';
     soundWin();
-    startCoinRain();
+    showSecretDigitPops(twoSecret, null);
     return;
   }
 
@@ -3456,6 +3404,7 @@ function showCoinPop(amount, anchorEl) {
   setTimeout(() => pop.remove(), 1500);
 }
 
+
 function showLoginNudge() {
   if (window.currentUser) return;
   const banner = document.getElementById('win-banner');
@@ -3498,6 +3447,117 @@ function confirmNames() {
   document.getElementById('name-modal').style.display = 'none';
   refreshCoinDisplays();
   if (pendingModalMode === 2) startTwoPlayerGame(); else startNewGame();
+}
+
+
+// ── Custom Secret Mode ──
+let csVals = ['','','',''];
+let csCursor = 0;
+let customSecretMode = false;
+
+function openCustomSecretModal() {
+  csVals = ['','','',''];
+  csCursor = 0;
+  document.getElementById('cs-err').textContent = '';
+  csRender();
+  document.getElementById('custom-secret-modal').style.display = 'flex';
+}
+
+function closeCustomSecretModal() {
+  document.getElementById('custom-secret-modal').style.display = 'none';
+}
+
+function csRender() {
+  for (let i = 0; i < 4; i++) {
+    const box = document.getElementById('cs-d' + i);
+    const old = box.querySelector('.digit-cursor');
+    if (old) old.remove();
+    box.classList.toggle('active', i === csCursor);
+    // ซ่อนตัวเลขเป็น ● กัน spoil
+    if (csVals[i] !== '') {
+      box.innerHTML = '<span style="color:var(--accent);font-size:22px">●</span>';
+    } else {
+      box.innerHTML = '<span class="ph" style="font-size:20px">?</span>';
+    }
+    if (i === csCursor) {
+      const cur = document.createElement('div');
+      cur.className = 'digit-cursor';
+      box.appendChild(cur);
+    }
+  }
+}
+
+function csFocus(i) { csCursor = i; csRender(); }
+
+function csKey(n) {
+  csVals[csCursor] = String(n);
+  if (csCursor < 3) csCursor++;
+  csRender();
+  document.getElementById('cs-err').textContent = '';
+}
+
+function csDel() {
+  if (csVals[csCursor] !== '') {
+    csVals[csCursor] = '';
+  } else if (csCursor > 0) {
+    csCursor--;
+    csVals[csCursor] = '';
+  }
+  csRender();
+}
+
+function confirmCustomSecret() {
+  const err = document.getElementById('cs-err');
+  if (csVals.some(v => v === '')) { err.textContent = '! ใส่ตัวเลขให้ครบ 4 ช่อง'; return; }
+  const nums = csVals.map(Number);
+  if (new Set(nums).size < 4) { err.textContent = '! ตัวเลขต้องไม่ซ้ำกัน'; return; }
+  closeCustomSecretModal();
+  customSecretMode = true;
+  // set secret และเริ่มเกม
+  if (currentMode === 2) {
+    twoSecret = nums;
+    startTwoPlayerGame();
+  } else {
+    secret = nums;
+    startNewGame(true); // true = ใช้ secret ที่กำหนดแล้ว
+  }
+}
+
+// close on outside click
+document.addEventListener('click', function(e) {
+  const csModal = document.getElementById('custom-secret-modal');
+  if (csModal && e.target === csModal) closeCustomSecretModal();
+});
+
+// ── แก้ showSecretDigitPops ให้ขึ้นตรงตำแหน่ง win-sub ──
+function showSecretDigitPops(digits, onDone) {
+  const subEl = document.getElementById('win-sub');
+  // ถ้าไม่มี element (2-player) ให้ใช้ตำแหน่งกลางจอ
+  const rect = subEl ? subEl.getBoundingClientRect() : null;
+
+  digits.forEach(function(d, i) {
+    setTimeout(function() {
+      const pop = document.createElement('div');
+      pop.className = 'coin-pop';
+      pop.textContent = d;
+      pop.style.fontSize = '28px';
+      if (rect) {
+        // กระจายตาม index ตรงแนวเดียวกับ win-sub
+        const spacing = rect.width / 5;
+        const xBase = rect.left + spacing * (i + 1);
+        pop.style.left = (xBase - 14) + 'px';
+        pop.style.top = (rect.top + 4) + 'px';
+      } else {
+        pop.style.left = (20 + i * 22) + 'vw';
+        pop.style.top = '40vh';
+      }
+      document.body.appendChild(pop);
+      setTimeout(function(){ pop.remove(); }, 1500);
+    }, i * 320); // delay 320ms ต่อตัว
+  });
+
+  // เรียก onDone หลังครบ 4 ตัว + รอแอนิเมชั่นขึ้น
+  if (onDone) setTimeout(onDone, digits.length * 320 + 400);
 }
 
 // ── Settings System ──
