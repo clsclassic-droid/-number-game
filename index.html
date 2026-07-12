@@ -28,23 +28,75 @@
   --cow:      #fbbf24;
   --cow-bg:   #241c08;
   --cow-bd:   #5c4a10;
+  --grid-color: 124,111,247;
+}
+
+/* ── Cyberpunk Theme ── */
+[data-theme="cyberpunk"] {
+  --bg: #0a0f0a; --surface: #0f1a0f; --surface2: #142014;
+  --border: #1a3a1a; --border2: #255025;
+  --text: #e0ffe0; --muted: #70a070; --dim: #3a5a3a;
+  --accent: #00ff88; --accent2: #00cc66;
+  --bull: #00ff88; --bull-bg: #002a1a; --bull-bd: #005c35;
+  --cow: #ffff00; --cow-bg: #2a2a00; --cow-bd: #5c5c00;
+  --grid-color: 0,255,136;
+}
+
+/* ── Ocean Theme ── */
+[data-theme="ocean"] {
+  --bg: #040d1a; --surface: #081525; --surface2: #0c1e30;
+  --border: #0e2d4a; --border2: #124060;
+  --text: #d0eeff; --muted: #5a90bb; --dim: #2a5070;
+  --accent: #38bdf8; --accent2: #0ea5e9;
+  --bull: #34d399; --bull-bg: #042a1a; --bull-bd: #065c35;
+  --cow: #fbbf24; --cow-bg: #241c08; --cow-bd: #5c4a10;
+  --grid-color: 56,189,248;
+}
+
+/* ── Light Theme ── */
+[data-theme="light"] {
+  --bg: #f0f2f8; --surface: #ffffff; --surface2: #e8eaf2;
+  --border: #d0d4e8; --border2: #b8bdd8;
+  --text: #1a1d2e; --muted: #5a6080; --dim: #9098b8;
+  --accent: #5b52d9; --accent2: #4840c0;
+  --bull: #16a34a; --bull-bg: #dcfce7; --bull-bd: #86efac;
+  --cow: #d97706; --cow-bg: #fef3c7; --cow-bd: #fcd34d;
+  --grid-color: 91,82,217;
 }
 
 html { background: #0d0f14; }
 
 body {
   font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
-  background: #0d0f14;
-  background: var(--bg);
+  background: transparent;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
   padding: 2.5rem 1rem 4rem;
   color: var(--text);
+  position: relative;
+  z-index: 1;
 }
 
-.wrap { width: 100%; max-width: 460px; }
+/* ── Grid Glow Canvas ── */
+#bg-canvas {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  z-index: 0;
+  pointer-events: none;
+  display: block;
+}
+
+.wrap { width: 100%; max-width: 460px; position: relative; z-index: 1; }
+
+/* ── Ensure all top-level UI stays above canvas ── */
+#shared-mode-selector { position: relative; z-index: 1; }
+.sb-fab { z-index: 150 !important; }
+.sb-overlay { z-index: 300 !important; }
+.name-modal-overlay { z-index: 200 !important; }
+.coin-pop { z-index: 999 !important; }
 
 /* ── Header ── */
 .header { text-align: center; margin-bottom: 2rem; }
@@ -228,7 +280,7 @@ body {
 .digit-display-row {
   display: flex;
   gap: 8px;
-  margin-bottom: 10px;
+  margin-bottom: 4px;
 }
 
 .digit-box {
@@ -330,8 +382,8 @@ body {
 .err-msg {
   font-size: 12px;
   color: #f87171;
-  min-height: 18px;
-  margin-bottom: 10px;
+  min-height: 14px;
+  margin-bottom: 4px;
   font-family: 'Courier New', 'Consolas', monospace;
 }
 
@@ -658,7 +710,6 @@ body {
   flex-direction: column;
   width: 100%;
   max-width: 460px;
-  height: 100vh;
   height: 100dvh;
   overflow: hidden;
   position: fixed;
@@ -667,78 +718,135 @@ body {
   transform: translateX(-50%);
   z-index: 100;
   background: var(--bg);
-  padding-top: env(safe-area-inset-top);
-  padding-bottom: env(safe-area-inset-bottom);
-  box-sizing: border-box;
 }
 
 .player-half {
   flex: 1;
   display: flex;
-  flex-direction: column;
-  padding: 5px 10px;
+  flex-direction: row;
+  padding: 6px 10px;
   overflow: hidden;
+  min-height: 0;
+  max-height: 50dvh;
+  gap: 8px;
+  align-items: stretch;
+}
+
+.player-half .ph-win   { display: none; }
+.player-half .ph-win[style*="block"] { display: block; position: absolute; top: 4px; left: 4px; right: 4px; z-index: 2; }
+.player-half .ph-label { display: none; }
+
+/* History column — LEFT */
+.player-half .ph-hist-col {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  overflow: hidden;
+  min-height: 0;
+  min-width: 0;
+}
+
+/* Input column — RIGHT */
+.player-half .ph-input-col {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+  min-width: 0;
+}
+
+.player-half .ph-input-col .ph-keypad {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(4, 1fr);
+  gap: 5px;
+  flex: 1;
+  min-height: 0;
+}
+
+.player-half .ph-input-col .ph-key {
+  height: 100%;
+  min-height: 0;
+  font-size: 16px;
+}
+
+.player-half .ph-input-col .ph-digit {
+  height: 46px;
+  font-size: 22px;
+}
+
+.player-half .ph-input-col .ph-digits {
+  gap: 5px;
+  flex-shrink: 0;
+}
+
+/* Fix: history must not push keypad */
+.ph-bottom-history {
+  overflow-y: auto;
+  flex: 1;
   min-height: 0;
 }
 
 .player-half.p2-half {
   transform: rotate(180deg);
   border-bottom: 2px dashed var(--border2);
+  position: relative;
 }
 
 .player-half.p1-half {
   border-top: 2px dashed var(--border2);
+  position: relative;
 }
 
 .ph-label {
-  font-size: 9px;
+  font-size: 10px;
   font-weight: 700;
   letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--dim);
-  margin-bottom: 3px;
+  margin-bottom: 6px;
   display: flex;
   align-items: center;
   gap: 6px;
   flex-shrink: 0;
 }
 
-.ph-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); flex-shrink: 0; }
+.ph-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); flex-shrink: 0; }
 .p2-half .ph-dot { background: var(--cow); }
 
 .ph-status {
   display: flex;
   gap: 0;
   border: 1px solid var(--border);
-  border-radius: 7px;
+  border-radius: 8px;
   overflow: hidden;
   background: var(--surface);
-  margin-bottom: 3px;
+  margin-bottom: 6px;
   flex-shrink: 0;
 }
 
-.ph-stat { flex: 1; padding: 2px 8px; border-right: 1px solid var(--border); }
+.ph-stat { flex: 1; padding: 5px 8px; border-right: 1px solid var(--border); }
 .ph-stat:last-child { border-right: none; }
-.ph-stat-label { font-size: 8px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--dim); }
-.ph-stat-val { font-family: "Courier New", monospace; font-size: 13px; font-weight: 700; color: var(--text); }
+.ph-stat-label { font-size: 9px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--dim); }
+.ph-stat-val { font-family: "Courier New", monospace; font-size: 15px; font-weight: 700; color: var(--text); }
 .ph-stat-val.gc { color: var(--bull); }
 .ph-stat-val.yc { color: var(--cow); }
 
 .ph-digits {
   display: flex;
-  gap: 5px;
-  margin-bottom: 3px;
+  gap: 6px;
+  margin-bottom: 6px;
   flex-shrink: 0;
 }
 
 .ph-digit {
   flex: 1;
-  height: 34px;
+  height: 44px;
   font-family: "Courier New", monospace;
-  font-size: 16px;
+  font-size: 18px;
   font-weight: 700;
   border: 1.5px solid var(--border2);
-  border-radius: 7px;
+  border-radius: 8px;
   background: var(--surface);
   color: var(--text);
   display: flex;
@@ -751,20 +859,55 @@ body {
 
 .ph-digit.active { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(124,111,247,0.2); }
 .ph-digit.p2a { border-color: var(--cow); box-shadow: 0 0 0 2px rgba(251,191,36,0.2); }
-.ph-digit .ph-cur { position: absolute; bottom: 4px; width: 14px; height: 2px; border-radius: 2px; background: var(--accent); animation: kblink 1s infinite; }
+.ph-digit .ph-cur { position: absolute; bottom: 5px; width: 16px; height: 2px; border-radius: 2px; background: var(--accent); animation: kblink 1s infinite; }
 .ph-digit .ph-cur.p2c { background: var(--cow); }
-.ph-digit .ph { color: var(--dim); font-size: 16px; }
+.ph-digit .ph { color: var(--dim); font-size: 18px; }
 
 .ph-keypad {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 3px;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 4px;
   flex-shrink: 0;
+  height: 160px;
 }
+
+/* ── 2-player side layout: history LEFT, input RIGHT ── */
+.player-half.side-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: auto auto auto auto 1fr;
+  grid-template-areas:
+    "win    win"
+    "label  label"
+    "status status"
+    "hist   digits"
+    "hist   keypad";
+  gap: 4px 8px;
+  align-items: start;
+}
+.player-half.side-layout .ph-win    { grid-area: win; }
+.player-half.side-layout .ph-label  { grid-area: label; }
+.player-half.side-layout .ph-status { grid-area: status; }
+.player-half.side-layout .ph-digits { grid-area: digits; margin-bottom: 0; }
+.player-half.side-layout .ph-err    { display: none; }
+.player-half.p1-half .ph-err,
+.player-half.p2-half .ph-err { display: block !important; font-size: 10px; color: #f87171; min-height: 12px; font-family: 'Courier New', monospace; flex-shrink: 0; }
+.player-half.side-layout .ph-keypad { grid-area: keypad; height: auto; }
+.player-half.side-layout .ph-side-history {
+  grid-area: hist;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  align-self: stretch;
+}
+.player-half.side-layout .ph-bottom-history { display: none !important; }
+.player-half.p1-half.side-layout .ph-bottom-history,
+.player-half.p2-half.side-layout .ph-bottom-history { display: flex !important; }
 
 .ph-key {
   font-family: "Courier New", monospace;
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 700;
   border: 1px solid var(--border2);
   border-radius: 6px;
@@ -776,37 +919,37 @@ body {
   justify-content: center;
   user-select: none;
   -webkit-tap-highlight-color: transparent;
-  height: 34px;
+  min-height: 36px;
 }
 
 .ph-key:active { background: var(--border2); transform: scale(0.94); }
 .ph-key.del { font-size: 13px; color: var(--muted); }
-.ph-key.go { background: var(--accent); color: #fff; border-color: var(--accent); font-family: "Segoe UI", sans-serif; font-size: 12px; font-weight: 700; grid-column: span 4; }
+.ph-key.go { background: var(--accent); color: #fff; border-color: var(--accent); font-family: "Segoe UI", sans-serif; font-size: 11px; font-weight: 700; }
 .ph-key.go.p2g { background: #a0790f; border-color: #a0790f; }
 .ph-key.go:active { opacity: 0.8; }
 .ph-key.go:disabled { background: var(--border2); color: var(--dim); }
 
-.ph-err { font-size: 9px; color: #f87171; min-height: 11px; font-family: "Courier New", monospace; flex-shrink: 0; margin-bottom: 2px; }
+.ph-err { font-size: 10px; color: #f87171; min-height: 14px; font-family: "Courier New", monospace; flex-shrink: 0; margin-bottom: 2px; }
 
 .ph-win {
   display: none;
   background: var(--bull-bg);
   border: 1px solid var(--bull-bd);
-  border-radius: 7px;
-  padding: 4px 10px;
-  font-size: 11px;
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 13px;
   font-weight: 700;
   color: var(--bull);
-  margin-bottom: 3px;
+  margin-bottom: 6px;
   flex-shrink: 0;
 }
-.ph-win.loser { background: var(--surface2); border-color: var(--border2); color: var(--muted); }
+.ph-win.loser { background: #2d0a0a; border-color: #7f1d1d; color: #f87171; }
 
 .two-mid {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 4px 10px;
+  padding: 6px 12px;
   border-top: 2px dashed var(--border2);
   border-bottom: 2px dashed var(--border2);
   flex-shrink: 0;
@@ -815,7 +958,7 @@ body {
 
 .two-mid-timer {
   font-family: "Courier New", monospace;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 700;
   color: var(--muted);
   flex: 1;
@@ -994,24 +1137,24 @@ body {
 .p-hist-row {
   display: flex;
   align-items: center;
-  gap: 6px;
-  padding: 4px 8px;
-  border-radius: 6px;
+  gap: 8px;
+  padding: 7px 10px;
+  border-radius: 8px;
   border: 1px solid var(--border);
   background: var(--surface);
-  font-size: 11px;
+  font-size: 12px;
 }
 
-.p-hist-num { font-family: 'Courier New', 'Consolas', monospace; font-size: 9px; color: var(--dim); min-width: 18px; }
-.p-hist-digits { display: flex; gap: 3px; }
+.p-hist-num { font-family: 'Courier New', 'Consolas', monospace; font-size: 10px; color: var(--dim); min-width: 20px; }
+.p-hist-digits { display: flex; gap: 4px; }
 
 .p-hist-digit {
-  width: 22px; height: 22px;
+  width: 28px; height: 28px;
   display: flex; align-items: center; justify-content: center;
-  border-radius: 4px;
+  border-radius: 6px;
   font-family: 'Courier New', 'Consolas', monospace;
   font-weight: 700;
-  font-size: 11px;
+  font-size: 13px;
   background: var(--surface2);
   color: var(--dim);
   border: 1px solid var(--border);
@@ -1020,12 +1163,12 @@ body {
 .p-hist-digit.bull { background: var(--bull-bg); color: var(--bull); border-color: var(--bull-bd); }
 .p-hist-digit.cow  { background: var(--cow-bg);  color: var(--cow);  border-color: var(--cow-bd); }
 
-.p-scores { margin-left: auto; display: flex; gap: 4px; }
+.p-scores { margin-left: auto; display: flex; gap: 5px; }
 .p-score-pill {
   font-family: 'Courier New', 'Consolas', monospace;
-  font-size: 9px;
+  font-size: 10px;
   font-weight: 700;
-  padding: 2px 5px;
+  padding: 3px 7px;
   border-radius: 20px;
 }
 .p-bull-p { background: var(--bull-bg); color: var(--bull); border: 1px solid var(--bull-bd); }
@@ -1104,10 +1247,37 @@ body {
 .mode-btn-mid:hover { color: var(--text); border-color: var(--accent); }
 .mode-btn-mid.active { color: var(--text); border-color: var(--accent); background: rgba(124,111,247,0.12); }
 
-.level-selector {
+.combined-selector {
   display: flex;
-  gap: 8px;
+  gap: 6px;
   margin-bottom: 1.5rem;
+  align-items: stretch;
+}
+.combo-btn {
+  flex: 1;
+  padding: 10px 6px;
+  border: 1.5px solid var(--border2);
+  border-radius: 10px;
+  background: var(--surface);
+  color: var(--muted);
+  cursor: pointer;
+  text-align: center;
+  font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  transition: all 0.15s;
+}
+.combo-btn:hover { border-color: var(--accent); color: var(--text); }
+.combo-btn.active { border-color: var(--accent); background: rgba(124,111,247,0.12); color: var(--text); }
+.combo-btn .cb-icon { font-size: 16px; }
+.combo-btn .cb-name { font-size: 12px; font-weight: 700; display: block; }
+.combo-btn .cb-desc { font-size: 9px; color: var(--dim); font-weight: 400; display: block; }
+.combo-btn.active .cb-desc { color: var(--muted); }
+.combo-divider {
+  width: 1px; background: var(--border2);
+  align-self: stretch; margin: 4px 0; flex-shrink: 0;
 }
 
 .level-btn {
@@ -1202,20 +1372,557 @@ body {
   .submit-btn  { height: 60px; padding: 0 14px; font-size: 13px; }
   .game-title  { font-size: 22px; }
 }
+
+/* ── Settings FAB ── */
+.settings-fab {
+  position: fixed; top: 14px; right: 14px; z-index: 150;
+  width: 44px; height: 44px; border-radius: 50%;
+  background: var(--surface); border: 1.5px solid var(--border2);
+  color: var(--text); font-size: 20px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; box-shadow: 0 2px 12px rgba(0,0,0,0.5);
+  transition: all 0.15s;
+}
+.settings-fab:hover { border-color: var(--accent); transform: scale(1.05); }
+
+/* ── Settings Panel ── */
+.settings-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.85);
+  z-index: 300; display: none; flex-direction: column; align-items: center;
+}
+.settings-overlay.open { display: flex; }
+.settings-panel {
+  width: 100%; max-width: 460px; height: 100%;
+  background: var(--bg); display: flex; flex-direction: column; overflow-y: auto;
+}
+.settings-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 16px 18px 12px; border-bottom: 1px solid var(--border); flex-shrink: 0;
+}
+.settings-title { font-size: 17px; font-weight: 700; color: var(--text); }
+.settings-close {
+  width: 34px; height: 34px; border-radius: 50%;
+  border: 1px solid var(--border2); background: var(--surface);
+  color: var(--muted); font-size: 16px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+}
+.settings-body { padding: 16px; display: flex; flex-direction: column; gap: 24px; }
+.settings-section-title {
+  font-size: 10px; font-weight: 700; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--dim); margin-bottom: 10px;
+}
+
+/* Theme cards */
+.theme-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+.theme-card {
+  border: 2px solid var(--border2); border-radius: 12px;
+  padding: 12px; cursor: pointer; transition: all 0.15s;
+  display: flex; flex-direction: column; gap: 8px;
+  background: var(--surface);
+}
+.theme-card:hover { border-color: var(--accent); }
+.theme-card.active { border-color: var(--accent); background: rgba(124,111,247,0.1); }
+.theme-card.active[data-t="cyberpunk"] { border-color: #00ff88; background: rgba(0,255,136,0.08); }
+.theme-card.active[data-t="ocean"] { border-color: #38bdf8; background: rgba(56,189,248,0.08); }
+.theme-card.active[data-t="light"] { border-color: #5b52d9; background: rgba(91,82,217,0.08); }
+.theme-preview {
+  height: 48px; border-radius: 8px; display: flex; gap: 4px;
+  align-items: center; justify-content: center; padding: 6px;
+}
+.theme-dot { width: 14px; height: 14px; border-radius: 4px; }
+.theme-name { font-size: 13px; font-weight: 700; color: var(--text); }
+.theme-check { font-size: 11px; color: var(--accent); font-weight: 700; display: none; }
+.theme-card.active .theme-check { display: block; }
+
+/* Layout toggle */
+.layout-toggle {
+  display: flex; gap: 8px;
+}
+.layout-btn {
+  flex: 1; padding: 12px 8px; border: 2px solid var(--border2);
+  border-radius: 10px; background: var(--surface); color: var(--muted);
+  cursor: pointer; transition: all 0.15s; text-align: center;
+  font-family: system-ui, sans-serif; font-size: 13px; font-weight: 600;
+}
+.layout-btn:hover { border-color: var(--accent); color: var(--text); }
+.layout-btn.active { border-color: var(--accent); background: rgba(124,111,247,0.12); color: var(--text); }
+.layout-btn .lb-icon { font-size: 22px; display: block; margin-bottom: 4px; }
+.layout-btn .lb-name { font-size: 12px; display: block; }
+
+/* Sound toggle in settings */
+.sound-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 16px; border: 1px solid var(--border);
+  border-radius: 10px; background: var(--surface);
+}
+.sound-row-label { font-size: 14px; font-weight: 600; color: var(--text); }
+.sound-row-sub { font-size: 11px; color: var(--dim); margin-top: 2px; }
+.toggle-switch {
+  width: 44px; height: 24px; border-radius: 12px;
+  background: var(--border2); cursor: pointer; position: relative;
+  transition: background 0.2s; flex-shrink: 0; border: none;
+}
+.toggle-switch.on { background: var(--accent); }
+.toggle-switch::after {
+  content: ''; position: absolute;
+  width: 18px; height: 18px; border-radius: 50%;
+  background: white; top: 3px; left: 3px;
+  transition: transform 0.2s;
+}
+.toggle-switch.on::after { transform: translateX(20px); }
+
+/* ── 2-column game layout ── */
+.game-cols {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  align-items: start;
+}
+.game-cols .col-input { display: flex; flex-direction: column; gap: 6px; }
+.game-cols .col-history {
+  display: flex; flex-direction: column; gap: 4px;
+  overflow: visible;
+  min-height: 0;
+}
+.game-cols .digit-box { height: 48px; font-size: 22px; border-radius: 10px; }
+.game-cols .key-btn { height: 40px; font-size: 17px; border-radius: 9px; }
+.game-cols .legend { flex-direction: column; gap: 2px; margin-bottom: 0; font-size: 10px; }
+.game-cols .divider { display: none; }
+
+/* history row in side mode — compact table style */
+.side-hist-row {
+  display: grid;
+  grid-template-columns: 1fr auto auto auto;
+  gap: 4px;
+  align-items: center;
+  padding: 5px 8px;
+  border: 1px solid var(--border);
+  border-top: none;
+  background: var(--surface);
+  animation: slideIn 0.2s ease;
+}
+.side-hist-row:first-child { border-top: 1px solid var(--border); }
+.side-hist-row:last-child { border-radius: 0 0 8px 8px; }
+.side-hist-digits { display: flex; gap: 3px; align-items: center; }
+.side-hist-num { font-family: 'Courier New', monospace; font-size: 9px; color: var(--dim); margin-right: 3px; }
+.side-hist-digit {
+  width: 22px; height: 22px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 4px;
+  font-family: 'Courier New', monospace; font-weight: 700; font-size: 11px;
+  background: var(--surface2); color: var(--dim); border: 1px solid var(--border);
+}
+.side-hist-digit.bull { background: var(--bull-bg); color: var(--bull); border-color: var(--bull-bd); }
+.side-hist-digit.cow  { background: var(--cow-bg);  color: var(--cow);  border-color: var(--cow-bd); }
+.side-score {
+  font-family: 'Courier New', monospace; font-size: 11px; font-weight: 700;
+  min-width: 28px; text-align: center;
+}
+.side-score.cow-s { color: var(--cow); }
+.side-score.bull-s { color: var(--bull); }
+.side-score.time-s { color: var(--muted); min-width: 36px; text-align: right; font-size: 10px; font-weight: 400; }
+.login-btn {
+  display: flex; align-items: center; gap: 6px;
+  padding: 5px 11px;
+  border: 1.5px solid var(--border2); border-radius: 20px;
+  background: var(--surface); color: var(--text);
+  font-size: 12px; font-weight: 600; cursor: pointer;
+  transition: all 0.15s; white-space: nowrap;
+}
+.login-btn:hover { border-color: var(--accent); color: var(--accent); }
+.login-btn.logged-in { border-color: var(--bull-bd); color: var(--bull); background: var(--bull-bg); }
+.login-btn img { width: 16px; height: 16px; border-radius: 50%; }
+
+/* ── Scoreboard FAB ── */
+.sb-fab {
+  position: fixed; top: 14px; left: 14px; z-index: 150;
+  width: 44px; height: 44px; border-radius: 50%;
+  background: var(--surface); border: 1.5px solid var(--border2);
+  color: var(--text); font-size: 20px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; box-shadow: 0 2px 12px rgba(0,0,0,0.5);
+  transition: all 0.15s;
+}
+.sb-fab:hover { border-color: var(--cow); transform: scale(1.05); }
+
+/* ── Scoreboard Overlay ── */
+.sb-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.85);
+  z-index: 300; display: none; flex-direction: column;
+  align-items: center;
+}
+.sb-overlay.open { display: flex; }
+.sb-panel {
+  width: 100%; max-width: 460px; height: 100%;
+  background: var(--bg); display: flex; flex-direction: column; overflow: hidden;
+}
+.sb-panel-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 16px 18px 12px; border-bottom: 1px solid var(--border); flex-shrink: 0;
+}
+.sb-panel-title {
+  font-size: 17px; font-weight: 700; color: var(--text);
+  display: flex; align-items: center; gap: 8px;
+}
+.sb-live-dot {
+  width: 8px; height: 8px; border-radius: 50%; background: var(--bull);
+  animation: sbpulse 1.5s ease infinite; display: inline-block;
+}
+@keyframes sbpulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.4;transform:scale(0.7)} }
+.sb-close-btn {
+  width: 34px; height: 34px; border-radius: 50%;
+  border: 1px solid var(--border2); background: var(--surface);
+  color: var(--muted); font-size: 16px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+}
+.sb-list { flex: 1; overflow-y: auto; padding: 12px 16px; display: flex; flex-direction: column; gap: 6px; }
+.sb-row {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 14px; border-radius: 12px;
+  border: 1px solid var(--border); background: var(--surface);
+}
+.sb-row.sb-me { border-color: var(--accent); background: rgba(124,111,247,0.08); }
+.sb-row.sb-top1 { border-color: #b45309; background: rgba(180,83,9,0.08); }
+.sb-row.sb-top2 { border-color: #6b7280; background: rgba(107,114,128,0.06); }
+.sb-row.sb-top3 { border-color: #92400e; background: rgba(146,64,14,0.06); }
+.sb-rank { font-size: 18px; min-width: 30px; text-align: center; }
+.sb-avatar {
+  width: 32px; height: 32px; border-radius: 50%;
+  background: var(--surface2); border: 1px solid var(--border2);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px; flex-shrink: 0; overflow: hidden;
+}
+.sb-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.sb-info { flex: 1; min-width: 0; }
+.sb-name { font-size: 14px; font-weight: 600; color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.sb-coins {
+  font-family: 'Courier New', monospace; font-size: 14px; font-weight: 700;
+  color: var(--cow); background: var(--cow-bg); border: 1px solid var(--cow-bd);
+  padding: 4px 10px; border-radius: 20px; white-space: nowrap;
+}
+
+/* ── Player name + coin bar ── */
+.player-name-bar { display:flex; align-items:center; justify-content:space-between; margin-bottom:1rem; gap:8px; }
+.player-name-display { font-size:14px; font-weight:700; color:var(--text); display:flex; align-items:center; gap:6px; }
+.pn-edit { font-size:11px; color:var(--dim); cursor:pointer; border:none; background:none; padding:2px 5px; border-radius:4px; }
+.coin-display {
+  display:flex; align-items:center; gap:5px;
+  font-family:'Courier New',monospace; font-size:14px; font-weight:700;
+  color:var(--cow); background:var(--cow-bg); border:1px solid var(--cow-bd);
+  padding:4px 11px; border-radius:20px;
+}
+.ph-coin { font-family:'Courier New',monospace; font-size:12px; font-weight:700; color:var(--cow); }
+
+/* ── Name Modal ── */
+.name-modal-overlay {
+  position:fixed; inset:0; background:rgba(0,0,0,0.75);
+  z-index:200; display:flex; align-items:center; justify-content:center; padding:20px;
+}
+.name-modal {
+  background:var(--surface); border:1px solid var(--border2);
+  border-radius:16px; padding:24px 20px; width:100%; max-width:340px;
+  display:flex; flex-direction:column; gap:14px;
+}
+.name-modal-title { font-size:16px; font-weight:700; color:var(--text); text-align:center; }
+.name-modal-sub { font-size:12px; color:var(--muted); text-align:center; margin-top:-8px; }
+.name-field { display:flex; flex-direction:column; gap:6px; }
+.name-field label { font-size:11px; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; color:var(--dim); }
+.name-input {
+  width:100%; height:44px; padding:0 14px; font-size:15px; font-weight:600;
+  background:var(--bg); border:1.5px solid var(--border2); border-radius:10px;
+  color:var(--text); outline:none; font-family:system-ui,sans-serif;
+}
+.name-input:focus { border-color:var(--accent); }
+.name-input.p2-input:focus { border-color:var(--cow); }
+.name-modal-btn {
+  height:46px; font-size:14px; font-weight:700; border:none;
+  border-radius:10px; background:var(--accent); color:#fff; cursor:pointer;
+  font-family:system-ui,sans-serif;
+}
+.name-modal-btn:hover { background:var(--accent2); }
+
+/* ── Coin pop animation ── */
+.coin-pop {
+  position:fixed; font-size:22px; font-weight:700; color:var(--cow);
+  pointer-events:none; z-index:999;
+  animation:coinFloat 1.4s ease-out forwards;
+  text-shadow:0 0 12px rgba(251,191,36,0.6);
+}
+@keyframes coinFloat {
+  0%{opacity:1;transform:translateY(0) scale(1)}
+  60%{opacity:1;transform:translateY(-60px) scale(1.2)}
+  100%{opacity:0;transform:translateY(-100px) scale(0.8)}
+}
+.digit-pop {
+  position:fixed; font-weight:700; color:#ffd700;
+  pointer-events:none; z-index:9999;
+  font-family:'Courier New','Consolas',monospace;
+  animation:digitPop 1.8s ease-out forwards;
+  text-shadow:
+    0 0 0 6px rgba(0,0,0,0.9),
+    -2px -2px 0 #000, 2px -2px 0 #000,
+    -2px 2px 0 #000, 2px  2px 0 #000,
+    0 0 20px #ffb800, 0 0 40px #ff8c00;
+}
+@keyframes digitPop {
+  0%  {opacity:0;transform:translateY(10px) scale(0.6)}
+  15% {opacity:1;transform:translateY(-5px) scale(1.4)}
+  40% {opacity:1;transform:translateY(-30px) scale(1.2)}
+  75% {opacity:1;transform:translateY(-70px) scale(1.1)}
+  100%{opacity:0;transform:translateY(-120px) scale(1.0)}
+}
+
+/* ── Login nudge in win banner ── */
+.login-nudge {
+  margin-top:10px; padding:10px 14px;
+  background:rgba(124,111,247,0.1); border:1px solid var(--accent);
+  border-radius:10px; font-size:13px; color:var(--accent);
+  display:flex; align-items:center; gap:8px; flex-wrap:wrap;
+}
+.login-nudge-btn {
+  margin-left:auto; padding:5px 12px;
+  background:var(--accent); color:#fff; border:none;
+  border-radius:8px; font-size:12px; font-weight:700; cursor:pointer; white-space:nowrap;
+}
 </style>
+
+<!-- Firebase -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-app.js";
+import { getDatabase, ref, set, get, onValue, serverTimestamp, increment } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-database.js";
+import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-auth.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDNH6mMX564DLsJBkmlerzSucCayQBcdCc",
+  authDomain: "number-game-263fe.firebaseapp.com",
+  databaseURL: "https://number-game-263fe-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "number-game-263fe",
+  storageBucket: "number-game-263fe.firebasestorage.app",
+  messagingSenderId: "80584236951",
+  appId: "1:80584236951:web:b2cd31936ce07e0a056ed2",
+  measurementId: "G-2XMZZPS1MY"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+const auth = getAuth(app);
+const provider = new GoogleAuthProvider();
+
+window.currentUser = null;
+
+onAuthStateChanged(auth, (user) => {
+  window.currentUser = user;
+  updateLoginBtn();
+  if (window.refreshCoinDisplays) window.refreshCoinDisplays();
+});
+
+function updateLoginBtn() {
+  const btn = document.getElementById('login-btn');
+  if (!btn) return;
+  if (window.currentUser) {
+    const name = window.currentUser.displayName?.split(' ')[0] || 'ออกจากระบบ';
+    const photo = window.currentUser.photoURL;
+    btn.innerHTML = photo ? `<img src="${photo}" referrerpolicy="no-referrer"> ${name}` : `👤 ${name}`;
+    btn.classList.add('logged-in');
+    btn.title = 'กดเพื่อออกจากระบบ';
+  } else {
+    btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg> Login`;
+    btn.classList.remove('logged-in');
+  }
+}
+
+window.toggleLogin = async function() {
+  if (window.currentUser) {
+    await signOut(auth);
+  } else {
+    try { await signInWithPopup(auth, provider); } catch(e) { console.warn(e); }
+  }
+};
+
+window.fbAddCoins = async function(amount) {
+  if (!window.currentUser) return;
+  try {
+    const uid = window.currentUser.uid;
+    const r = ref(db, 'scoreboard/' + uid);
+    const snap = await get(r);
+    const prev = snap.exists() ? snap.val() : {};
+    await set(r, {
+      name: window.currentUser.displayName || 'ผู้เล่น',
+      photo: window.currentUser.photoURL || '',
+      coins: (prev.coins || 0) + amount,
+      updatedAt: serverTimestamp()
+    });
+  } catch(e) { console.warn('Firebase error:', e); }
+};
+
+onValue(ref(db, 'scoreboard'), (snap) => {
+  const data = snap.val();
+  if (!data) { renderSbList([]); return; }
+  const arr = Object.entries(data)
+    .map(([uid, v]) => ({ uid, ...v }))
+    .sort((a, b) => (b.coins || 0) - (a.coins || 0))
+    .slice(0, 20);
+  renderSbList(arr);
+});
+
+function renderSbList(arr) {
+  const el = document.getElementById('sb-list');
+  if (!el) return;
+  if (!arr.length) {
+    el.innerHTML = '<div style="text-align:center;color:var(--dim);padding:32px;font-size:13px">ยังไม่มีข้อมูล — Login แล้วชนะเพื่อขึ้น Scoreboard!</div>';
+    return;
+  }
+  const medals = ['🥇','🥈','🥉'];
+  const topCls = ['sb-top1','sb-top2','sb-top3'];
+  el.innerHTML = arr.map((p, i) => {
+    const isMe = window.currentUser && p.uid === window.currentUser.uid;
+    const cls = isMe ? 'sb-me' : (topCls[i] || '');
+    const avatar = p.photo ? `<img src="${p.photo}" referrerpolicy="no-referrer">` : (p.name?.[0]?.toUpperCase() || '?');
+    return `<div class="sb-row ${cls}">
+      <div class="sb-rank">${medals[i] || (i+1)}</div>
+      <div class="sb-avatar">${avatar}</div>
+      <div class="sb-info"><div class="sb-name">${p.name}${isMe ? ' 👤' : ''}</div></div>
+      <div class="sb-coins">🪙 ${p.coins || 0}</div>
+    </div>`;
+  }).join('');
+}
+
+window.openScoreboard = () => document.getElementById('sb-overlay').classList.add('open');
+window.closeScoreboard = () => document.getElementById('sb-overlay').classList.remove('open');
+</script>
 </head>
 <body>
-<!-- Shared mode bar -->
-<div style="width:100%;max-width:460px;margin-bottom:12px">
-  <div class="mode-selector" id="shared-mode-selector">
-    <button class="mode-btn active" id="mode1-btn" onclick="selectMode(1)">
-      <span class="md-name">👤 1 คน</span>
-      <span class="md-desc">เล่นคนเดียว</span>
-    </button>
-    <button class="mode-btn" id="mode2-btn" onclick="selectMode(2)">
-      <span class="md-name">👥 2 คน</span>
-      <span class="md-desc">แข่งกัน บน/ล่าง</span>
-    </button>
+<canvas id="bg-canvas"></canvas>
+
+<!-- 🏆 Scoreboard FAB -->
+<button class="sb-fab" onclick="openScoreboard ? openScoreboard() : null" title="Scoreboard โลก">🏆</button>
+
+<!-- Scoreboard Overlay -->
+<div class="sb-overlay" id="sb-overlay">
+  <div class="sb-panel">
+    <div class="sb-panel-header">
+      <div class="sb-panel-title"><span class="sb-live-dot"></span> 🏆 Scoreboard โลก</div>
+      <button class="sb-close-btn" onclick="closeScoreboard ? closeScoreboard() : document.getElementById('sb-overlay').classList.remove('open')">✕</button>
+    </div>
+    <div class="sb-list" id="sb-list"><div style="text-align:center;color:var(--dim);padding:32px;font-size:13px">กำลังโหลด...</div></div>
+  </div>
+</div>
+
+<!-- ⚙️ Settings FAB -->
+<button class="settings-fab" onclick="openSettings()" title="ตั้งค่า">⚙️</button>
+
+<!-- Settings Panel -->
+<div class="settings-overlay" id="settings-overlay">
+  <div class="settings-panel">
+    <div class="settings-header">
+      <div class="settings-title">⚙️ ตั้งค่า</div>
+      <button class="settings-close" onclick="closeSettings()">✕</button>
+    </div>
+    <div class="settings-body">
+
+      <!-- Theme -->
+      <div>
+        <div class="settings-section-title">🎨 ธีม UI</div>
+        <div class="theme-grid">
+          <div class="theme-card active" data-t="dark" onclick="setTheme('dark')">
+            <div class="theme-preview" style="background:#0d0f14">
+              <div class="theme-dot" style="background:#7c6ff7"></div>
+              <div class="theme-dot" style="background:#4ade80"></div>
+              <div class="theme-dot" style="background:#fbbf24"></div>
+            </div>
+            <div class="theme-name">Dark Purple</div>
+            <div class="theme-check">✓ กำลังใช้</div>
+          </div>
+          <div class="theme-card" data-t="cyberpunk" onclick="setTheme('cyberpunk')">
+            <div class="theme-preview" style="background:#0a0f0a">
+              <div class="theme-dot" style="background:#00ff88"></div>
+              <div class="theme-dot" style="background:#00ff88"></div>
+              <div class="theme-dot" style="background:#ffff00"></div>
+            </div>
+            <div class="theme-name">Cyberpunk</div>
+            <div class="theme-check">✓ กำลังใช้</div>
+          </div>
+          <div class="theme-card" data-t="ocean" onclick="setTheme('ocean')">
+            <div class="theme-preview" style="background:#040d1a">
+              <div class="theme-dot" style="background:#38bdf8"></div>
+              <div class="theme-dot" style="background:#34d399"></div>
+              <div class="theme-dot" style="background:#fbbf24"></div>
+            </div>
+            <div class="theme-name">Ocean</div>
+            <div class="theme-check">✓ กำลังใช้</div>
+          </div>
+          <div class="theme-card" data-t="light" onclick="setTheme('light')">
+            <div class="theme-preview" style="background:#f0f2f8">
+              <div class="theme-dot" style="background:#5b52d9"></div>
+              <div class="theme-dot" style="background:#16a34a"></div>
+              <div class="theme-dot" style="background:#d97706"></div>
+            </div>
+            <div class="theme-name">Light</div>
+            <div class="theme-check">✓ กำลังใช้</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Layout -->
+      <div>
+        <div class="settings-section-title">📋 Layout ประวัติการทาย</div>
+        <div class="layout-toggle">
+          <button class="layout-btn" id="layout-side-btn" onclick="setLayout('side')">
+            <span class="lb-icon">⬅️</span>
+            <span class="lb-name">ด้านข้าง</span>
+          </button>
+          <button class="layout-btn active" id="layout-bottom-btn" onclick="setLayout('bottom')">
+            <span class="lb-icon">⬇️</span>
+            <span class="lb-name">ด้านล่าง</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Sound -->
+      <div>
+        <div class="settings-section-title">🔊 เสียง</div>
+        <div class="sound-row" style="margin-bottom:8px">
+          <div>
+            <div class="sound-row-label">🎵 เพลงประกอบ</div>
+            <div class="sound-row-sub">เพลง background</div>
+          </div>
+          <button class="toggle-switch on" id="music-switch" onclick="toggleMusicSwitch()"></button>
+        </div>
+        <div class="sound-row">
+          <div>
+            <div class="sound-row-label">🔔 เสียง SFX</div>
+            <div class="sound-row-sub">เสียงปุ่มกด, ผลการทาย, ชนะ</div>
+          </div>
+          <button class="toggle-switch on" id="sfx-switch" onclick="toggleSfxSwitch()"></button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- Name Modal -->
+<div class="name-modal-overlay" id="name-modal" style="display:none">
+  <div class="name-modal">
+    <div class="name-modal-title" id="modal-title">ตั้งชื่อผู้เล่น</div>
+    <div class="name-modal-sub" id="modal-sub">ใส่ชื่อเพื่อแสดงในเกม</div>
+    <div class="name-field">
+      <label id="modal-label1">ชื่อผู้เล่น</label>
+      <input class="name-input" id="modal-input1" type="text" maxlength="12" placeholder="เช่น ส้ม" autocomplete="off" onkeydown="if(event.key==='Enter')confirmNames()">
+    </div>
+    <div class="name-field" id="modal-field2" style="display:none">
+      <label style="color:var(--cow)">ชื่อผู้เล่น 2</label>
+      <input class="name-input p2-input" id="modal-input2" type="text" maxlength="12" placeholder="เช่น มิ้น" autocomplete="off" onkeydown="if(event.key==='Enter')confirmNames()">
+    </div>
+    <button class="name-modal-btn" onclick="confirmNames()">เริ่มเกม →</button>
+  </div>
+</div>
+
+<!-- Shared mode bar (hidden, keep for JS) -->
+<div style="display:none">
+  <div id="shared-mode-selector">
+    <button id="mode1-btn"></button>
+    <button id="mode2-btn"></button>
   </div>
 </div>
 
@@ -1231,6 +1938,18 @@ body {
     </div>
     <h1 class="game-title">ถอด<span>รหัส</span>ตัวเลข</h1>
     <p class="game-sub">ตัวเลข 4 หลักที่ซ่อนอยู่ — ถอดรหัสให้ได้!</p>
+  </div>
+
+  <!-- Player name + coin + login -->
+  <div class="player-name-bar">
+    <div class="player-name-display">
+      <span id="sp-name-text">ผู้เล่น</span>
+      <button class="pn-edit" onclick="openNameModal(1)">✎</button>
+    </div>
+    <div style="display:flex;gap:8px;align-items:center">
+      <div class="coin-display" id="sp-coin-wrap" style="display:none">🪙 <span id="sp-coin-count">0</span></div>
+      <button class="login-btn" id="login-btn" onclick="toggleLogin ? toggleLogin() : null">Login</button>
+    </div>
   </div>
 
   <!-- Rules -->
@@ -1252,8 +1971,8 @@ body {
 
       <h3>คำใบ้</h3>
       <ul>
-        <li><span class="tag-bull">ตัว</span> — จำนวนตัวเลขที่ตรงกับรหัส (ไม่สนตำแหน่ง)</li>
-        <li><span class="tag-cow">ที่</span> — จำนวนตัวเลขที่ถูกทั้งตัวและตำแหน่ง</li>
+        <li><span class="tag-cow">ตัว</span> — ตัวเลขถูก แต่ตำแหน่งผิด</li>
+        <li><span class="tag-bull">ที่</span> — ตัวเลขถูก และตำแหน่งถูก</li>
         <li>ตัวเลขที่ไม่มีในรหัส จะไม่นับทั้งคู่</li>
       </ul>
 
@@ -1262,9 +1981,9 @@ body {
         <div class="ex-row">
           <span class="ex-label">#1</span>
           <div class="ex-digits">
-            <div class="ex-digit">1</div><div class="ex-digit">5</div><div class="ex-digit">6</div><div class="ex-digit">8</div>
+            <div class="ex-digit cow">1</div><div class="ex-digit">5</div><div class="ex-digit">6</div><div class="ex-digit">8</div>
           </div>
-          <span class="ex-result">→ 1 ตัว &nbsp;0 ที่ &nbsp;(เลข 1 มีในรหัส ผิดที่)</span>
+          <span class="ex-result">→ 1 ตัว &nbsp;0 ที่ &nbsp;(เลข 1 อยู่ในรหัส แต่ผิดตำแหน่ง)</span>
         </div>
         <div class="ex-row">
           <span class="ex-label">#2</span>
@@ -1291,15 +2010,34 @@ body {
     </div>
   </div>
 
-  <!-- Level selector -->
-  <div class="level-selector">
-    <button class="level-btn active" id="lv1-btn" onclick="selectLevel(1)">
-      <span class="lv-name">Level 1</span>
-      <span class="lv-desc">ง่าย — เห็นสีใบ้</span>
+  <!-- Combined mode + level selector -->
+  <div class="combined-selector">
+    <button class="combo-btn active" id="combo-mode1-btn" onclick="selectMode(1)">
+      <span class="cb-icon">👤</span>
+      <span class="cb-name">1 คน</span>
+      <span class="cb-desc">คนเดียว</span>
     </button>
-    <button class="level-btn" id="lv2-btn" onclick="selectLevel(2)">
-      <span class="lv-name">Level 2</span>
-      <span class="lv-desc">ปานกลาง — ไม่มีสี</span>
+    <button class="combo-btn" id="combo-mode2-btn" onclick="selectMode(2)">
+      <span class="cb-icon">👥</span>
+      <span class="cb-name">2 คน</span>
+      <span class="cb-desc">บน/ล่าง</span>
+    </button>
+    <div class="combo-divider"></div>
+    <button class="combo-btn" id="custom-secret-btn" onclick="openCustomSecretModal()">
+      <span class="cb-icon">🔐</span>
+      <span class="cb-name">ตั้งรหัส</span>
+      <span class="cb-desc">ท้าเพื่อน</span>
+    </button>
+    <div class="combo-divider"></div>
+    <button class="combo-btn active" id="lv1-btn" onclick="selectLevel(1)">
+      <span class="cb-icon">🟢</span>
+      <span class="cb-name">Lv.1</span>
+      <span class="cb-desc">มีสีใบ้</span>
+    </button>
+    <button class="combo-btn" id="lv2-btn" onclick="selectLevel(2)">
+      <span class="cb-icon">⚫</span>
+      <span class="cb-name">Lv.2</span>
+      <span class="cb-desc">ไม่มีสี</span>
     </button>
   </div>
 
@@ -1333,61 +2071,68 @@ body {
 
   <!-- Game area -->
   <div id="game-area">
-    <!-- Status -->
-    <div class="status-bar">
-      <div class="stat-cell">
-        <div class="stat-label">ถูกตัว</div>
-        <div class="stat-val bull-col" id="bull-count">—</div>
-      </div>
-      <div class="stat-cell">
-        <div class="stat-label">ถูกที่</div>
-        <div class="stat-val cow-col" id="cow-count">—</div>
-      </div>
-      <div class="stat-cell">
-        <div class="stat-label">ครั้งที่</div>
-        <div class="stat-val" id="round-disp">1</div>
-      </div>
-      <div class="stat-cell">
-        <div class="stat-label">เวลา</div>
-        <div class="stat-val" id="timer-disp" style="font-size:16px;letter-spacing:0.05em">0:00</div>
+    <div style="display:none">
+      <span id="bull-count"></span><span id="cow-count"></span><span id="round-disp"></span>
+    </div>
+
+    <!-- Timer — always visible -->
+    <div id="timer-bottom" style="display:flex;justify-content:flex-end;margin-bottom:8px">
+      <div style="display:flex;align-items:center;gap:6px;font-family:'Courier New',monospace;font-size:13px;font-weight:700;color:var(--muted);background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:4px 12px">
+        ⏱ <span id="timer-disp-bottom">0:00</span>
       </div>
     </div>
 
-    <!-- Input -->
-    <div class="input-label">ใส่รหัส 4 หลัก</div>
-    <div class="digit-display-row" id="digit-display-row">
-      <div class="digit-box active" id="d0" onclick="spFocus(0)"><span class="ph">?</span></div>
-      <div class="digit-box" id="d1" onclick="spFocus(1)"><span class="ph">?</span></div>
-      <div class="digit-box" id="d2" onclick="spFocus(2)"><span class="ph">?</span></div>
-      <div class="digit-box" id="d3" onclick="spFocus(3)"><span class="ph">?</span></div>
+    <!-- Game cols wrapper (switches between 1-col and 2-col) -->
+    <div id="game-layout-wrap">
+
+      <!-- History col (LEFT in side mode) -->
+      <div id="col-history">
+        <!-- Side mode header -->
+        <div id="history-header-side" style="display:none">
+          <div style="display:grid;grid-template-columns:1fr auto auto auto;gap:4px;padding:5px 8px;background:var(--surface2);border-radius:8px 8px 0 0;border:1px solid var(--border);border-bottom:none">
+            <div style="font-size:9px;font-weight:700;letter-spacing:0.07em;text-transform:uppercase;color:var(--dim)">ประวัติ</div>
+            <div style="font-size:9px;font-weight:700;color:var(--cow);text-align:center;min-width:28px">ตัว</div>
+            <div style="font-size:9px;font-weight:700;color:var(--bull);text-align:center;min-width:28px">ที่</div>
+            <div style="font-family:'Courier New',monospace;font-size:9px;font-weight:700;color:var(--muted);text-align:right;min-width:36px">⏱ <span id="timer-disp">0:00</span></div>
+          </div>
+        </div>
+        <!-- Bottom mode timer -->
+        <hr class="divider" id="history-divider">
+        <div class="history" id="history"></div>
+      </div>
+
+      <!-- Input col (RIGHT in side mode) -->
+      <div id="col-input">
+        <div class="input-label">ใส่รหัส 4 หลัก</div>
+        <div class="digit-display-row" id="digit-display-row">
+          <div class="digit-box active" id="d0" onclick="spFocus(0)"><span class="ph">?</span></div>
+          <div class="digit-box" id="d1" onclick="spFocus(1)"><span class="ph">?</span></div>
+          <div class="digit-box" id="d2" onclick="spFocus(2)"><span class="ph">?</span></div>
+          <div class="digit-box" id="d3" onclick="spFocus(3)"><span class="ph">?</span></div>
+        </div>
+        <div class="err-msg" id="err-msg"></div>
+        <div class="keypad" id="sp-keypad">
+          <div class="key-btn" onclick="spKey(1)" oncontextmenu="spDel();return false;">1</div>
+          <div class="key-btn" onclick="spKey(2)" oncontextmenu="spDel();return false;">2</div>
+          <div class="key-btn" onclick="spKey(3)" oncontextmenu="spDel();return false;">3</div>
+          <div class="key-btn" onclick="spKey(4)" oncontextmenu="spDel();return false;">4</div>
+          <div class="key-btn" onclick="spKey(5)" oncontextmenu="spDel();return false;">5</div>
+          <div class="key-btn" onclick="spKey(6)" oncontextmenu="spDel();return false;">6</div>
+          <div class="key-btn" onclick="spKey(7)" oncontextmenu="spDel();return false;">7</div>
+          <div class="key-btn" onclick="spKey(8)" oncontextmenu="spDel();return false;">8</div>
+          <div class="key-btn" onclick="spKey(9)" oncontextmenu="spDel();return false;">9</div>
+          <div class="key-btn del" onclick="spDel()">⌫</div>
+          <div class="key-btn" onclick="spKey(0)" oncontextmenu="spDel();return false;">0</div>
+          <div class="key-btn go" id="sp-go-btn" onclick="submitGuess()">ทาย →</div>
+        </div>
+        <div class="legend" id="legend">
+          <span><span class="legend-dot" style="background:var(--cow)"></span>ตัวเลขถูก ตำแหน่งผิด</span>
+          <span><span class="legend-dot" style="background:var(--bull)"></span>ตัวเลขถูก ตำแหน่งถูก</span>
+          <span><span class="legend-dot" style="background:var(--dim);opacity:0.5"></span>ไม่มีในรหัส</span>
+        </div>
+      </div>
+
     </div>
-
-    <div class="err-msg" id="err-msg"></div>
-
-    <div class="keypad" id="sp-keypad">
-      <div class="key-btn" onclick="spKey(1)">1</div>
-      <div class="key-btn" onclick="spKey(2)">2</div>
-      <div class="key-btn" onclick="spKey(3)">3</div>
-      <div class="key-btn" onclick="spKey(4)">4</div>
-      <div class="key-btn" onclick="spKey(5)">5</div>
-      <div class="key-btn" onclick="spKey(6)">6</div>
-      <div class="key-btn" onclick="spKey(7)">7</div>
-      <div class="key-btn" onclick="spKey(8)">8</div>
-      <div class="key-btn" onclick="spKey(9)">9</div>
-      <div class="key-btn del" onclick="spDel()">⌫</div>
-      <div class="key-btn" onclick="spKey(0)">0</div>
-      <div class="key-btn go" id="sp-go-btn" onclick="submitGuess()">ทาย →</div>
-    </div>
-
-    <!-- Legend -->
-    <div class="legend" id="legend">
-      <span><span class="legend-dot" style="background:var(--bull)"></span>ถูกตัว (ไม่สนตำแหน่ง)</span>
-      <span><span class="legend-dot" style="background:var(--cow)"></span>ถูกที่ (ถูกทั้งตัวและตำแหน่ง)</span>
-      <span><span class="legend-dot" style="background:var(--dim);opacity:0.5"></span>ไม่มีในรหัส</span>
-    </div>
-
-    <hr class="divider">
-    <div class="history" id="history"></div>
   </div>
 
   <!-- Records -->
@@ -1395,7 +2140,6 @@ body {
     <div class="records-header">
       <div class="records-title">ประวัติรหัสที่ถอดแล้ว</div>
       <div style="display:flex;gap:6px;align-items:center">
-        <button class="sound-toggle on" id="sound-toggle" onclick="toggleSound()">🔊 เสียง</button>
         <div id="clear-normal" style="display:flex">
           <button class="clear-btn" onclick="askClear()">ล้างทั้งหมด</button>
         </div>
@@ -1411,90 +2155,174 @@ body {
 
 </div>
 
+
+<!-- Custom Secret Modal -->
+<div id="custom-secret-modal" class="name-modal-overlay" style="display:none">
+  <div class="name-modal" style="max-width:340px">
+    <div class="name-modal-title" id="cs-title">ตั้งรหัสลับ</div>
+    <div class="name-modal-sub" id="cs-sub">ใส่ตัวเลข 4 หลัก ไม่ซ้ำกัน แล้วให้เพื่อนแก้!</div>
+    <div style="display:flex;gap:8px;justify-content:center;margin:16px 0 8px">
+      <div class="digit-box" id="cs-d0" onclick="csFocus(0)" style="width:56px;height:56px;font-size:26px">
+        <span class="ph" style="font-size:20px">?</span>
+      </div>
+      <div class="digit-box" id="cs-d1" onclick="csFocus(1)" style="width:56px;height:56px;font-size:26px">
+        <span class="ph" style="font-size:20px">?</span>
+      </div>
+      <div class="digit-box" id="cs-d2" onclick="csFocus(2)" style="width:56px;height:56px;font-size:26px">
+        <span class="ph" style="font-size:20px">?</span>
+      </div>
+      <div class="digit-box" id="cs-d3" onclick="csFocus(3)" style="width:56px;height:56px;font-size:26px">
+        <span class="ph" style="font-size:20px">?</span>
+      </div>
+    </div>
+    <div class="err-msg" id="cs-err" style="text-align:center;min-height:16px;margin-bottom:4px"></div>
+    <div class="keypad" style="margin-bottom:12px">
+      <div class="key-btn" onclick="csKey(1)" oncontextmenu="csDel();return false;">1</div>
+      <div class="key-btn" onclick="csKey(2)" oncontextmenu="csDel();return false;">2</div>
+      <div class="key-btn" onclick="csKey(3)" oncontextmenu="csDel();return false;">3</div>
+      <div class="key-btn" onclick="csKey(4)" oncontextmenu="csDel();return false;">4</div>
+      <div class="key-btn" onclick="csKey(5)" oncontextmenu="csDel();return false;">5</div>
+      <div class="key-btn" onclick="csKey(6)" oncontextmenu="csDel();return false;">6</div>
+      <div class="key-btn" onclick="csKey(7)" oncontextmenu="csDel();return false;">7</div>
+      <div class="key-btn" onclick="csKey(8)" oncontextmenu="csDel();return false;">8</div>
+      <div class="key-btn" onclick="csKey(9)" oncontextmenu="csDel();return false;">9</div>
+      <div class="key-btn del" onclick="csDel()">⌫</div>
+      <div class="key-btn" onclick="csKey(0)" oncontextmenu="csDel();return false;">0</div>
+      <div class="key-btn go" onclick="confirmCustomSecret()">ตกลง ✓</div>
+    </div>
+    <button class="name-modal-cancel" onclick="closeCustomSecretModal()">ยกเลิก</button>
+  </div>
+</div>
+
 <!-- 2-Player Layout -->
 <div class="two-player-wrap" id="two-player-wrap" style="display:none">
 
   <!-- Player 2 top (rotated) -->
   <div class="player-half p2-half">
-    <div class="ph-win" id="p2-win-box"></div>
-    <div class="ph-label"><span class="ph-dot"></span>ผู้เล่น 2</div>
-    <div class="ph-status">
-      <div class="ph-stat"><div class="ph-stat-label">ถูกตัว</div><div class="ph-stat-val gc" id="p2-bull">—</div></div>
-      <div class="ph-stat"><div class="ph-stat-label">ถูกที่</div><div class="ph-stat-val yc" id="p2-cow">—</div></div>
-      <div class="ph-stat"><div class="ph-stat-label">ครั้งที่</div><div class="ph-stat-val" id="p2-round">1</div></div>
+    <div style="display:none">
+      <span id="p2-bull"></span><span id="p2-cow"></span>
+      <span id="p2-round"></span><span id="p2-coin"></span>
     </div>
-    <div class="ph-digits" id="p2-digits">
-      <div class="ph-digit p2a" id="p2d0" onclick="tpFocus(2,0)"><span class="ph">?</span></div>
-      <div class="ph-digit" id="p2d1" onclick="tpFocus(2,1)"><span class="ph">?</span></div>
-      <div class="ph-digit" id="p2d2" onclick="tpFocus(2,2)"><span class="ph">?</span></div>
-      <div class="ph-digit" id="p2d3" onclick="tpFocus(2,3)"><span class="ph">?</span></div>
+    <!-- History column LEFT -->
+    <div class="ph-hist-col">
+      <div class="ph-win" id="p2-win-box"></div>
+      <div class="ph-label" style="display:flex;margin-bottom:4px"><span class="ph-dot"></span><span id="p2-name-label">ผู้เล่น 2</span></div>
+      <div style="display:grid;grid-template-columns:1fr auto auto auto;gap:3px;padding:3px 6px;background:var(--surface2);border-radius:6px 6px 0 0;border:1px solid var(--border);border-bottom:none;font-size:9px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;flex-shrink:0">
+        <div style="color:var(--dim)">ประวัติ</div>
+        <div style="color:var(--cow);text-align:center;min-width:24px">ตัว</div>
+        <div style="color:var(--bull);text-align:center;min-width:24px">ที่</div>
+        <div style="color:var(--muted);text-align:right;min-width:32px">⏱</div>
+      </div>
+      <div class="ph-bottom-history" id="p2-history" style="display:flex;flex-direction:column;gap:0;border:1px solid var(--border);border-top:none;border-radius:0 0 6px 6px;overflow-y:auto;flex:1;min-height:0;"></div>
     </div>
-    <div class="ph-err" id="p2-err"></div>
-    <div class="ph-keypad">
-      <div class="ph-key" onclick="tpKey(2,1)">1</div>
-      <div class="ph-key" onclick="tpKey(2,2)">2</div>
-      <div class="ph-key" onclick="tpKey(2,3)">3</div>
-      <div class="ph-key" onclick="tpKey(2,4)">4</div>
-      <div class="ph-key" onclick="tpKey(2,5)">5</div>
-      <div class="ph-key" onclick="tpKey(2,6)">6</div>
-      <div class="ph-key" onclick="tpKey(2,7)">7</div>
-      <div class="ph-key" onclick="tpKey(2,8)">8</div>
-      <div class="ph-key" onclick="tpKey(2,9)">9</div>
-      <div class="ph-key" onclick="tpKey(2,0)">0</div>
-      <div class="ph-key del" onclick="tpDel(2)">⌫</div>
-      <div class="ph-key go p2g" id="p2-submit" onclick="p2Submit(2)" style="grid-column:span 4">ทาย →</div>
+    <!-- Input column RIGHT -->
+    <div class="ph-input-col">
+      <div class="ph-digits" id="p2-digits">
+        <div class="ph-digit p2a" id="p2d0" onclick="tpFocus(2,0)"><span class="ph">?</span></div>
+        <div class="ph-digit" id="p2d1" onclick="tpFocus(2,1)"><span class="ph">?</span></div>
+        <div class="ph-digit" id="p2d2" onclick="tpFocus(2,2)"><span class="ph">?</span></div>
+        <div class="ph-digit" id="p2d3" onclick="tpFocus(2,3)"><span class="ph">?</span></div>
+      </div>
+      <div class="ph-err" id="p2-err"></div>
+      <div class="ph-keypad">
+        <div class="ph-key" onclick="tpKey(2,1)" oncontextmenu="tpDel(2);return false;">1</div>
+        <div class="ph-key" onclick="tpKey(2,2)" oncontextmenu="tpDel(2);return false;">2</div>
+        <div class="ph-key" onclick="tpKey(2,3)" oncontextmenu="tpDel(2);return false;">3</div>
+        <div class="ph-key" onclick="tpKey(2,4)" oncontextmenu="tpDel(2);return false;">4</div>
+        <div class="ph-key" onclick="tpKey(2,5)" oncontextmenu="tpDel(2);return false;">5</div>
+        <div class="ph-key" onclick="tpKey(2,6)" oncontextmenu="tpDel(2);return false;">6</div>
+        <div class="ph-key" onclick="tpKey(2,7)" oncontextmenu="tpDel(2);return false;">7</div>
+        <div class="ph-key" onclick="tpKey(2,8)" oncontextmenu="tpDel(2);return false;">8</div>
+        <div class="ph-key" onclick="tpKey(2,9)" oncontextmenu="tpDel(2);return false;">9</div>
+        <div class="ph-key del" onclick="tpDel(2)">⌫</div>
+        <div class="ph-key" onclick="tpKey(2,0)" oncontextmenu="tpDel(2);return false;">0</div>
+        <div class="ph-key go p2g" id="p2-submit" onclick="p2Submit(2)">ทาย →</div>
+      </div>
     </div>
-    <div id="p2-history" style="overflow-y:auto;flex:1;margin-top:3px;display:flex;flex-direction:column;gap:2px;min-height:0;"></div>
+    <div class="ph-side-history" id="p2-side-history" style="display:none"></div>
   </div>
 
   <!-- Middle -->
   <div class="two-mid">
     <button class="two-mid-btn" onclick="selectMode(1)">👤 1 คน</button>
-    <div class="two-mid-timer" id="two-timer">0:00</div>
+    <div style="display:flex;flex-direction:column;align-items:center;gap:3px;flex:1">
+      <div class="two-mid-timer" id="two-timer" style="flex:none">0:00</div>
+      <div style="display:flex;align-items:center;gap:6px;font-family:'Courier New',monospace;font-size:12px;font-weight:700">
+        <span style="color:var(--accent);font-size:11px" id="two-name-p1">ผู้เล่น 1</span>
+        <span style="color:var(--accent);font-size:14px" id="two-score-p1">0</span>
+        <span style="color:var(--dim)">–</span>
+        <span style="color:var(--cow);font-size:14px" id="two-score-p2">0</span>
+        <span style="color:var(--cow);font-size:11px" id="two-name-p2">ผู้เล่น 2</span>
+      </div>
+    </div>
     <button class="two-mid-btn active">👥 2 คน</button>
   </div>
 
   <!-- Player 1 bottom -->
   <div class="player-half p1-half">
-    <div class="ph-win" id="p1-win-box"></div>
-    <div class="ph-label"><span class="ph-dot"></span>ผู้เล่น 1</div>
-    <div class="ph-status">
-      <div class="ph-stat"><div class="ph-stat-label">ถูกตัว</div><div class="ph-stat-val gc" id="p1-bull">—</div></div>
-      <div class="ph-stat"><div class="ph-stat-label">ถูกที่</div><div class="ph-stat-val yc" id="p1-cow">—</div></div>
-      <div class="ph-stat"><div class="ph-stat-label">ครั้งที่</div><div class="ph-stat-val" id="p1-round">1</div></div>
+    <div style="display:none">
+      <span id="p1-bull"></span><span id="p1-cow"></span>
+      <span id="p1-round"></span><span id="p1-coin"></span>
     </div>
-    <div class="ph-digits" id="p1-digits">
-      <div class="ph-digit active" id="p1d0" onclick="tpFocus(1,0)"><span class="ph">?</span></div>
-      <div class="ph-digit" id="p1d1" onclick="tpFocus(1,1)"><span class="ph">?</span></div>
-      <div class="ph-digit" id="p1d2" onclick="tpFocus(1,2)"><span class="ph">?</span></div>
-      <div class="ph-digit" id="p1d3" onclick="tpFocus(1,3)"><span class="ph">?</span></div>
+    <!-- History column LEFT -->
+    <div class="ph-hist-col">
+      <div class="ph-win" id="p1-win-box"></div>
+      <div class="ph-label" style="display:flex;margin-bottom:4px"><span class="ph-dot"></span><span id="p1-name-label">ผู้เล่น 1</span></div>
+      <div style="display:grid;grid-template-columns:1fr auto auto auto;gap:3px;padding:3px 6px;background:var(--surface2);border-radius:6px 6px 0 0;border:1px solid var(--border);border-bottom:none;font-size:9px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;flex-shrink:0">
+        <div style="color:var(--dim)">ประวัติ</div>
+        <div style="color:var(--cow);text-align:center;min-width:24px">ตัว</div>
+        <div style="color:var(--bull);text-align:center;min-width:24px">ที่</div>
+        <div style="color:var(--muted);text-align:right;min-width:32px">⏱</div>
+      </div>
+      <div class="ph-bottom-history" id="p1-history" style="display:flex;flex-direction:column;gap:0;border:1px solid var(--border);border-top:none;border-radius:0 0 6px 6px;overflow-y:auto;flex:1;min-height:0;"></div>
     </div>
-    <div class="ph-err" id="p1-err"></div>
-    <div class="ph-keypad">
-      <div class="ph-key" onclick="tpKey(1,1)">1</div>
-      <div class="ph-key" onclick="tpKey(1,2)">2</div>
-      <div class="ph-key" onclick="tpKey(1,3)">3</div>
-      <div class="ph-key" onclick="tpKey(1,4)">4</div>
-      <div class="ph-key" onclick="tpKey(1,5)">5</div>
-      <div class="ph-key" onclick="tpKey(1,6)">6</div>
-      <div class="ph-key" onclick="tpKey(1,7)">7</div>
-      <div class="ph-key" onclick="tpKey(1,8)">8</div>
-      <div class="ph-key" onclick="tpKey(1,9)">9</div>
-      <div class="ph-key" onclick="tpKey(1,0)">0</div>
-      <div class="ph-key del" onclick="tpDel(1)">⌫</div>
-      <div class="ph-key go" id="p1-submit" onclick="p2Submit(1)" style="grid-column:span 4">ทาย →</div>
+    <!-- Input column RIGHT -->
+    <div class="ph-input-col">
+      <div class="ph-digits" id="p1-digits">
+        <div class="ph-digit active" id="p1d0" onclick="tpFocus(1,0)"><span class="ph">?</span></div>
+        <div class="ph-digit" id="p1d1" onclick="tpFocus(1,1)"><span class="ph">?</span></div>
+        <div class="ph-digit" id="p1d2" onclick="tpFocus(1,2)"><span class="ph">?</span></div>
+        <div class="ph-digit" id="p1d3" onclick="tpFocus(1,3)"><span class="ph">?</span></div>
+      </div>
+      <div class="ph-err" id="p1-err"></div>
+      <div class="ph-keypad">
+        <div class="ph-key" onclick="tpKey(1,1)" oncontextmenu="tpDel(1);return false;">1</div>
+        <div class="ph-key" onclick="tpKey(1,2)" oncontextmenu="tpDel(1);return false;">2</div>
+        <div class="ph-key" onclick="tpKey(1,3)" oncontextmenu="tpDel(1);return false;">3</div>
+        <div class="ph-key" onclick="tpKey(1,4)" oncontextmenu="tpDel(1);return false;">4</div>
+        <div class="ph-key" onclick="tpKey(1,5)" oncontextmenu="tpDel(1);return false;">5</div>
+        <div class="ph-key" onclick="tpKey(1,6)" oncontextmenu="tpDel(1);return false;">6</div>
+        <div class="ph-key" onclick="tpKey(1,7)" oncontextmenu="tpDel(1);return false;">7</div>
+        <div class="ph-key" onclick="tpKey(1,8)" oncontextmenu="tpDel(1);return false;">8</div>
+        <div class="ph-key" onclick="tpKey(1,9)" oncontextmenu="tpDel(1);return false;">9</div>
+        <div class="ph-key del" onclick="tpDel(1)">⌫</div>
+        <div class="ph-key" onclick="tpKey(1,0)" oncontextmenu="tpDel(1);return false;">0</div>
+        <div class="ph-key go" id="p1-submit" onclick="p2Submit(1)">ทาย →</div>
+      </div>
     </div>
-    <div id="p1-history" style="overflow-y:auto;flex:1;margin-top:3px;display:flex;flex-direction:column;gap:2px;min-height:0;"></div>
+    <div class="ph-side-history" id="p1-side-history" style="display:none"></div>
   </div>
 
   <!-- New game -->
   <div class="two-new-game" id="p2-new-game-bar">
     <button class="submit-btn" onclick="startTwoPlayerGame()">เกมใหม่ →</button>
+    <div id="two-records-preview" style="padding:8px 12px 4px;width:100%;max-height:200px;overflow-y:auto"></div>
   </div>
 
 </div>
 
 <script>
+// ── Resume AudioContext on any user interaction ──
+function resumeAudioCtx() {
+  if (!audioCtx) {
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  } else if (audioCtx.state === 'suspended') {
+    audioCtx.resume();
+  }
+}
+document.addEventListener('touchstart', resumeAudioCtx, { passive: true });
+document.addEventListener('mousedown', resumeAudioCtx, { passive: true });
+
 function toggleRules() {
   const btn = document.getElementById('rules-toggle');
   const content = document.getElementById('rules-content');
@@ -1508,10 +2336,11 @@ let currentLevel = 1;
 let timerInterval = null;
 
 function selectLevel(lv) {
+  const prevLevel = currentLevel;
   currentLevel = lv;
   document.getElementById('lv1-btn').classList.toggle('active', lv === 1);
   document.getElementById('lv2-btn').classList.toggle('active', lv === 2);
-  startNewGame();
+  if (prevLevel !== lv) startNewGame();
 }
 let guessLog = [];
 let soundOn = true;
@@ -1539,7 +2368,10 @@ function toggleGuesses(btn) {
 // ── Web Audio ──
 let audioCtx = null;
 function getCtx() {
-  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  if (!audioCtx) {
+    try { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); } catch(e) { return null; }
+  }
+  if (audioCtx.state === 'suspended') audioCtx.resume();
   return audioCtx;
 }
 
@@ -1547,15 +2379,25 @@ function playTone(freq, type, duration, vol, delay) {
   if (!soundOn) return;
   try {
     const ctx = getCtx();
-    const o = ctx.createOscillator();
-    const g = ctx.createGain();
-    o.connect(g); g.connect(ctx.destination);
-    o.type = type || 'sine';
-    o.frequency.setValueAtTime(freq, ctx.currentTime + (delay||0));
-    g.gain.setValueAtTime(vol || 0.3, ctx.currentTime + (delay||0));
-    g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + (delay||0) + duration);
-    o.start(ctx.currentTime + (delay||0));
-    o.stop(ctx.currentTime + (delay||0) + duration);
+    if (!ctx) return;
+    const doPlay = () => {
+      try {
+        const o = ctx.createOscillator();
+        const g = ctx.createGain();
+        o.connect(g); g.connect(ctx.destination);
+        o.type = type || 'sine';
+        o.frequency.setValueAtTime(freq, ctx.currentTime + (delay||0));
+        g.gain.setValueAtTime(vol || 0.3, ctx.currentTime + (delay||0));
+        g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + (delay||0) + duration);
+        o.start(ctx.currentTime + (delay||0));
+        o.stop(ctx.currentTime + (delay||0) + duration);
+      } catch(e) {}
+    };
+    if (ctx.state === 'suspended') {
+      ctx.resume().then(doPlay);
+    } else {
+      doPlay();
+    }
   } catch(e) {}
 }
 
@@ -1588,33 +2430,82 @@ function soundWin() {
   });
 }
 
+
+function soundBullUp(bullCount) {
+  // เสียงต่างกันตามจำนวน bulls 1-3
+  var configs = {
+    1: [[523, 'triangle', 0.12, 0.28, 0]],
+    2: [[523, 'triangle', 0.12, 0.25, 0], [659, 'triangle', 0.13, 0.28, 0.1]],
+    3: [[523, 'triangle', 0.12, 0.22, 0], [659, 'triangle', 0.13, 0.25, 0.1], [784, 'triangle', 0.15, 0.30, 0.2]]
+  };
+  var tones = configs[Math.min(bullCount, 3)] || configs[1];
+  tones.forEach(function(a) { playTone(a[0], a[1], a[2], a[3], a[4]); });
+  setTimeout(function() { playTone(1046, 'sine', 0.08, 0.12); }, (tones.length - 1) * 100 + 80);
+}
+
 function soundError() {
   playTone(180, 'sawtooth', 0.1, 0.2);
 }
 
 // ── Nocturne MIDI Playback Engine ──
+
 // ── Music Engine (MP3 via Audio API) ──
 let bgMusic = null;
 let musicStarted = false;
 let musicOn = true;
 
+// ── Music Playlist ──
+const MUSIC_PLAYLIST = [
+  'music/CBNocturne.mp3',
+  'music/Crystal-Ball.mp3',
+  'music/avp-stage4.mp3'
+];
+let _musicPlaylist = [];     // shuffled queue
+let _musicFading = false;
+const MUSIC_VOL = 0.4;
+
+function _shufflePlaylist(excludeSrc) {
+  // Fisher-Yates shuffle, optionally skip a track to avoid repeat
+  let pool = MUSIC_PLAYLIST.filter(t => t !== excludeSrc);
+  if (!pool.length) pool = MUSIC_PLAYLIST.slice();
+  for (let i = pool.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [pool[i], pool[j]] = [pool[j], pool[i]];
+  }
+  _musicPlaylist = pool;
+}
+
+function _nextTrack() {
+  if (!_musicPlaylist.length) _shufflePlaylist(bgMusic ? bgMusic.src : null);
+  return _musicPlaylist.shift();
+}
+
+function _playTrack(src, fadeIn) {
+  bgMusic = new Audio(src);
+  bgMusic.volume = fadeIn ? 0 : MUSIC_VOL;
+  bgMusic.addEventListener('ended', _onTrackEnd);
+  bgMusic.play().then(() => {
+    if (fadeIn) {
+      let vol = 0;
+      const fi = setInterval(() => {
+        vol = Math.min(vol + 0.02, MUSIC_VOL);
+        bgMusic.volume = vol;
+        if (vol >= MUSIC_VOL) clearInterval(fi);
+      }, 100);
+    }
+  }).catch(() => {});
+}
+
+function _onTrackEnd() {
+  if (!musicOn) return;
+  const next = _nextTrack();
+  _playTrack(next, true);
+}
+
 function initMusic() {
   if (bgMusic) return;
-  bgMusic = new Audio('music/CBNocturne.mp3');
-  bgMusic.loop = true;
-  bgMusic.volume = 0.4;
-  // Fade in
-  bgMusic.volume = 0;
-  bgMusic.play().then(() => {
-    let vol = 0;
-    const fadeIn = setInterval(() => {
-      vol = Math.min(vol + 0.02, 0.4);
-      bgMusic.volume = vol;
-      if (vol >= 0.4) clearInterval(fadeIn);
-    }, 100);
-  }).catch(() => {
-    // Autoplay blocked — will start on first interaction
-  });
+  _shufflePlaylist(null);
+  _playTrack(_musicPlaylist.shift(), true);
 }
 
 function startMusic() {
@@ -1624,29 +2515,30 @@ function startMusic() {
 }
 
 function pauseMusic() {
-  if (bgMusic) {
-    let vol = bgMusic.volume;
-    const fadeOut = setInterval(() => {
-      vol = Math.max(vol - 0.04, 0);
-      bgMusic.volume = vol;
-      if (vol <= 0) { clearInterval(fadeOut); bgMusic.pause(); }
-    }, 60);
-  }
+  if (!bgMusic || _musicFading) return;
+  _musicFading = true;
+  let vol = bgMusic.volume;
+  const fo = setInterval(() => {
+    vol = Math.max(vol - 0.04, 0);
+    bgMusic.volume = vol;
+    if (vol <= 0) { clearInterval(fo); bgMusic.pause(); _musicFading = false; }
+  }, 60);
 }
 
 function resumeMusic() {
   if (!bgMusic || !musicOn) return;
   bgMusic.play().then(() => {
     let vol = bgMusic.volume;
-    const fadeIn = setInterval(() => {
-      vol = Math.min(vol + 0.02, 0.4);
+    const fi = setInterval(() => {
+      vol = Math.min(vol + 0.02, MUSIC_VOL);
       bgMusic.volume = vol;
-      if (vol >= 0.4) clearInterval(fadeIn);
+      if (vol >= MUSIC_VOL) clearInterval(fi);
     }, 100);
   }).catch(() => {});
 }
 
 function tryStartMusic() {
+  if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
   if (!musicStarted && musicOn) {
     musicStarted = true;
     startMusic();
@@ -1668,14 +2560,14 @@ function soundNewRecord() {
 }
 let gameRecords = JSON.parse(localStorage.getItem('numgame_records') || '[]');
 
-function saveRecord(secretArr, rounds, timeMs, guessLog) {
+function saveRecord(secretArr, rounds, timeMs, guessLog, winnerLabel) {
   // Check if this is a new best time (among records with same or more rounds)
   const prevBestTime = gameRecords.length
     ? Math.min(...gameRecords.map(r => r.timeMs || Infinity))
     : Infinity;
   const isNewRecord = timeMs < prevBestTime;
 
-  const rec = { secret: secretArr.join(' '), rounds, time: formatTime(timeMs), timeMs: timeMs, ts: Date.now(), guesses: guessLog, isNewRecord: isNewRecord, level: currentLevel };
+  const rec = { secret: secretArr.join(' '), rounds, time: formatTime(timeMs), timeMs: timeMs, ts: Date.now(), guesses: guessLog, isNewRecord: isNewRecord, level: currentLevel, winner: winnerLabel || null };
   gameRecords.unshift(rec);
   if (gameRecords.length > 20) gameRecords = gameRecords.slice(0, 20);
   localStorage.setItem('numgame_records', JSON.stringify(gameRecords));
@@ -1686,6 +2578,26 @@ function saveRecord(secretArr, rounds, timeMs, guessLog) {
 function askClear() {
   document.getElementById('clear-normal').style.display = 'none';
   document.getElementById('clear-confirm').style.display = 'flex';
+}
+
+function twoAskClear() {
+  const n = document.getElementById('two-clear-normal');
+  const c = document.getElementById('two-clear-confirm');
+  if (n) n.style.display = 'none';
+  if (c) c.style.display = 'flex';
+}
+
+function twoCancelClear() {
+  const n = document.getElementById('two-clear-normal');
+  const c = document.getElementById('two-clear-confirm');
+  if (n) n.style.display = 'flex';
+  if (c) c.style.display = 'none';
+}
+
+function twoClearRecords() {
+  clearRecords();
+  const recPrev = document.getElementById('two-records-preview');
+  if (recPrev) recPrev.innerHTML = '';
 }
 
 function cancelClear() {
@@ -1741,7 +2653,7 @@ function renderRecords() {
       + '<div class="record-meta">'
       + '<div class="record-badge">' + r.rounds + ' ครั้ง</div>'
       + '<div class="record-badge ' + (isBest ? 'best' : '') + '">' + (isBest ? '🏆 ' : '') + r.time + '</div>'
-      + '<div class="record-badge" style="font-size:10px;color:var(--muted);border-color:var(--border)">' + 'Lv.' + (r.level || 1) + '</div>'
+      + '<div class="record-badge" style="font-size:10px;color:var(--muted);border-color:var(--border)">' + (r.winner ? '👥 ' + r.winner : 'Lv.' + (r.level || 1)) + '</div>'
       + '<div class="record-badge" style="font-size:10px;color:var(--dim);border:none;background:none;padding:0">' + dateStr + '</div>'
       + '</div></div>'
       + guessHTML
@@ -1762,15 +2674,22 @@ function startTimer() {
   stopTimer();
   startTime = Date.now();
   elapsed = 0;
-  document.getElementById('timer-disp').textContent = '0:00';
+  updateTimerDisplay('0:00');
   timerInterval = setInterval(() => {
     elapsed = Date.now() - startTime;
-    document.getElementById('timer-disp').textContent = formatTime(elapsed);
+    updateTimerDisplay(formatTime(elapsed));
   }, 500);
 }
 
 function stopTimer() {
   if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
+}
+
+function updateTimerDisplay(text) {
+  const t1 = document.getElementById('timer-disp');
+  const t2 = document.getElementById('timer-disp-bottom');
+  if (t1) t1.textContent = text;
+  if (t2) t2.textContent = text;
 }
 
 function generateSecret() {
@@ -1782,15 +2701,20 @@ function generateSecret() {
   return digits.slice(0, 4);
 }
 
-function startNewGame() {
-  secret = generateSecret();
+let gameWon = false;
+let prevBulls = 0;  // track bulls จากครั้งก่อน
+
+function startNewGame(useExistingSecret) {
+  gameWon = false;
+  prevBulls = 0;
+  if (!useExistingSecret) { secret = generateSecret(); customSecretMode = false; }
   round = 1;
   document.getElementById('history').innerHTML = '';
   document.getElementById('win-banner').style.display = 'none';
   document.getElementById('lose-banner').style.display = 'none';
   document.getElementById('win-history').style.display = 'none';
   document.getElementById('win-history-list').innerHTML = '';
-  document.getElementById('game-area').style.display = '';
+  document.getElementById('game-area').style.display = 'block';
   document.getElementById('bull-count').textContent = '—';  // ถูกตัว
   document.getElementById('cow-count').textContent = '—';  // ถูกที่
   document.getElementById('round-disp').textContent = '1';
@@ -1799,7 +2723,9 @@ function startNewGame() {
   resetLogoMark();
   clearInputs();
   spRender();
-  startTimer();
+  stopTimer();
+  elapsed = 0;
+  updateTimerDisplay('0:00');
   // Show/hide legend based on level
   document.getElementById('legend').style.opacity = currentLevel === 1 ? '1' : '0.2';
 }
@@ -1840,6 +2766,7 @@ function evaluate(guess) {
 }
 
 function submitGuess() {
+  if (gameWon) return;
   const guess = getGuess();
   const err = document.getElementById('err-msg');
 
@@ -1851,7 +2778,7 @@ function submitGuess() {
   const { bulls, cows } = evaluate(guess);
 
   soundSubmit();
-  guessLog.push({ digits: guess.slice(), bulls: bulls, cows: cows });
+  guessLog.push({ digits: guess.slice(), bulls: bulls, cows: cows, time: elapsed });
 
   document.getElementById('bull-count').textContent = cows;  // ถูกตัว = total digit matches
   document.getElementById('cow-count').textContent = bulls;  // ถูกที่ = exact position matches
@@ -1861,29 +2788,88 @@ function submitGuess() {
   addHistory(guess, bulls, cows, round);
 
   if (bulls === 4) {
+    gameWon = true;
     setTimeout(() => {
       stopTimer();
       const isNewRec = saveRecord(secret, round, elapsed, guessLog);
-      if (isNewRec) {
-        soundNewRecord();
-      } else {
-        soundWin();
-      }
+      if (isNewRec) soundNewRecord(); else soundWin();
+      showSecretDigitPops(secret, function() {
+        // coin pop หลัง effect รหัสลับครบ — เฉพาะตอน login
+        if (window.currentUser) {
+          const reward = getCoinReward();
+          awardCoins(0, reward);
+          showCoinPop(reward, document.getElementById('sp-coin-count'));
+        }
+      });
+
       document.getElementById('win-banner').style.display = 'flex';
+      document.getElementById('single-wrap').style.display = 'block';
       const newRecLabel = isNewRec ? ' 🏅 สถิติใหม่!' : '';
-      document.getElementById('win-sub').textContent = `${round} ครั้ง  ·  ${formatTime(elapsed)}  ·  รหัสลับ: ${secret.join(' ')}` + newRecLabel;
+      const bonusLabel = currentLevel === 2 ? ' ⭐ Level 2 Bonus!' : '';
+      document.getElementById('win-text').textContent = (playerNames[0] || 'ผู้เล่น') + ' ถอดรหัสสำเร็จ!';
+      document.getElementById('win-sub').textContent = `${round} ครั้ง · ${formatTime(elapsed)} · รหัสลับ: ${secret.join(' ')}${bonusLabel}${newRecLabel}`;
       document.getElementById('game-area').style.display = 'none';
 
-      const histSrc = document.getElementById('history');
+      // Login nudge ถ้ายังไม่ได้ login
+      setTimeout(showLoginNudge, 400);
+
       const winList = document.getElementById('win-history-list');
       winList.innerHTML = '';
-      const rows = Array.from(histSrc.children).reverse();
-      rows.forEach((row, i) => {
-        const clone = row.cloneNode(true);
-        if (i === rows.length - 1) clone.classList.add('last-row');
-        winList.appendChild(clone);
-      });
-      if (rows.length > 0) document.getElementById('win-history').style.display = 'block';
+
+      if (guessLog.length > 0) {
+        // Header row
+        const hdr = document.createElement('div');
+        hdr.style.cssText = 'display:grid;grid-template-columns:1fr auto auto auto;gap:4px;padding:4px 10px;background:var(--surface2);border-radius:6px 6px 0 0;border:1px solid var(--border);border-bottom:none;margin-bottom:0';
+        hdr.innerHTML = `
+          <div style="font-size:9px;font-weight:700;letter-spacing:0.07em;text-transform:uppercase;color:var(--dim)">ประวัติ</div>
+          <div style="font-size:9px;font-weight:700;color:var(--cow);text-align:center;min-width:32px">ตัว</div>
+          <div style="font-size:9px;font-weight:700;color:var(--bull);text-align:center;min-width:32px">ที่</div>
+          <div style="font-size:9px;font-weight:700;color:var(--muted);text-align:right;min-width:40px">เวลา</div>`;
+        winList.appendChild(hdr);
+
+        guessLog.forEach((g, i) => {
+          const isLast = i === guessLog.length - 1;
+          const row = document.createElement('div');
+          row.style.cssText = `display:grid;grid-template-columns:1fr auto auto auto;gap:4px;align-items:center;padding:7px 10px;border:1px solid ${isLast ? 'var(--bull-bd)' : 'var(--border)'};background:${isLast ? 'var(--bull-bg)' : 'var(--surface)'};${i === 0 ? 'border-top:none;' : ''}${isLast ? 'border-radius:0 0 6px 6px;' : i===0?'border-top:none':''};animation:slideIn 0.2s ease`;
+
+          const leftCol = document.createElement('div');
+          leftCol.style.cssText = 'display:flex;align-items:center;gap:4px';
+          const rn = document.createElement('span');
+          rn.style.cssText = 'font-family:Courier New,monospace;font-size:9px;color:var(--dim);min-width:18px';
+          rn.textContent = '#' + (i + 1);
+          leftCol.appendChild(rn);
+          g.digits.forEach((d, di) => {
+            const dd = document.createElement('div');
+            dd.style.cssText = 'width:26px;height:26px;display:flex;align-items:center;justify-content:center;border-radius:5px;font-family:Courier New,monospace;font-weight:700;font-size:12px;border:1px solid var(--border);background:var(--surface2);color:var(--dim)';
+            if (currentLevel === 1) {
+              if (d === secret[di]) { dd.style.background='var(--bull-bg)'; dd.style.color='var(--bull)'; dd.style.borderColor='var(--bull-bd)'; }
+              else if (secret.includes(d)) { dd.style.background='var(--cow-bg)'; dd.style.color='var(--cow)'; dd.style.borderColor='var(--cow-bd)'; }
+            }
+            dd.textContent = d;
+            leftCol.appendChild(dd);
+          });
+
+          const cowCell = document.createElement('div');
+          cowCell.style.cssText = 'font-family:Courier New,monospace;font-size:12px;font-weight:700;color:var(--cow);text-align:center;min-width:32px';
+          cowCell.textContent = g.cows;
+
+          const bullCell = document.createElement('div');
+          bullCell.style.cssText = 'font-family:Courier New,monospace;font-size:12px;font-weight:700;color:var(--bull);text-align:center;min-width:32px';
+          bullCell.textContent = g.bulls;
+
+          const timeCell = document.createElement('div');
+          timeCell.style.cssText = 'font-family:Courier New,monospace;font-size:11px;color:var(--muted);text-align:right;min-width:40px';
+          timeCell.textContent = formatTime(g.time || 0);
+
+          row.appendChild(leftCol);
+          row.appendChild(cowCell);
+          row.appendChild(bullCell);
+          row.appendChild(timeCell);
+          winList.appendChild(row);
+        });
+
+        document.getElementById('win-history').style.display = 'block';
+      }
 
       const cells = document.querySelectorAll('.logo-cell');
       cells.forEach(c => { c.classList.remove('lit','half'); });
@@ -1892,42 +2878,114 @@ function submitGuess() {
     return;
   }
 
+  // sound: bulls เพิ่มขึ้นจากครั้งก่อน
+  if (bulls > 0 && bulls > prevBulls) {
+    setTimeout(function() { soundBullUp(bulls); }, 150);
+  } else if (bulls > 0) {
+    setTimeout(soundBull, 150);
+  } else if (cows > 0) {
+    setTimeout(soundCow, 150);
+  } else {
+    setTimeout(soundMiss, 150);
+  }
+  prevBulls = bulls;
+
   round++;
   document.getElementById('round-disp').textContent = round;
   clearInputs();
   document.getElementById('d0').focus();
 }
 
-function addHistory(guess, bulls, cows, r) {
+function reRenderHistory(mode) {
   const hist = document.getElementById('history');
-  const row = document.createElement('div');
-  row.className = 'hist-row';
-
-  const roundSpan = document.createElement('div');
-  roundSpan.className = 'round-num';
-  roundSpan.textContent = '#' + r;
-
-  const numDiv = document.createElement('div');
-  numDiv.className = 'hist-num';
-  guess.forEach((d, i) => {
-    const dd = document.createElement('div');
-    dd.className = 'hist-digit';
-    if (currentLevel === 1) {
-      if (d === secret[i]) dd.classList.add('bull');
-      else if (secret.includes(d)) dd.classList.add('cow');
-    }
-    dd.textContent = d;
-    numDiv.appendChild(dd);
+  if (!hist || !guessLog.length) return;
+  hist.innerHTML = '';
+  guessLog.forEach((g, i) => {
+    addHistoryRow(g.digits, g.bulls, g.cows, i + 1, false, g.time || 0);
   });
+}
 
-  const scores = document.createElement('div');
-  scores.className = 'hist-scores';
-  scores.innerHTML = `<div class="score-pill bull-p">${cows} ตัว</div><div class="score-pill cow-p">${bulls} ที่</div>`;
+function addHistoryRow(guess, bulls, cows, r, prepend, rowTime) {
+  const hist = document.getElementById('history');
+  const isSide = currentLayout === 'side';
 
-  row.appendChild(roundSpan);
-  row.appendChild(numDiv);
-  row.appendChild(scores);
-  hist.insertBefore(row, hist.firstChild);
+  if (isSide) {
+    // Table-style compact row
+    const row = document.createElement('div');
+    row.className = 'side-hist-row';
+
+    const leftCol = document.createElement('div');
+    leftCol.className = 'side-hist-digits';
+    const rn = document.createElement('span');
+    rn.className = 'side-hist-num';
+    rn.textContent = '#' + r;
+    leftCol.appendChild(rn);
+    guess.forEach((d, i) => {
+      const dd = document.createElement('div');
+      dd.className = 'side-hist-digit';
+      if (currentLevel === 1) {
+        if (d === secret[i]) dd.classList.add('bull');
+        else if (secret.includes(d)) dd.classList.add('cow');
+      }
+      dd.textContent = d;
+      leftCol.appendChild(dd);
+    });
+
+    const cowCol = document.createElement('div');
+    cowCol.className = 'side-score cow-s';
+    cowCol.textContent = cows;
+
+    const bullCol = document.createElement('div');
+    bullCol.className = 'side-score bull-s';
+    bullCol.textContent = bulls;
+
+    const timeCol = document.createElement('div');
+    timeCol.className = 'side-score time-s';
+    timeCol.textContent = formatTime(rowTime !== undefined ? rowTime : elapsed);
+
+    row.appendChild(leftCol);
+    row.appendChild(cowCol);
+    row.appendChild(bullCol);
+    row.appendChild(timeCol);
+    // prepend = false เพราะ side mode เรียง #1 บน
+    if (prepend) {
+      // ใน side mode ไม่ prepend — append เพื่อให้ลำดับถูก
+      hist.appendChild(row);
+    } else {
+      hist.appendChild(row);
+    }
+  } else {
+    // Original bottom layout
+    const row = document.createElement('div');
+    row.className = 'hist-row';
+    const roundSpan = document.createElement('div');
+    roundSpan.className = 'round-num';
+    roundSpan.textContent = '#' + r;
+    const numDiv = document.createElement('div');
+    numDiv.className = 'hist-num';
+    guess.forEach((d, i) => {
+      const dd = document.createElement('div');
+      dd.className = 'hist-digit';
+      if (currentLevel === 1) {
+        if (d === secret[i]) dd.classList.add('bull');
+        else if (secret.includes(d)) dd.classList.add('cow');
+      }
+      dd.textContent = d;
+      numDiv.appendChild(dd);
+    });
+    const scores = document.createElement('div');
+    scores.className = 'hist-scores';
+    scores.innerHTML = `<div class="score-pill cow-p">${cows} ตัว</div><div class="score-pill bull-p">${bulls} ที่</div>`;
+    row.appendChild(roundSpan);
+    row.appendChild(numDiv);
+    row.appendChild(scores);
+    if (prepend) hist.insertBefore(row, hist.firstChild);
+    else hist.appendChild(row);
+  }
+}
+
+function addHistory(guess, bulls, cows, r) {
+  addHistoryRow(guess, bulls, cows, r, true, elapsed);
 }
 
 // ── Single-player custom keypad ──
@@ -1959,6 +3017,7 @@ function spFocus(i) { spCursor = i; spRender(); }
 function spKey(n) {
   tryStartMusic();
   soundType();
+  if (!timerInterval) startTimer();
   spVals[spCursor] = String(n);
   if (spCursor < 3) spCursor++;
   spRender();
@@ -1996,38 +3055,51 @@ renderRecords();
 // ── Mode & 2-player vars ──
 let currentMode = 1;
 let p1Round = 1, p2Round = 1;
+let p1GuessLog = [], p2GuessLog = [];
+let p1Wins = 0, p2Wins = 0;
 let p1Done = false, p2Done = false;
 let twoTimerInterval = null;
 let twoElapsed = 0;
 let twoSecret = [];
 
+function applyTwoPlayerLayout() {
+  const isSide = currentLayout === 'side';
+  [1, 2].forEach(p => {
+    const half = document.querySelector(p === 1 ? '.player-half.p1-half' : '.player-half.p2-half');
+    if (!half) return;
+    if (isSide) half.classList.add('side-layout');
+    else half.classList.remove('side-layout');
+  });
+}
+
 function selectMode(m) {
+  const prevMode = currentMode;
   currentMode = m;
-  // sync all mode buttons (top bar + mid divider)
-  ['mode1-btn','mid-mode1-btn'].forEach(id => { const el = document.getElementById(id); if(el) el.classList.toggle('active', m === 1); });
-  ['mode2-btn','mid-mode2-btn'].forEach(id => { const el = document.getElementById(id); if(el) el.classList.toggle('active', m === 2); });
+  ['mode1-btn','mid-mode1-btn','combo-mode1-btn'].forEach(id => { const el = document.getElementById(id); if(el) el.classList.toggle('active', m === 1); });
+  ['mode2-btn','mid-mode2-btn','combo-mode2-btn'].forEach(id => { const el = document.getElementById(id); if(el) el.classList.toggle('active', m === 2); });
   if (m === 1) {
     document.getElementById('two-player-wrap').style.display = 'none';
     document.getElementById('single-wrap').style.display = 'block';
-    document.getElementById('shared-mode-selector').style.display = 'flex';
     document.getElementById('records-section').style.display = 'block';
     document.body.style.padding = '';
     document.body.style.paddingTop = '';
     document.body.style.alignItems = '';
-    startNewGame();
+    refreshCoinDisplays();
+    if (prevMode !== 1) startNewGame();
   } else {
     document.getElementById('single-wrap').style.display = 'none';
     document.getElementById('two-player-wrap').style.display = 'flex';
-    document.getElementById('shared-mode-selector').style.display = 'none';
     document.getElementById('records-section').style.display = 'none';
     document.body.style.padding = '0';
     document.body.style.alignItems = 'center';
     window.scrollTo(0, 0);
-    startTwoPlayerGame();
+    refreshCoinDisplays();
+    openNameModal(2);
   }
 }
 
 function startTwoPlayerGame() {
+  prevBulls = 0;
   twoSecret = generateSecret();
   p1Round = 1; p2Round = 1;
   p1Done = false; p2Done = false;
@@ -2040,6 +3112,10 @@ function startTwoPlayerGame() {
   document.getElementById('p2-err').textContent = '';
   document.getElementById('p1-history').innerHTML = '';
   document.getElementById('p2-history').innerHTML = '';
+  p1GuessLog = []; p2GuessLog = [];
+  document.getElementById('p1-side-history').innerHTML = '';
+  document.getElementById('p2-side-history').innerHTML = '';
+  applyTwoPlayerLayout();
   document.getElementById('p1-win-box').style.display = 'none';
   document.getElementById('p2-win-box').style.display = 'none';
   document.getElementById('p2-new-game-bar').style.display = 'none';
@@ -2096,55 +3172,142 @@ function p2Submit(p) {
   // Add to history
   const hist = document.getElementById('p' + p + '-history');
   const row = document.createElement('div');
-  row.className = 'p-hist-row';
-  const rNum = document.createElement('div');
-  rNum.className = 'p-hist-num';
-  rNum.textContent = '#' + round;
-  const digits = document.createElement('div');
-  digits.className = 'p-hist-digits';
+  row.style.cssText = 'display:grid;grid-template-columns:1fr auto auto auto;gap:3px;align-items:center;padding:4px 6px;border:1px solid var(--border);border-top:none;background:var(--surface);font-family:Courier New,monospace;font-size:11px';
+  const leftCol = document.createElement('div');
+  leftCol.style.cssText = 'display:flex;align-items:center;gap:3px';
+  const rn = document.createElement('span');
+  rn.style.cssText = 'font-size:9px;color:var(--dim);min-width:18px';
+  rn.textContent = '#' + round;
+  leftCol.appendChild(rn);
   guess.forEach((d, i) => {
     const dd = document.createElement('div');
-    dd.className = 'p-hist-digit';
+    dd.style.cssText = 'width:20px;height:20px;display:flex;align-items:center;justify-content:center;border-radius:4px;font-weight:700;font-size:11px;border:1px solid var(--border);background:var(--surface2);color:var(--dim)';
     if (currentLevel === 1) {
-      if (d === twoSecret[i]) dd.classList.add('bull');
-      else if (twoSecret.includes(d)) dd.classList.add('cow');
+      if (d === twoSecret[i]) { dd.style.background='var(--bull-bg)'; dd.style.color='var(--bull)'; dd.style.borderColor='var(--bull-bd)'; }
+      else if (twoSecret.includes(d)) { dd.style.background='var(--cow-bg)'; dd.style.color='var(--cow)'; dd.style.borderColor='var(--cow-bd)'; }
     }
     dd.textContent = d;
-    digits.appendChild(dd);
+    leftCol.appendChild(dd);
   });
-  const sc = document.createElement('div');
-  sc.className = 'p-scores';
-  sc.innerHTML = '<div class="p-score-pill p-bull-p">' + cows + ' ตัว</div><div class="p-score-pill p-cow-p">' + bulls + ' ที่</div>';
-  row.appendChild(rNum); row.appendChild(digits); row.appendChild(sc);
-  hist.insertBefore(row, hist.firstChild);
+  const cowCol = document.createElement('div');
+  cowCol.style.cssText = 'color:var(--cow);font-weight:700;text-align:center;min-width:24px';
+  cowCol.textContent = cows;
+  const bullCol = document.createElement('div');
+  bullCol.style.cssText = 'color:var(--bull);font-weight:700;text-align:center;min-width:24px';
+  bullCol.textContent = bulls;
+  const timeCol = document.createElement('div');
+  timeCol.style.cssText = 'color:var(--muted);font-size:10px;text-align:right;min-width:32px';
+  timeCol.textContent = formatTime(twoElapsed);
+  row.appendChild(leftCol); row.appendChild(cowCol); row.appendChild(bullCol); row.appendChild(timeCol);
+  hist.appendChild(row);
+
+  // Add to guessLog
+  const gEntry = { digits: guess.slice(), bulls, cows, time: twoElapsed };
+  if (p === 1) p1GuessLog.push(gEntry); else p2GuessLog.push(gEntry);
 
   if (p === 1) p1Round++; else p2Round++;
   document.getElementById('p' + p + '-round').textContent = p === 1 ? p1Round : p2Round;
 
   if (bulls === 4) {
+    const alreadyWon = (p === 1) ? p2Done : p1Done;
+    if (alreadyWon) return;
+
     if (twoTimerInterval) { clearInterval(twoTimerInterval); twoTimerInterval = null; }
     const other = p === 1 ? 2 : 1;
     if (p === 1) p1Done = true; else p2Done = true;
 
+    // เหรียญ — ให้เฉพาะตอน login
+    const winnerIdx = p - 1;
+    if (window.currentUser) {
+      const reward = getCoinReward();
+      awardCoins(winnerIdx, reward);
+      showCoinPop(reward, document.getElementById('p' + p + '-coin'));
+    }
+
+    const winnerName = playerNames[winnerIdx] || ('ผู้เล่น ' + p);
+    const loserName  = playerNames[other - 1] || ('ผู้เล่น ' + other);
+    const bonusLabel = currentLevel === 2 ? ' ⭐' : '';
+
+    // Update win score
+    if (p === 1) p1Wins++; else p2Wins++;
+    const s1 = document.getElementById('two-score-p1');
+    const s2 = document.getElementById('two-score-p2');
+    if (s1) s1.textContent = p1Wins;
+    if (s2) s2.textContent = p2Wins;
+
+    // Save to records
+    saveRecord(twoSecret, round, twoElapsed, p === 1 ? p1GuessLog : p2GuessLog, '2P:' + winnerName);
+
+    // Show recent records in 2-player new game bar
+    const recPrev = document.getElementById('two-records-preview');
+    if (recPrev && gameRecords.length) {
+      recPrev.innerHTML = '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">'
+        + '<div style="font-size:10px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--dim)">ประวัติรหัสที่ถอดแล้ว</div>'
+        + '<div id="two-clear-normal" style="display:flex"><button class="clear-btn" onclick="twoAskClear()">ล้างทั้งหมด</button></div>'
+        + '<div id="two-clear-confirm" style="display:none;gap:5px;align-items:center">'
+        + '<span style="font-size:11px;color:var(--muted)">แน่ใจ?</span>'
+        + '<button class="clear-btn" style="color:#f87171;border-color:#f87171" onclick="twoClearRecords()">ลบเลย</button>'
+        + '<button class="clear-btn" onclick="twoCancelClear()">ยกเลิก</button>'
+        + '</div>'
+        + '</div>'
+        + gameRecords.slice(0,5).map((r,i) => {
+          const isBest = (r.timeMs||Infinity) === Math.min(...gameRecords.map(x=>x.timeMs||Infinity));
+          const secretDigits = r.secret.split(' ');
+          let guessHTML = '';
+          if (r.guesses && r.guesses.length) {
+            guessHTML = '<button class="rec-toggle" onclick="toggleGuesses(this)">▸ ดูประวัติการทาย (' + r.guesses.length + ' ครั้ง)</button>'
+              + '<div class="rec-guesses" style="display:none">';
+            r.guesses.forEach(function(g, gi) {
+              guessHTML += '<div class="rec-guess-row"><span class="rec-guess-num">#'+(gi+1)+'</span><div class="rec-guess-digits">';
+              g.digits.forEach(function(d, di) {
+                var cls = (r.level||1)===1 ? (d==secretDigits[di]?'bull':(secretDigits.includes(String(d))?'cow':'')) : '';
+                guessHTML += '<div class="rec-guess-digit '+cls+'">'+d+'</div>';
+              });
+              guessHTML += '</div><span class="rec-guess-score">'+g.cows+' ตัว · '+g.bulls+' ที่</span></div>';
+            });
+            guessHTML += '</div>';
+          }
+          return '<div style="border:1px solid var(--border);border-radius:8px;background:var(--surface);margin-bottom:4px;overflow:hidden">'
+            + '<div style="display:flex;align-items:center;gap:6px;padding:6px 8px">'
+            + '<span style="font-family:Courier New,monospace;font-size:9px;color:var(--dim);min-width:18px">#'+(i+1)+'</span>'
+            + '<span style="font-family:Courier New,monospace;font-weight:700;color:var(--bull);letter-spacing:0.1em">'+r.secret+'</span>'
+            + '<span style="margin-left:auto;font-family:Courier New,monospace;font-size:10px;color:'+(isBest?'var(--bull)':'var(--muted)')+'">'+r.time+'</span>'
+            + '<span style="font-family:Courier New,monospace;font-size:10px;color:var(--dim)">'+r.rounds+' ครั้ง</span>'
+            + (r.winner ? '<span style="font-size:10px;color:var(--accent)">'+r.winner.replace('2P:','')+'</span>' : '')
+            + '</div>'
+            + (guessHTML ? '<div style="padding:0 8px 6px">'+guessHTML+'</div>' : '')
+            + '</div>';
+        }).join('');
+    }
+
     const winBox = document.getElementById('p' + p + '-win-box');
     winBox.style.display = 'block';
-    winBox.textContent = '🏆 ผู้เล่น ' + p + ' ชนะ! (' + (round) + ' ครั้ง · ' + formatTime(twoElapsed) + ')';
+    winBox.textContent = '🏆 ' + winnerName + ' ชนะ! (' + round + ' ครั้ง · ' + formatTime(twoElapsed) + ')' + bonusLabel;
 
     const loseBox = document.getElementById('p' + other + '-win-box');
     loseBox.className = 'ph-win loser';
     loseBox.style.display = 'block';
-    loseBox.textContent = '💀 ผู้เล่น ' + other + ' แพ้ — รหัสลับ: ' + twoSecret.join(' ');
+    loseBox.textContent = '💀 ' + loserName + ' แพ้ — รหัสลับ: ' + twoSecret.join(' ');
 
     document.getElementById('p1-submit').setAttribute('disabled','');
     document.getElementById('p2-submit').setAttribute('disabled','');
-    document.getElementById('p2-new-game-bar').style.display = 'flex'; document.getElementById('p2-new-game-bar').style.flexDirection = 'column';
+    document.getElementById('p2-new-game-bar').style.display = 'flex';
+    document.getElementById('p2-new-game-bar').style.flexDirection = 'column';
     soundWin();
+    showSecretDigitPops(twoSecret, null);
     return;
   }
 
-  if (bulls > 0) setTimeout(soundBull, 150);
-  else if (cows > 0) setTimeout(soundCow, 150);
-  else setTimeout(soundMiss, 150);
+  if (bulls > 0 && bulls > prevBulls) {
+    setTimeout(function() { soundBullUp(bulls); }, 150);
+  } else if (bulls > 0) {
+    setTimeout(soundBull, 150);
+  } else if (cows > 0) {
+    setTimeout(soundCow, 150);
+  } else {
+    setTimeout(soundMiss, 150);
+  }
+  prevBulls = bulls;
 
   clearPInputs(p);
 }
@@ -2204,15 +3367,427 @@ function tpClearAll(p) {
 // Ensure single player mode on load
 document.addEventListener('DOMContentLoaded', function() {
   renderRecords();
+  refreshCoinDisplays();
+  currentMode = 0; // reset so selectMode(1) triggers startNewGame
   selectMode(1);
-  // Call again after short delay to override anything that might change it
-  setTimeout(function() { 
-    if (currentMode !== 1) selectMode(1); 
-  }, 200);
-  setTimeout(function() { 
-    if (currentMode !== 1) selectMode(1); 
-  }, 500);
 });
+
+// ── Name & Coin System ──
+const COIN_LV1 = 15, COIN_LV2 = 35;
+let playerNames = JSON.parse(localStorage.getItem('numgame_names') || '["ผู้เล่น","ผู้เล่น 2"]');
+let playerCoins = JSON.parse(localStorage.getItem('numgame_coins') || '[0,0]');
+let pendingModalMode = 1;
+
+function saveNames() { localStorage.setItem('numgame_names', JSON.stringify(playerNames)); }
+function saveCoins() { localStorage.setItem('numgame_coins', JSON.stringify(playerCoins)); }
+function getCoins(i) { return playerCoins[i] || 0; }
+function getCoinReward() { return currentLevel === 2 ? COIN_LV2 : COIN_LV1; }
+
+function refreshCoinDisplays() {
+  const loggedIn = !!window.currentUser;
+  const nameEl = document.getElementById('sp-name-text');
+  if (nameEl) nameEl.textContent = loggedIn ? (window.currentUser.displayName?.split(' ')[0] || playerNames[0]) : playerNames[0];
+  const coinWrap = document.getElementById('sp-coin-wrap');
+  if (coinWrap) coinWrap.style.display = loggedIn ? 'flex' : 'none';
+  const coinEl = document.getElementById('sp-coin-count');
+  if (coinEl) coinEl.textContent = getCoins(0);
+  const p1l = document.getElementById('p1-name-label'); if (p1l) p1l.textContent = playerNames[0];
+  const p2l = document.getElementById('p2-name-label'); if (p2l) p2l.textContent = playerNames[1];
+  const tn1 = document.getElementById('two-name-p1'); if (tn1) tn1.textContent = playerNames[0];
+  const tn2 = document.getElementById('two-name-p2'); if (tn2) tn2.textContent = playerNames[1];
+  const p1c = document.getElementById('p1-coin'); if (p1c) p1c.textContent = getCoins(0);
+  const p2c = document.getElementById('p2-coin'); if (p2c) p2c.textContent = getCoins(1);
+}
+window.refreshCoinDisplays = refreshCoinDisplays;
+
+function awardCoins(playerIdx, amount) {
+  playerCoins[playerIdx] = (playerCoins[playerIdx] || 0) + amount;
+  saveCoins();
+  refreshCoinDisplays();
+  if (window.currentUser && window.fbAddCoins) window.fbAddCoins(amount);
+}
+
+function showCoinPop(amount, anchorEl) {
+  const pop = document.createElement('div');
+  pop.className = 'coin-pop';
+  pop.textContent = '+' + amount + ' 🪙';
+  if (anchorEl) {
+    const r = anchorEl.getBoundingClientRect();
+    pop.style.left = (r.left + r.width/2 - 30) + 'px';
+    pop.style.top = (r.top - 10) + 'px';
+  } else {
+    pop.style.left = '50%'; pop.style.top = '40%'; pop.style.transform = 'translateX(-50%)';
+  }
+  document.body.appendChild(pop);
+  setTimeout(() => pop.remove(), 1500);
+}
+
+
+function showLoginNudge() {
+  if (window.currentUser) return;
+  const banner = document.getElementById('win-banner');
+  if (!banner) return;
+  const ex = banner.querySelector('.login-nudge'); if (ex) ex.remove();
+  const nudge = document.createElement('div');
+  nudge.className = 'login-nudge';
+  nudge.innerHTML = '🏆 Login เพื่อขึ้น Scoreboard และรับเหรียญ! <button class="login-nudge-btn" onclick="toggleLogin && toggleLogin()">Login ด้วย Google</button>';
+  banner.appendChild(nudge);
+}
+
+function openNameModal(mode) {
+  pendingModalMode = mode;
+  const modal = document.getElementById('name-modal');
+  if (!modal) { if (mode === 2) startTwoPlayerGame(); else startNewGame(); return; }
+  const f2 = document.getElementById('modal-field2');
+  if (mode === 2) {
+    document.getElementById('modal-title').textContent = 'ตั้งชื่อผู้เล่น';
+    document.getElementById('modal-sub').textContent = 'โหมด 2 คน — ใส่ชื่อทั้งคู่';
+    document.getElementById('modal-label1').textContent = 'ชื่อผู้เล่น 1';
+    f2.style.display = 'flex';
+    document.getElementById('modal-input2').value = playerNames[1] !== 'ผู้เล่น 2' ? playerNames[1] : '';
+  } else {
+    document.getElementById('modal-title').textContent = 'ตั้งชื่อผู้เล่น';
+    document.getElementById('modal-sub').textContent = 'ใส่ชื่อเพื่อแสดงในเกม';
+    document.getElementById('modal-label1').textContent = 'ชื่อผู้เล่น';
+    f2.style.display = 'none';
+  }
+  document.getElementById('modal-input1').value = (playerNames[0] !== 'ผู้เล่น' && playerNames[0] !== 'ผู้เล่น 1') ? playerNames[0] : '';
+  modal.style.display = 'flex';
+  setTimeout(() => document.getElementById('modal-input1').focus(), 100);
+}
+
+function confirmNames() {
+  const v1 = document.getElementById('modal-input1').value.trim();
+  const v2 = document.getElementById('modal-input2')?.value.trim() || '';
+  if (v1) playerNames[0] = v1;
+  if (pendingModalMode === 2 && v2) playerNames[1] = v2;
+  saveNames();
+  document.getElementById('name-modal').style.display = 'none';
+  refreshCoinDisplays();
+  if (pendingModalMode === 2) startTwoPlayerGame(); else startNewGame();
+}
+
+
+// ── Custom Secret Mode ──
+let csVals = ['','','',''];
+let csCursor = 0;
+let customSecretMode = false;
+
+function openCustomSecretModal() {
+  csVals = ['','','',''];
+  csCursor = 0;
+  document.getElementById('cs-err').textContent = '';
+  csRender();
+  document.getElementById('custom-secret-modal').style.display = 'flex';
+}
+
+function closeCustomSecretModal() {
+  document.getElementById('custom-secret-modal').style.display = 'none';
+}
+
+function csRender() {
+  for (let i = 0; i < 4; i++) {
+    const box = document.getElementById('cs-d' + i);
+    const old = box.querySelector('.digit-cursor');
+    if (old) old.remove();
+    box.classList.toggle('active', i === csCursor);
+    // ซ่อนตัวเลขเป็น ● กัน spoil
+    if (csVals[i] !== '') {
+      box.innerHTML = '<span style="color:var(--accent);font-size:22px">●</span>';
+    } else {
+      box.innerHTML = '<span class="ph" style="font-size:20px">?</span>';
+    }
+    if (i === csCursor) {
+      const cur = document.createElement('div');
+      cur.className = 'digit-cursor';
+      box.appendChild(cur);
+    }
+  }
+}
+
+function csFocus(i) { csCursor = i; csRender(); }
+
+function csKey(n) {
+  csVals[csCursor] = String(n);
+  if (csCursor < 3) csCursor++;
+  csRender();
+  document.getElementById('cs-err').textContent = '';
+}
+
+function csDel() {
+  if (csVals[csCursor] !== '') {
+    csVals[csCursor] = '';
+  } else if (csCursor > 0) {
+    csCursor--;
+    csVals[csCursor] = '';
+  }
+  csRender();
+}
+
+function confirmCustomSecret() {
+  const err = document.getElementById('cs-err');
+  if (csVals.some(v => v === '')) { err.textContent = '! ใส่ตัวเลขให้ครบ 4 ช่อง'; return; }
+  const nums = csVals.map(Number);
+  if (new Set(nums).size < 4) { err.textContent = '! ตัวเลขต้องไม่ซ้ำกัน'; return; }
+  closeCustomSecretModal();
+  customSecretMode = true;
+  // set secret และเริ่มเกม
+  if (currentMode === 2) {
+    twoSecret = nums;
+    startTwoPlayerGame();
+  } else {
+    secret = nums;
+    startNewGame(true); // true = ใช้ secret ที่กำหนดแล้ว
+  }
+}
+
+// close on outside click
+document.addEventListener('click', function(e) {
+  const csModal = document.getElementById('custom-secret-modal');
+  if (csModal && e.target === csModal) closeCustomSecretModal();
+});
+
+// ── showSecretDigitPops — ตัวเลขรหัสลับลอยขึ้นทีละตัว ──
+function showSecretDigitPops(digits, onDone) {
+  // delay 80ms รอ DOM render ก่อนแล้วค่อยหา rect
+  setTimeout(function() {
+    var subEl = document.getElementById('win-sub');
+    var rect = subEl ? subEl.getBoundingClientRect() : null;
+    var hasRect = rect && rect.width > 0 && rect.top > 0;
+
+    digits.forEach(function(d, i) {
+      setTimeout(function() {
+        var pop = document.createElement('div');
+        pop.className = 'digit-pop';
+        pop.textContent = d;
+        pop.style.fontSize = (52 + Math.random() * 12) + 'px';
+
+        if (hasRect) {
+          var spacing = rect.width / 5;
+          var xBase = rect.left + spacing * (i + 1);
+          pop.style.left = Math.round(xBase - 22) + 'px';
+          pop.style.top  = Math.round(rect.top - 10) + 'px';
+        } else {
+          // fallback: กระจายกลางจอ
+          var vw = window.innerWidth;
+          var vh = window.innerHeight;
+          pop.style.left = Math.round(vw * (0.15 + i * 0.17)) + 'px';
+          pop.style.top  = Math.round(vh * 0.45) + 'px';
+        }
+
+        document.body.appendChild(pop);
+        setTimeout(function(){ pop.remove(); }, 2100);
+      }, i * 350);
+    });
+
+    if (onDone) setTimeout(onDone, digits.length * 350 + 500);
+  }, 80);
+}
+
+// ── Settings System ──
+let currentTheme = localStorage.getItem('numgame_theme') || 'dark';
+let currentLayout = localStorage.getItem('numgame_layout') || 'bottom';
+
+function openSettings() { document.getElementById('settings-overlay').classList.add('open'); }
+function closeSettings() { document.getElementById('settings-overlay').classList.remove('open'); }
+
+function setTheme(t) {
+  currentTheme = t;
+  localStorage.setItem('numgame_theme', t);
+  applyTheme(t);
+  // update theme cards
+  document.querySelectorAll('.theme-card').forEach(c => {
+    c.classList.toggle('active', c.dataset.t === t);
+  });
+}
+
+function applyTheme(t) {
+  document.documentElement.setAttribute('data-theme', t === 'dark' ? '' : t);
+  // update grid color for canvas
+  if (window._gridColorMap) {
+    window._currentGridColor = window._gridColorMap[t] || '124,111,247';
+    window._currentBgColor = window._bgColorMap?.[t] || '#0d0f14';
+  }
+}
+
+window._gridColorMap = {
+  'dark': '124,111,247',
+  'cyberpunk': '0,255,136',
+  'ocean': '56,189,248',
+  'light': '91,82,217'
+};
+window._currentGridColor = window._gridColorMap[currentTheme] || '124,111,247';
+window._bgColorMap = {
+  'dark': '#0d0f14', 'cyberpunk': '#0a0f0a',
+  'ocean': '#040d1a', 'light': '#f0f2f8'
+};
+window._currentBgColor = window._bgColorMap[currentTheme] || '#0d0f14';
+
+function setLayout(l) {
+  currentLayout = l;
+  localStorage.setItem('numgame_layout', l);
+  applyLayout(l);
+  if (currentMode === 2) applyTwoPlayerLayout();
+  document.getElementById('layout-bottom-btn').classList.toggle('active', l === 'bottom');
+  document.getElementById('layout-side-btn').classList.toggle('active', l === 'side');
+}
+
+function applyLayout(l) {
+  const wrap = document.getElementById('game-layout-wrap');
+  const divider = document.getElementById('history-divider');
+  const histHeader = document.getElementById('history-header-side');
+  const timerBottom = document.getElementById('timer-bottom');
+  const legend = document.getElementById('legend');
+
+  if (l === 'side') {
+    wrap.style.display = 'grid';
+    wrap.style.gridTemplateColumns = '1fr 1fr';
+    wrap.style.gap = '10px';
+    wrap.style.alignItems = 'start';
+    const colHistory = document.getElementById('col-history');
+    const colInput = document.getElementById('col-input');
+    if (colHistory && colInput && colHistory.nextSibling !== colInput) {
+      wrap.insertBefore(colHistory, wrap.firstChild);
+    }
+    if (divider) divider.style.display = 'none';
+    if (histHeader) histHeader.style.display = 'block';
+    if (legend) legend.style.display = 'none';
+    document.querySelectorAll('.digit-box').forEach(el => { el.style.height = '48px'; el.style.fontSize = '22px'; });
+    document.querySelectorAll('#sp-keypad .key-btn').forEach(el => { el.style.height = '40px'; el.style.fontSize = '17px'; });
+    reRenderHistory('side');
+  } else {
+    wrap.style.display = 'block';
+    wrap.style.gridTemplateColumns = '';
+    wrap.style.gap = '';
+    const colHistory = document.getElementById('col-history');
+    if (colHistory) wrap.appendChild(colHistory);
+    if (divider) divider.style.display = '';
+    if (histHeader) histHeader.style.display = 'none';
+    if (legend) legend.style.display = '';
+    document.querySelectorAll('.digit-box').forEach(el => { el.style.height = ''; el.style.fontSize = ''; });
+    document.querySelectorAll('#sp-keypad .key-btn').forEach(el => { el.style.height = ''; el.style.fontSize = ''; });
+    reRenderHistory('bottom');
+  }
+}
+
+function toggleSoundSwitch() {
+  // legacy — keep for compatibility
+  toggleSfxSwitch();
+}
+
+function toggleMusicSwitch() {
+  musicOn = !musicOn;
+  localStorage.setItem('numgame_music', musicOn ? '1' : '0');
+  const sw = document.getElementById('music-switch');
+  if (sw) sw.classList.toggle('on', musicOn);
+  if (musicOn) resumeMusic(); else pauseMusic();
+}
+
+function toggleSfxSwitch() {
+  soundOn = !soundOn;
+  localStorage.setItem('numgame_sfx', soundOn ? '1' : '0');
+  const sw = document.getElementById('sfx-switch');
+  if (sw) sw.classList.toggle('on', soundOn);
+}
+
+// close settings on overlay click
+document.addEventListener('click', function(e) {
+  const so = document.getElementById('settings-overlay');
+  if (so && e.target === so) so.classList.remove('open');
+});
+
+// apply saved settings on load
+document.addEventListener('DOMContentLoaded', function() {
+  applyTheme(currentTheme);
+  applyLayout(currentLayout);
+  // sync theme cards
+  document.querySelectorAll('.theme-card').forEach(c => {
+    c.classList.toggle('active', c.dataset.t === currentTheme);
+  });
+  document.getElementById('layout-bottom-btn')?.classList.toggle('active', currentLayout === 'bottom');
+  document.getElementById('layout-side-btn')?.classList.toggle('active', currentLayout === 'side');
+  // restore sfx/music state
+  soundOn = localStorage.getItem('numgame_sfx') !== '0';
+  musicOn = localStorage.getItem('numgame_music') !== '0';
+  document.getElementById('sfx-switch')?.classList.toggle('on', soundOn);
+  document.getElementById('music-switch')?.classList.toggle('on', musicOn);
+});
+
+// ── Close overlays on outside click ──
+document.addEventListener('click', function(e) {
+  const modal = document.getElementById('name-modal');
+  if (modal && e.target === modal) {
+    modal.style.display = 'none';
+    if (pendingModalMode === 2) startTwoPlayerGame(); else startNewGame();
+  }
+  const sb = document.getElementById('sb-overlay');
+  if (sb && e.target === sb) sb.classList.remove('open');
+});
+
+// ── Grid Glow Background ──
+(function() {
+  const canvas = document.getElementById('bg-canvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  let t = 0;
+
+  function resize() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = window._currentBgColor || '#0d0f14';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    const step = 36;
+    for (let x = 0; x <= canvas.width + step; x += step) {
+      for (let y = 0; y <= canvas.height + step; y += step) {
+        const wave = Math.sin(x * 0.025 + t) * Math.cos(y * 0.025 + t * 0.7);
+        const pulse = Math.sin(t * 1.2 + x * 0.01) * 0.5 + 0.5;
+
+        const lineAlpha = (wave + 1) * 0.06 + 0.02;
+        const gc = window._currentGridColor || '124,111,247';
+        ctx.strokeStyle = `rgba(${gc},${lineAlpha})`;
+        ctx.lineWidth = 0.5;
+        ctx.beginPath();
+        ctx.rect(x - step/2, y - step/2, step, step);
+        ctx.stroke();
+
+        if (wave > 0.5) {
+          const cellAlpha = (wave - 0.5) * 0.18 * pulse;
+          ctx.fillStyle = `rgba(${gc},${cellAlpha})`;
+          ctx.fillRect(x - step/2 + 1, y - step/2 + 1, step - 2, step - 2);
+        }
+
+        if (wave > 0.7) {
+          const dotAlpha = (wave - 0.7) * 0.8 * pulse;
+          ctx.beginPath();
+          ctx.arc(x, y, 1.5, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(${gc},${dotAlpha})`;
+          ctx.fill();
+        }
+      }
+    }
+
+    const scanY = ((t * 40) % (canvas.height + 100)) - 50;
+    const scanGrad = ctx.createLinearGradient(0, scanY - 40, 0, scanY + 40);
+    scanGrad.addColorStop(0, 'rgba(124,111,247,0)');
+    scanGrad.addColorStop(0.5, 'rgba(124,111,247,0.04)');
+    scanGrad.addColorStop(1, 'rgba(124,111,247,0)');
+    ctx.fillStyle = scanGrad;
+    ctx.fillRect(0, scanY - 40, canvas.width, 80);
+
+    t += 0.008;
+    requestAnimationFrame(draw);
+  }
+
+  draw();
+})();
+</script>
 </script>
 </body>
 </html>
