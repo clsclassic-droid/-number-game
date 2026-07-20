@@ -7,6 +7,10 @@
 <meta name="theme-color" content="#0d0f14">
 <title>ถอดรหัสตัวเลข</title>
 
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Kanit:wght@500;600;700&display=swap" rel="stylesheet">
+
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -18,10 +22,10 @@
   --border:   #2a2f42;
   --border2:  #363d55;
   --text:     #e8eaf0;
-  --muted:    #7a82a0;
-  --dim:      #454d6a;
-  --accent:   #7c6ff7;
-  --accent2:  #5b52d9;
+  --muted:    #8a92b0;
+  --dim:      #5a6282;
+  --accent:   #8975ff;
+  --accent2:  #6b5ef0;
   --bull:     #4ade80;
   --bull-bg:  #0f2a1a;
   --bull-bd:  #1e5c35;
@@ -33,21 +37,21 @@
 
 /* ── Cyberpunk Theme ── */
 [data-theme="cyberpunk"] {
-  --bg: #0a0f0a; --surface: #0f1a0f; --surface2: #142014;
-  --border: #1a3a1a; --border2: #255025;
-  --text: #e0ffe0; --muted: #70a070; --dim: #3a5a3a;
-  --accent: #00ff88; --accent2: #00cc66;
+  --bg: #0c1014; --surface: #121922; --surface2: #142014;
+  --border: #1d3440; --border2: #255025;
+  --text: #ecfff5; --muted: #7fb8a5; --dim: #3a5a3a;
+  --accent: #1dff9a; --accent2: #00d97a;
   --bull: #00ff88; --bull-bg: #002a1a; --bull-bd: #005c35;
-  --cow: #ffff00; --cow-bg: #2a2a00; --cow-bd: #5c5c00;
+  --cow: #ffd84d; --cow-bg: #2b2208; --cow-bd: #5c5c00;
   --grid-color: 0,255,136;
 }
 
 /* ── Ocean Theme ── */
 [data-theme="ocean"] {
   --bg: #040d1a; --surface: #081525; --surface2: #0c1e30;
-  --border: #0e2d4a; --border2: #124060;
-  --text: #d0eeff; --muted: #5a90bb; --dim: #2a5070;
-  --accent: #38bdf8; --accent2: #0ea5e9;
+  --border: #13375a; --border2: #124060;
+  --text: #d0eeff; --muted: #6ca3cf; --dim: #2a5070;
+  --accent: #4cc9ff; --accent2: #1bb8ff;
   --bull: #34d399; --bull-bg: #042a1a; --bull-bd: #065c35;
   --cow: #fbbf24; --cow-bg: #241c08; --cow-bd: #5c4a10;
   --grid-color: 56,189,248;
@@ -55,13 +59,279 @@
 
 /* ── Light Theme ── */
 [data-theme="light"] {
-  --bg: #f0f2f8; --surface: #ffffff; --surface2: #e8eaf2;
-  --border: #d0d4e8; --border2: #b8bdd8;
-  --text: #1a1d2e; --muted: #5a6080; --dim: #9098b8;
-  --accent: #5b52d9; --accent2: #4840c0;
-  --bull: #16a34a; --bull-bg: #dcfce7; --bull-bd: #86efac;
-  --cow: #d97706; --cow-bg: #fef3c7; --cow-bd: #fcd34d;
+  --bg: #f5f7fc; --surface: #ffffff; --surface2: #eef1f8;
+  --border: #d8dced; --border2: #c6cbe3;
+  --text: #1a1d2e; --muted: #66708f; --dim: #9098b8;
+  --accent: #6a5ef5; --accent2: #574de0;
+  --bull: #22b45b; --bull-bg: #dcfce7; --bull-bd: #86efac;
+  --cow: #e58b11; --cow-bg: #fef3c7; --cow-bd: #fcd34d;
   --grid-color: 91,82,217;
+}
+
+/* ── Cute Kawaii Theme (dark bg + floating white pill cards) ── */
+[data-theme="cute"] {
+  --bg: #12131b; --surface: #ffffff; --surface2: #fff7fb;
+  --border: #f3bfd6; --border2: #ff79b7;
+  --text: #484564; --muted: #7c7794; --dim: #b7b2c7;
+  --accent: #ff6fb0; --accent2: #ff4f99;
+  --bull: #22c55e; --bull-bg: #dcfce7; --bull-bd: #86efac;
+  --cow: #f59e0b; --cow-bg: #fff5d8; --cow-bd: #f7ca63;
+  --grid-color: 255,111,176;
+}
+
+/* Cute theme: dark page, white pill cards, pink glow */
+html[data-theme="cute"] {
+  background: var(--bg) radial-gradient(circle at 50% 15%, rgba(255,111,176,.10), transparent 60%);
+}
+[data-theme="cute"] body { font-family: 'Fredoka', 'Kanit', sans-serif; }
+
+/* text that sits directly on the dark page background (not inside a white card) */
+[data-theme="cute"] .game-title,
+[data-theme="cute"] .player-name-display { color: #ffffff; }
+[data-theme="cute"] .game-title span { color: var(--accent); }
+[data-theme="cute"] .game-sub { color: var(--dim); }
+
+[data-theme="cute"] .rules-box,
+[data-theme="cute"] .settings-panel,
+[data-theme="cute"] .sb-panel,
+[data-theme="cute"] .name-modal { border-radius: 24px; }
+[data-theme="cute"] .name-modal,
+[data-theme="cute"] .settings-panel,
+[data-theme="cute"] .sb-panel { border-radius: 28px; }
+[data-theme="cute"] .mode-btn { border-radius: 20px; }
+[data-theme="cute"] .theme-card { border-radius: 18px; }
+[data-theme="cute"] .digit-box,
+[data-theme="cute"] .key-btn { border-radius: 18px; }
+[data-theme="cute"] .tag-bull,
+[data-theme="cute"] .tag-cow,
+[data-theme="cute"] .record-badge { border-radius: 999px; }
+
+[data-theme="cute"] .key-btn,
+[data-theme="cute"] .mode-btn,
+[data-theme="cute"] .digit-box,
+[data-theme="cute"] .theme-card,
+[data-theme="cute"] .settings-fab,
+[data-theme="cute"] .login-btn { transition: all .18s ease; }
+
+[data-theme="cute"] .rules-box,
+[data-theme="cute"] .settings-panel,
+[data-theme="cute"] .sb-panel,
+[data-theme="cute"] .name-modal {
+  box-shadow: 0 8px 24px rgba(0,0,0,.18), 0 0 0 1px rgba(255,255,255,.6);
+}
+[data-theme="cute"] .key-btn {
+  box-shadow: 0 6px 18px rgba(255,111,176,.18), 0 2px 0 rgba(255,111,176,.12);
+}
+[data-theme="cute"] .key-btn.go {
+  background: linear-gradient(180deg, #ff89c0, #ff5fa2);
+  border-color: transparent;
+  box-shadow: 0 10px 24px rgba(255,79,153,.35);
+}
+[data-theme="cute"] .key-btn.go:hover { filter: brightness(1.06); }
+[data-theme="cute"] .key-btn.go:active { transform: translateY(1px) scale(0.97); }
+
+[data-theme="cute"] .mode-btn.active,
+[data-theme="cute"] .digit-box.active {
+  background: #fff;
+  border: 2px solid var(--accent);
+  box-shadow: 0 0 0 4px rgba(255,111,176,.18), 0 8px 20px rgba(255,111,176,.22);
+}
+[data-theme="cute"] .theme-card.active {
+  box-shadow: 0 0 0 4px rgba(255,111,176,.18), 0 8px 20px rgba(255,111,176,.22);
+}
+
+/* ── Rainbow Land Theme (pastel sky + candy-color cards) ── */
+[data-theme="rainbow"] {
+  --bg: #ffe4f1; --surface: #fffdf9; --surface2: #f6effd;
+  --border: #f3c6e0; --border2: #ffb0d8;
+  --text: #5b4a6f; --muted: #8a7a9c; --dim: #c3b3d6;
+  --accent: #ff5fa8; --accent2: #a78bfa;
+  --bull: #22c55e; --bull-bg: #dcfce7; --bull-bd: #86efac;
+  --cow: #f59e0b; --cow-bg: #fef3c7; --cow-bd: #fcd34d;
+  --grid-color: 255,95,168;
+}
+
+html[data-theme="rainbow"] {
+  background: #f8f4e3 url('background/snoopy.png') center/cover no-repeat fixed;
+}
+[data-theme="rainbow"] body { font-family: 'Fredoka', 'Kanit', sans-serif; }
+
+/* header decorations (pure CSS, no interactivity, hidden on narrow phones) */
+[data-theme="rainbow"] .header { position: relative; }
+[data-theme="rainbow"] .header::before,
+[data-theme="rainbow"] .header::after {
+  position: absolute; top: -6px; font-size: 26px; pointer-events: none; opacity: .9;
+}
+[data-theme="rainbow"] .header::before { content: "🌈✨"; left: -6px; }
+[data-theme="rainbow"] .header::after  { content: "🐰🎈"; right: -6px; }
+@media (max-width: 420px) {
+  [data-theme="rainbow"] .header::before,
+  [data-theme="rainbow"] .header::after { display: none; }
+}
+
+[data-theme="rainbow"] .game-title {
+  color: #6d3f8f;
+  text-shadow: 0 2px 0 #fff, 0 4px 0 rgba(109,63,143,.15);
+}
+[data-theme="rainbow"] .game-title span { color: var(--accent); }
+[data-theme="rainbow"] .game-sub { color: var(--muted); }
+
+[data-theme="rainbow"] .rules-box,
+[data-theme="rainbow"] .settings-panel,
+[data-theme="rainbow"] .sb-panel,
+[data-theme="rainbow"] .name-modal { border-radius: 24px; border-width: 2px; }
+[data-theme="rainbow"] .name-modal,
+[data-theme="rainbow"] .settings-panel,
+[data-theme="rainbow"] .sb-panel { border-radius: 28px; }
+[data-theme="rainbow"] .mode-btn,
+[data-theme="rainbow"] .combo-btn { border-radius: 20px; border-width: 2px; }
+[data-theme="rainbow"] .theme-card { border-radius: 18px; }
+[data-theme="rainbow"] .digit-box,
+[data-theme="rainbow"] .key-btn { border-radius: 18px; }
+[data-theme="rainbow"] .tag-bull,
+[data-theme="rainbow"] .tag-cow,
+[data-theme="rainbow"] .record-badge { border-radius: 999px; }
+
+[data-theme="rainbow"] .key-btn,
+[data-theme="rainbow"] .combo-btn,
+[data-theme="rainbow"] .mode-btn,
+[data-theme="rainbow"] .digit-box,
+[data-theme="rainbow"] .theme-card,
+[data-theme="rainbow"] .settings-fab,
+[data-theme="rainbow"] .login-btn { transition: all .18s ease; }
+
+[data-theme="rainbow"] .rules-box,
+[data-theme="rainbow"] .settings-panel,
+[data-theme="rainbow"] .sb-panel,
+[data-theme="rainbow"] .name-modal {
+  box-shadow: 0 8px 20px rgba(167,66,130,.14), 0 0 0 1px rgba(255,255,255,.6);
+}
+[data-theme="rainbow"] .key-btn {
+  box-shadow: 0 6px 14px rgba(167,139,250,.18);
+}
+[data-theme="rainbow"] .key-btn.go {
+  background: linear-gradient(135deg, #ff8fc6, #a78bfa);
+  border-color: transparent; color: #fff;
+  box-shadow: 0 10px 22px rgba(255,95,168,.35);
+}
+[data-theme="rainbow"] .key-btn.go:hover { filter: brightness(1.06); }
+[data-theme="rainbow"] .key-btn.go:active { transform: translateY(1px) scale(0.97); }
+
+[data-theme="rainbow"] .digit-box.active {
+  background: #fff;
+  border: 2px solid var(--accent);
+  box-shadow: 0 0 0 4px rgba(255,95,168,.16), 0 6px 16px rgba(255,95,168,.2);
+}
+[data-theme="rainbow"] .theme-card.active {
+  box-shadow: 0 0 0 4px rgba(255,95,168,.18), 0 8px 20px rgba(255,95,168,.22);
+}
+
+/* per-card candy colors for the mode/level selector, matching the mockup */
+[data-theme="rainbow"] #combo-mode1-btn { background: #dbeafe; border-color: #93c5fd; }
+[data-theme="rainbow"] #combo-mode1-btn.active { box-shadow: 0 0 0 3px rgba(59,130,246,.25); border-color: #3b82f6; }
+[data-theme="rainbow"] #combo-mode2-btn { background: #ede9fe; border-color: #c4b5fd; }
+[data-theme="rainbow"] #combo-mode2-btn.active { box-shadow: 0 0 0 3px rgba(139,92,246,.25); border-color: #8b5cf6; }
+[data-theme="rainbow"] #custom-secret-btn { background: #fef9c3; border-color: #fde047; }
+[data-theme="rainbow"] #custom-secret-btn.active { box-shadow: 0 0 0 3px rgba(202,138,4,.25); border-color: #ca8a04; }
+[data-theme="rainbow"] #lv1-btn { background: #dcfce7; border-color: #86efac; }
+[data-theme="rainbow"] #lv1-btn.active { box-shadow: 0 0 0 3px rgba(34,197,94,.25); border-color: #22c55e; }
+[data-theme="rainbow"] #lv2-btn { background: #f1f5f9; border-color: #cbd5e1; }
+[data-theme="rainbow"] #lv2-btn.active { box-shadow: 0 0 0 3px rgba(100,116,139,.25); border-color: #64748b; }
+[data-theme="rainbow"] .combo-btn .cb-name,
+[data-theme="rainbow"] .combo-btn .cb-desc { color: var(--text); }
+
+/* decorative scenery, desktop-only flourish so mobile stays clean */
+[data-theme="rainbow"] .wrap::before,
+[data-theme="rainbow"] .wrap::after {
+  position: fixed; bottom: 12px; font-size: 64px; pointer-events: none; opacity: .85; z-index: 0;
+}
+[data-theme="rainbow"] .wrap::before { content: "🎈🐰"; left: 16px; }
+[data-theme="rainbow"] .wrap::after  { content: "🏠🌳"; right: 16px; }
+@media (max-width: 900px) {
+  [data-theme="rainbow"] .wrap::before,
+  [data-theme="rainbow"] .wrap::after { display: none; }
+}
+
+/* ── Forest Nature Theme (real photo background, from Unsplash) ── */
+[data-theme="forest"] {
+  --bg: #10160f; --surface: rgba(255,252,244,0.94); --surface2: rgba(255,252,244,0.8);
+  --border: #cdbd8f; --border2: #a9c98c;
+  --text: #2f3b26; --muted: #5c6b4f; --dim: #8a967f;
+  --accent: #d99a3c; --accent2: #b97b26;
+  --bull: #4d9e4d; --bull-bg: #e1f3df; --bull-bd: #9fd39a;
+  --cow: #c2703c; --cow-bg: #fbe7d6; --cow-bd: #e3ab7c;
+  --grid-color: 217,154,60;
+}
+
+html[data-theme="forest"] {
+  background: linear-gradient(rgba(10,14,8,.35), rgba(10,14,8,.55)), url('img/forest-bg.jpg') center/cover no-repeat fixed;
+}
+[data-theme="forest"] body { font-family: 'Fredoka', 'Kanit', sans-serif; }
+
+/* small circular photo emblem next to the title, cropped from the same photo */
+[data-theme="forest"] .header { position: relative; }
+[data-theme="forest"] .header::before {
+  content: ""; position: absolute; top: -8px; left: 4px;
+  width: 46px; height: 46px; border-radius: 50%;
+  background: url('img/forest-icon.jpg') center/cover;
+  border: 3px solid rgba(255,255,255,.85);
+  box-shadow: 0 4px 12px rgba(0,0,0,.35);
+}
+@media (max-width: 420px) { [data-theme="forest"] .header::before { display: none; } }
+
+[data-theme="forest"] .game-title {
+  color: #fdf6e3;
+  text-shadow: 0 2px 6px rgba(0,0,0,.5);
+}
+[data-theme="forest"] .game-title span { color: var(--accent); }
+[data-theme="forest"] .game-sub { color: #d8e0cc; text-shadow: 0 1px 4px rgba(0,0,0,.5); }
+[data-theme="forest"] .player-name-display { color: #fdf6e3; text-shadow: 0 1px 4px rgba(0,0,0,.5); }
+
+[data-theme="forest"] .rules-box,
+[data-theme="forest"] .settings-panel,
+[data-theme="forest"] .sb-panel,
+[data-theme="forest"] .name-modal {
+  border-radius: 18px; border-width: 1.5px;
+  backdrop-filter: blur(6px);
+  box-shadow: 0 10px 26px rgba(0,0,0,.35);
+}
+[data-theme="forest"] .mode-btn,
+[data-theme="forest"] .combo-btn { border-radius: 14px; }
+[data-theme="forest"] .digit-box,
+[data-theme="forest"] .key-btn { border-radius: 12px; }
+[data-theme="forest"] .tag-bull,
+[data-theme="forest"] .tag-cow,
+[data-theme="forest"] .record-badge { border-radius: 999px; }
+
+/* forest-floor photo glimpsed behind the translucent keypad, buttons stay solid/legible on top */
+[data-theme="forest"] .keypad {
+  padding: 8px; border-radius: 16px;
+  background: linear-gradient(rgba(16,22,15,.55), rgba(16,22,15,.55)), url('img/forest-icon.jpg') center/cover;
+}
+[data-theme="forest"] .key-btn {
+  background: var(--surface2);
+  box-shadow: 0 2px 6px rgba(0,0,0,.2);
+}
+[data-theme="forest"] .key-btn.go {
+  background: linear-gradient(180deg, #e2ac52, #b97b26);
+  border-color: transparent; color: #fff;
+  box-shadow: 0 8px 18px rgba(185,123,38,.4);
+}
+[data-theme="forest"] .key-btn.go:hover { filter: brightness(1.06); }
+
+[data-theme="forest"] .digit-box.active {
+  border: 2px solid var(--accent);
+  box-shadow: 0 0 0 3px rgba(217,154,60,.25);
+}
+[data-theme="forest"] .mode-btn.active,
+[data-theme="forest"] .combo-btn.active {
+  border-color: var(--accent);
+  background: rgba(217,154,60,.14);
+}
+[data-theme="forest"] .settings-fab,
+[data-theme="forest"] .login-btn,
+[data-theme="forest"] .theme-card {
+  background: var(--surface);
 }
 
 html { background: #0d0f14; }
@@ -1860,6 +2130,33 @@ window.closeScoreboard = () => document.getElementById('sb-overlay').classList.r
             <div class="theme-name">Light</div>
             <div class="theme-check">✓ กำลังใช้</div>
           </div>
+          <div class="theme-card" data-t="cute" onclick="setTheme('cute')">
+            <div class="theme-preview" style="background:#12131b">
+              <div class="theme-dot" style="background:#ffffff"></div>
+              <div class="theme-dot" style="background:#ff6fb0"></div>
+              <div class="theme-dot" style="background:#ffffff"></div>
+            </div>
+            <div class="theme-name">🧸 Cute Kawaii</div>
+            <div class="theme-check">✓ กำลังใช้</div>
+          </div>
+          <div class="theme-card" data-t="rainbow" onclick="setTheme('rainbow')">
+            <div class="theme-preview" style="background:#f8f4e3 url('background/snoopy.png') center/cover">
+              <div class="theme-dot" style="background:#ff5fa8"></div>
+              <div class="theme-dot" style="background:#a78bfa"></div>
+              <div class="theme-dot" style="background:#f59e0b"></div>
+            </div>
+            <div class="theme-name">🌈 Rainbow Land</div>
+            <div class="theme-check">✓ กำลังใช้</div>
+          </div>
+          <div class="theme-card" data-t="forest" onclick="setTheme('forest')">
+            <div class="theme-preview" style="background:url('img/forest-icon.jpg') center/cover">
+              <div class="theme-dot" style="background:#d99a3c"></div>
+              <div class="theme-dot" style="background:#4d9e4d"></div>
+              <div class="theme-dot" style="background:#c2703c"></div>
+            </div>
+            <div class="theme-name">🌲 Forest Nature</div>
+            <div class="theme-check">✓ กำลังใช้</div>
+          </div>
         </div>
       </div>
 
@@ -3614,12 +3911,16 @@ window._gridColorMap = {
   'dark': '124,111,247',
   'cyberpunk': '0,255,136',
   'ocean': '56,189,248',
-  'light': '91,82,217'
+  'light': '91,82,217',
+  'cute': '255,111,176',
+  'rainbow': '255,95,168',
+  'forest': '217,154,60'
 };
 window._currentGridColor = window._gridColorMap[currentTheme] || '124,111,247';
 window._bgColorMap = {
   'dark': '#0d0f14', 'cyberpunk': '#0a0f0a',
-  'ocean': '#040d1a', 'light': '#f0f2f8'
+  'ocean': '#040d1a', 'light': '#f0f2f8',
+  'cute': 'transparent', 'rainbow': 'transparent', 'forest': 'transparent'
 };
 window._currentBgColor = window._bgColorMap[currentTheme] || '#0d0f14';
 
@@ -3740,8 +4041,10 @@ document.addEventListener('click', function(e) {
 
   function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.fillStyle = window._currentBgColor || '#0d0f14';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    if (window._currentBgColor !== 'transparent') {
+      ctx.fillStyle = window._currentBgColor || '#0d0f14';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+    }
 
     const step = 36;
     for (let x = 0; x <= canvas.width + step; x += step) {
