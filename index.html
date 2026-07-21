@@ -395,10 +395,20 @@ html[data-theme="comic"] {
 [data-theme="comic"] .combo-btn {
   border: 3px solid var(--border); border-radius: 12px;
   background: var(--surface); box-shadow: 3px 3px 0 var(--border);
-  padding: 10px 6px; font-weight: 700;
+  padding: 10px 6px; font-weight: 900; color: var(--text);
+  -webkit-font-smoothing: antialiased; letter-spacing: 0.02em;
 }
 [data-theme="comic"] .combo-btn.active {
   background: var(--accent); color: #fff; border-color: var(--border);
+  font-weight: 900;
+}
+[data-theme="comic"] .cb-name {
+  font-weight: 900; letter-spacing: 0.02em;
+  -webkit-font-smoothing: antialiased; display: block;
+}
+[data-theme="comic"] .cb-desc {
+  font-size: 10px; font-weight: 700; letter-spacing: 0.01em;
+  -webkit-font-smoothing: antialiased; display: block; opacity: 0.85;
 }
 [data-theme="comic"] .combo-divider { display: none; }
 
@@ -433,11 +443,13 @@ html[data-theme="comic"] {
   box-shadow: 3px 3px 0 var(--border); background: var(--surface);
   font-weight: 900; transition: all 0.12s ease;
   -webkit-font-smoothing: antialiased; color: var(--text);
-  letter-spacing: 0.02em;
+  letter-spacing: 0.03em; line-height: 1; font-size: 16px;
+  text-shadow: none;
 }
 [data-theme="comic"] .key-btn.go {
   background: var(--accent); color: #fff; border-color: var(--border);
   box-shadow: 4px 4px 0 var(--border); font-weight: 900;
+  font-size: 13px; letter-spacing: 0.02em;
 }
 [data-theme="comic"] .key-btn:hover { transform: translate(2px, 2px); box-shadow: 2px 2px 0 var(--border); }
 [data-theme="comic"] .key-btn:active { transform: translate(3px, 3px) scale(0.96); box-shadow: 1px 1px 0 var(--border); }
