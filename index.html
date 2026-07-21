@@ -516,14 +516,22 @@ html[data-theme="comic"] {
   border-radius: 6px; cursor: pointer;
 }
 
-/* History rows with individual rounded borders */
+/* History rows stacked without gaps */
 [data-theme="comic"] .history {
-  display: flex; flex-direction: column; gap: 6px;
+  display: flex; flex-direction: column; gap: 0;
+  border: 2.5px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 3px 3px 0 var(--border);
 }
 [data-theme="comic"] .history .history-row {
-  border-radius: 10px;
-  border: 2.5px solid var(--border);
-  box-shadow: 3px 3px 0 var(--border);
+  border: none;
+  border-bottom: 2.5px solid var(--border);
+  box-shadow: none;
+  padding: 8px 10px;
+}
+[data-theme="comic"] .history .history-row:last-child {
+  border-bottom: none;
 }
 [data-theme="comic"] .records-section { position: relative; }
 
