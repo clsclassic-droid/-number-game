@@ -496,6 +496,20 @@ html[data-theme="comic"] {
   font-weight: 700; font-size: 11px; padding: 5px 10px;
   border-radius: 6px; cursor: pointer;
 }
+
+/* History rows stacked without gaps */
+[data-theme="comic"] .history {
+  display: flex; flex-direction: column; gap: 0;
+}
+[data-theme="comic"] .history .history-row:first-child {
+  border-radius: 10px 10px 0 0;
+}
+[data-theme="comic"] .history .history-row:last-child {
+  border-radius: 0 0 10px 10px;
+}
+[data-theme="comic"] .history .history-row:not(:first-child):not(:last-child) {
+  border-radius: 0;
+}
 [data-theme="comic"] .records-section { position: relative; }
 
 
