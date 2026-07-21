@@ -516,11 +516,33 @@ html[data-theme="comic"] {
   border-radius: 6px; cursor: pointer;
 }
 
+/* History header + rows as unified panel */
+[data-theme="comic"] #history-header-side {
+  display: none;
+}
+[data-theme="comic"] .col-input::before {
+  content: 'ประวัติ';
+  display: grid;
+  grid-template-columns: 1fr auto auto auto;
+  gap: 4px;
+  padding: 5px 8px;
+  background: var(--surface2);
+  border: 2.5px solid var(--border);
+  border-bottom: none;
+  border-radius: 10px 10px 0 0;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--dim);
+}
+
 /* History rows stacked without gaps */
 [data-theme="comic"] .history {
   display: flex; flex-direction: column; gap: 0;
   border: 2.5px solid var(--border);
-  border-radius: 10px;
+  border-top: none;
+  border-radius: 0 0 10px 10px;
   overflow: hidden;
   box-shadow: 3px 3px 0 var(--border);
 }
