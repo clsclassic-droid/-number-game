@@ -498,18 +498,13 @@ html[data-theme="comic"] {
 }
 [data-theme="comic"] .records-section { position: relative; }
 
-/* Sketch filter application */
-[data-theme="comic"] .combined-selector,
-[data-theme="comic"] .combo-btn,
-[data-theme="comic"] .digit-box,
-[data-theme="comic"] .key-btn,
-[data-theme="comic"] .legend,
-[data-theme="comic"] .input-label {
+/* Sketch filter application — borders only, not text */
+[data-theme="comic"] .combined-selector {
   filter: url(#sketch-border1);
 }
-[data-theme="comic"] .combo-btn:nth-child(even),
-[data-theme="comic"] .key-btn:nth-child(3n+2) {
-  filter: url(#sketch-border2);
+[data-theme="comic"] .rules-box,
+[data-theme="comic"] .legend {
+  filter: url(#sketch-border1);
 }
 
 /* Tag styling */
