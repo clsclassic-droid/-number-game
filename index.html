@@ -477,12 +477,25 @@ html[data-theme="comic"] {
 [data-theme="comic"] .legend-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
 
 /* Records section label */
+[data-theme="comic"] .records-section {
+  position: relative;
+}
 [data-theme="comic"] .records-header {
   border: 4px solid var(--border); border-radius: 12px;
   background: #0d7a3e; color: #fff;
   padding: 10px 12px; margin-bottom: 10px;
   box-shadow: 4px 4px 0 var(--border);
   display: flex; justify-content: space-between; align-items: center;
+}
+[data-theme="comic"] #records-list {
+  display: flex; flex-direction: column; gap: 6px;
+}
+[data-theme="comic"] .record-item {
+  border: 2.5px solid var(--border); border-radius: 10px;
+  background: var(--surface); padding: 10px 12px;
+  box-shadow: 3px 3px 0 var(--border);
+  display: flex; align-items: center; gap: 12px;
+  font-weight: 700; font-size: 12px;
 }
 [data-theme="comic"] .records-title {
   font-weight: 900; font-size: 12px; color: #fff;
