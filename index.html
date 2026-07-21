@@ -334,7 +334,7 @@ html[data-theme="forest"] {
   background: var(--surface);
 }
 
-/* ── Comic Book Theme (yellow printing press + cobalt + hand-drawn borders) ── */
+/* ── Comic Book Theme (yellow printing press + cobalt banner + thick ink borders) ── */
 [data-theme="comic"] {
   --bg: #ffd633; --surface: #fffdf2; --surface2: #f0ead8;
   --border: #0e0c1e; --border2: #1a2e8a;
@@ -346,37 +346,144 @@ html[data-theme="forest"] {
 }
 
 html[data-theme="comic"] {
-  background: var(--bg) radial-gradient(circle at 50% 50%, rgba(212,28,46,.06), transparent 70%);
+  background: var(--bg) radial-gradient(circle at 50% 50%, rgba(212,28,46,.08), transparent 70%);
 }
-[data-theme="comic"] body { font-family: 'Kanit', system-ui, sans-serif; font-weight: 700; }
-[data-theme="comic"] .game-title { color: var(--ink); text-shadow: 4px 4px 0 rgba(0,0,0,.2); }
-[data-theme="comic"] .game-title span { color: var(--accent); }
-[data-theme="comic"] .game-sub { color: var(--text); }
+
+/* Cobalt banner header */
+[data-theme="comic"] .header {
+  background: #1a2e8a;
+  border-bottom: 5px solid var(--border);
+  padding: 20px 16px 16px;
+  position: relative;
+}
+[data-theme="comic"] .header .logo-mark {
+  display: none;
+}
+[data-theme="comic"] .header::before {
+  content: '🎯 BULLS & COWS — THAI NUMBER GAME';
+  display: block; font-size: 10px; font-weight: 700; letter-spacing: 0.15em;
+  color: rgba(255,255,255,.6); text-transform: uppercase; margin-bottom: 8px;
+}
+[data-theme="comic"] .header::after {
+  content: '▶ DESIGN CONCEPT — COMIC EDITION';
+  position: absolute; top: 20px; right: 16px;
+  background: var(--accent); color: #fff;
+  font-weight: 900; font-size: 9px; letter-spacing: 0.06em;
+  border: 2px solid var(--border); padding: 4px 10px;
+}
+[data-theme="comic"] .game-title {
+  color: #fff; text-shadow: 4px 4px 0 var(--border);
+  font-size: clamp(28px, 6vw, 48px); line-height: 1;
+}
+[data-theme="comic"] .game-title span { color: var(--bg); }
+[data-theme="comic"] .game-sub { color: rgba(255,255,255,.75); font-size: 12px; }
+
+/* Thick ink borders + offset shadows */
+[data-theme="comic"] .combined-selector {
+  border: 4px solid var(--border); border-radius: 14px;
+  background: var(--surface); box-shadow: 5px 5px 0 var(--border), 0 0 0 1px var(--border);
+  padding: 12px;
+}
+[data-theme="comic"] .combined-selector::before {
+  content: 'โหมดเกม'; position: absolute; top: -18px; left: 14px;
+  background: #1a2e8a; color: #fff; font-weight: 900; font-size: 10px;
+  border: 2px solid var(--border); padding: 3px 10px; letter-spacing: 0.05em;
+}
+
+[data-theme="comic"] .combo-btn {
+  border: 3px solid var(--border); border-radius: 12px;
+  background: var(--surface); box-shadow: 3px 3px 0 var(--border);
+  padding: 10px 6px; font-weight: 700;
+}
+[data-theme="comic"] .combo-btn.active {
+  background: var(--accent); color: #fff; border-color: var(--border);
+}
+[data-theme="comic"] .combo-divider { display: none; }
 
 [data-theme="comic"] .rules-box,
 [data-theme="comic"] .settings-panel,
 [data-theme="comic"] .sb-panel,
 [data-theme="comic"] .name-modal {
-  border-radius: 12px; border: 4px solid var(--ink);
-  box-shadow: 5px 5px 0 rgba(0,0,0,.25);
+  border-radius: 14px; border: 4px solid var(--border);
+  box-shadow: 5px 5px 0 var(--border);
 }
-[data-theme="comic"] .mode-btn { border-radius: 10px; border: 3px solid var(--ink); box-shadow: 3px 3px 0 rgba(0,0,0,.2); }
-[data-theme="comic"] .key-btn { border-radius: 9px; border: 3px solid var(--ink); box-shadow: 3px 3px 0 rgba(0,0,0,.2); }
-[data-theme="comic"] .digit-box { border-radius: 10px; border: 3.5px solid var(--ink); box-shadow: 3px 3px 0 rgba(0,0,0,.15); }
-[data-theme="comic"] .key-btn.go { background: var(--accent); color: #fff; border-color: var(--ink); box-shadow: 4px 4px 0 rgba(0,0,0,.25); }
-[data-theme="comic"] .key-btn.go:hover { filter: brightness(1.08); }
-[data-theme="comic"] .key-btn.go:active { transform: translateY(1px) scale(0.97); }
 
-[data-theme="comic"] .key-btn:hover { transform: translate(2px,2px); box-shadow: 2px 2px 0 rgba(0,0,0,.15); }
-[data-theme="comic"] .key-btn:active { transform: translate(3px,3px) scale(0.97); box-shadow: 1px 1px 0 rgba(0,0,0,.1); }
-[data-theme="comic"] .mode-btn.active { background: var(--accent); color: #fff; border-color: var(--ink); }
-[data-theme="comic"] .digit-box.active { background: var(--accent); border-color: var(--ink); color: #fff; }
+/* Input panel label */
+[data-theme="comic"] .input-label {
+  position: absolute; top: -18px; left: 12px;
+  background: var(--accent); color: #fff; font-weight: 900; font-size: 10px;
+  border: 2px solid var(--border); padding: 3px 10px; letter-spacing: 0.05em;
+}
 
-[data-theme="comic"] .tag-bull { background: var(--bull-bg); color: var(--bull); border: 2px solid var(--ink); }
-[data-theme="comic"] .tag-cow { background: var(--cow-bg); color: var(--cow); border: 2px solid var(--ink); }
-[data-theme="comic"] .record-badge { background: var(--ink); color: var(--bg); border: 2px solid var(--ink); }
+[data-theme="comic"] .digit-box {
+  border-radius: 10px; border: 4px solid var(--border);
+  box-shadow: 3px 3px 0 var(--border); background: var(--surface2);
+}
+[data-theme="comic"] .digit-box.active { background: var(--accent); color: #fff; border-color: var(--border); }
 
-[data-theme="comic"] .theme-card { border-radius: 12px; border: 3px solid var(--ink); }
+[data-theme="comic"] .key-btn {
+  border-radius: 9px; border: 3px solid var(--border);
+  box-shadow: 3px 3px 0 var(--border); background: var(--surface);
+  font-weight: 700; transition: all 0.12s ease;
+}
+[data-theme="comic"] .key-btn.go {
+  background: var(--accent); color: #fff; border-color: var(--border);
+  box-shadow: 4px 4px 0 var(--border); font-weight: 900;
+}
+[data-theme="comic"] .key-btn:hover { transform: translate(2px, 2px); box-shadow: 2px 2px 0 var(--border); }
+[data-theme="comic"] .key-btn:active { transform: translate(3px, 3px) scale(0.96); box-shadow: 1px 1px 0 var(--border); }
+[data-theme="comic"] .key-btn.go:hover { filter: brightness(1.12); }
+
+/* History panel label */
+[data-theme="comic"] #history-divider {
+  border-color: var(--border); margin: 12px 0;
+  position: relative; height: 2px;
+}
+[data-theme="comic"] #history-divider::before {
+  content: 'ประวัติการทาย'; position: absolute; top: -16px; left: 10px;
+  background: #1a2e8a; color: #fff; font-weight: 900; font-size: 10px;
+  border: 2px solid var(--border); padding: 3px 10px;
+}
+
+/* Legend styling */
+[data-theme="comic"] .legend {
+  border: 2.5px solid var(--border); border-radius: 10px;
+  background: var(--surface); padding: 8px; box-shadow: 3px 3px 0 var(--border);
+  display: flex; gap: 8px; margin-top: 12px;
+  font-size: 11px; font-weight: 700;
+}
+[data-theme="comic"] .legend-dot { width: 10px; height: 10px; border-radius: 50%; }
+
+/* Records section label */
+[data-theme="comic"] .records-header {
+  border: 4px solid var(--border); border-radius: 12px;
+  background: #0d7a3e; color: #fff;
+  padding: 10px 12px; margin-bottom: 10px;
+  box-shadow: 4px 4px 0 var(--border);
+}
+[data-theme="comic"] .records-title { font-weight: 900; font-size: 12px; }
+[data-theme="comic"] .records-section { position: relative; }
+
+/* Sketch filter application */
+[data-theme="comic"] .combined-selector,
+[data-theme="comic"] .combo-btn,
+[data-theme="comic"] .digit-box,
+[data-theme="comic"] .key-btn,
+[data-theme="comic"] .legend,
+[data-theme="comic"] .input-label {
+  filter: url(#sketch-border1);
+}
+[data-theme="comic"] .combo-btn:nth-child(even),
+[data-theme="comic"] .key-btn:nth-child(3n+2) {
+  filter: url(#sketch-border2);
+}
+
+/* Tag styling */
+[data-theme="comic"] .tag-bull { background: var(--bull-bg); color: var(--bull); border: 2px solid var(--border); font-weight: 700; }
+[data-theme="comic"] .tag-cow { background: var(--cow-bg); color: var(--cow); border: 2px solid var(--border); font-weight: 700; }
+
+/* Theme card */
+[data-theme="comic"] .theme-card { border-radius: 12px; border: 3px solid var(--border); }
 [data-theme="comic"] .theme-card.active { box-shadow: 0 0 0 3px var(--accent), 0 6px 16px rgba(212,28,46,.3); }
 
 html { background: #0d0f14; }
