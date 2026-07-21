@@ -334,6 +334,51 @@ html[data-theme="forest"] {
   background: var(--surface);
 }
 
+/* ── Comic Book Theme (yellow printing press + cobalt + hand-drawn borders) ── */
+[data-theme="comic"] {
+  --bg: #ffd633; --surface: #fffdf2; --surface2: #f0ead8;
+  --border: #0e0c1e; --border2: #1a2e8a;
+  --text: #0e0c1e; --muted: #3d3a4a; --dim: #6b6877;
+  --accent: #d41c2e; --accent2: #b91620;
+  --bull: #0d7a3e; --bull-bg: #cff0df; --bull-bd: #5fc999;
+  --cow: #c86c00; --cow-bg: #fde4c0; --cow-bd: #f0a857;
+  --grid-color: 212,28,46;
+}
+
+html[data-theme="comic"] {
+  background: var(--bg) radial-gradient(circle at 50% 50%, rgba(212,28,46,.06), transparent 70%);
+}
+[data-theme="comic"] body { font-family: 'Kanit', system-ui, sans-serif; font-weight: 700; }
+[data-theme="comic"] .game-title { color: var(--ink); text-shadow: 4px 4px 0 rgba(0,0,0,.2); }
+[data-theme="comic"] .game-title span { color: var(--accent); }
+[data-theme="comic"] .game-sub { color: var(--text); }
+
+[data-theme="comic"] .rules-box,
+[data-theme="comic"] .settings-panel,
+[data-theme="comic"] .sb-panel,
+[data-theme="comic"] .name-modal {
+  border-radius: 12px; border: 4px solid var(--ink);
+  box-shadow: 5px 5px 0 rgba(0,0,0,.25);
+}
+[data-theme="comic"] .mode-btn { border-radius: 10px; border: 3px solid var(--ink); box-shadow: 3px 3px 0 rgba(0,0,0,.2); }
+[data-theme="comic"] .key-btn { border-radius: 9px; border: 3px solid var(--ink); box-shadow: 3px 3px 0 rgba(0,0,0,.2); }
+[data-theme="comic"] .digit-box { border-radius: 10px; border: 3.5px solid var(--ink); box-shadow: 3px 3px 0 rgba(0,0,0,.15); }
+[data-theme="comic"] .key-btn.go { background: var(--accent); color: #fff; border-color: var(--ink); box-shadow: 4px 4px 0 rgba(0,0,0,.25); }
+[data-theme="comic"] .key-btn.go:hover { filter: brightness(1.08); }
+[data-theme="comic"] .key-btn.go:active { transform: translateY(1px) scale(0.97); }
+
+[data-theme="comic"] .key-btn:hover { transform: translate(2px,2px); box-shadow: 2px 2px 0 rgba(0,0,0,.15); }
+[data-theme="comic"] .key-btn:active { transform: translate(3px,3px) scale(0.97); box-shadow: 1px 1px 0 rgba(0,0,0,.1); }
+[data-theme="comic"] .mode-btn.active { background: var(--accent); color: #fff; border-color: var(--ink); }
+[data-theme="comic"] .digit-box.active { background: var(--accent); border-color: var(--ink); color: #fff; }
+
+[data-theme="comic"] .tag-bull { background: var(--bull-bg); color: var(--bull); border: 2px solid var(--ink); }
+[data-theme="comic"] .tag-cow { background: var(--cow-bg); color: var(--cow); border: 2px solid var(--ink); }
+[data-theme="comic"] .record-badge { background: var(--ink); color: var(--bg); border: 2px solid var(--ink); }
+
+[data-theme="comic"] .theme-card { border-radius: 12px; border: 3px solid var(--ink); }
+[data-theme="comic"] .theme-card.active { box-shadow: 0 0 0 3px var(--accent), 0 6px 16px rgba(212,28,46,.3); }
+
 html { background: #0d0f14; }
 
 body {
@@ -2060,6 +2105,17 @@ function renderSbList(arr) {
 window.openScoreboard = () => document.getElementById('sb-overlay').classList.add('open');
 window.closeScoreboard = () => document.getElementById('sb-overlay').classList.remove('open');
 </script>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <filter id="sketch-border1" x="-8%" y="-8%" width="116%" height="116%">
+    <feTurbulence type="fractalNoise" baseFrequency="0.032 0.088" numOctaves="2" seed="5" result="n"/>
+    <feDisplacementMap in="SourceGraphic" in2="n" scale="3.2"/>
+  </filter>
+  <filter id="sketch-border2" x="-8%" y="-8%" width="116%" height="116%">
+    <feTurbulence type="fractalNoise" baseFrequency="0.022 0.07" numOctaves="2" seed="13" result="n"/>
+    <feDisplacementMap in="SourceGraphic" in2="n" scale="4.4"/>
+  </filter>
+</svg>
 </head>
 <body>
 <canvas id="bg-canvas"></canvas>
@@ -2155,6 +2211,15 @@ window.closeScoreboard = () => document.getElementById('sb-overlay').classList.r
               <div class="theme-dot" style="background:#c2703c"></div>
             </div>
             <div class="theme-name">🌲 Forest Nature</div>
+            <div class="theme-check">✓ กำลังใช้</div>
+          </div>
+          <div class="theme-card" data-t="comic" onclick="setTheme('comic')">
+            <div class="theme-preview" style="background:#ffd633">
+              <div class="theme-dot" style="background:#d41c2e"></div>
+              <div class="theme-dot" style="background:#1a2e8a"></div>
+              <div class="theme-dot" style="background:#0e0c1e"></div>
+            </div>
+            <div class="theme-name">📕 Comic Book</div>
             <div class="theme-check">✓ กำลังใช้</div>
           </div>
         </div>
@@ -3914,13 +3979,15 @@ window._gridColorMap = {
   'light': '91,82,217',
   'cute': '255,111,176',
   'rainbow': '255,95,168',
-  'forest': '217,154,60'
+  'forest': '217,154,60',
+  'comic': '212,28,46'
 };
 window._currentGridColor = window._gridColorMap[currentTheme] || '124,111,247';
 window._bgColorMap = {
   'dark': '#0d0f14', 'cyberpunk': '#0a0f0a',
   'ocean': '#040d1a', 'light': '#f0f2f8',
-  'cute': 'transparent', 'rainbow': 'transparent', 'forest': 'transparent'
+  'cute': 'transparent', 'rainbow': 'transparent', 'forest': 'transparent',
+  'comic': 'transparent'
 };
 window._currentBgColor = window._bgColorMap[currentTheme] || '#0d0f14';
 
